@@ -1,0 +1,7 @@
+/frontend/.nuxt/
+/frontend/node_modules/
+/out/
+.DS_Store
+.idea
+*.iml
+
