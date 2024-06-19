@@ -32,7 +32,7 @@ jobs:
     - name: Copy build artifact to staging directory
       run: mkdir staging && cp target/*.jar staging
     - name: Upload build artifact to packages 
-    - uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v4
       with:
         name: Package
         path: staging
