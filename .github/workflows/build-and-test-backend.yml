@@ -27,12 +27,12 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
         cache: maven
-    - name: Build backend with Maven
+    - name: Build and test backend with Maven
       run: mvn -B --update-snapshots package --file ./backend/pom.xml
     - name: Copy build artifact to staging directory
       run: mkdir staging && cp ./backend/target/*.jar staging
     - name: Upload build artifact to packages 
       uses: actions/upload-artifact@v4
       with:
-        name: Package
+        name: agentmanager-backend-snapshot
         path: staging
