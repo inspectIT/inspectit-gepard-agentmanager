@@ -30,7 +30,7 @@ jobs:
     - name: Build backend with Maven
       run: mvn -B --update-snapshots package --file ./backend/pom.xml
     - name: Copy build artifact to staging directory
-      run: mkdir staging && cp backend/target/*.jar staging
+      run: mkdir staging && cp ./backend/target/*.jar staging
     - name: Upload build artifact to packages 
       uses: actions/upload-artifact@v4
       with:
