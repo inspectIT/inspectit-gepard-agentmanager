@@ -1,0 +1,128 @@
+openapi: "3.0.0"
+info:
+  title: AgentController API Description
+  description: API for managing agents
+  contact:
+    email: jwt@novatec-gmbh.de
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: "1.0.0"
+servers:
+  - url: "https://AgentController.swagger.io/api/v1"
+tags:
+  - name: agent
+    description: Managing Agentlifecycle
+
+paths:
+  /agents:
+    post:
+      tags:
+        - agents
+      summary: Add a agent to the configserver
+      description: Add a agent to the configserver
+      operationId: registerAgent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AgentDto'
+        required: true
+      responses:
+        '201':
+          description: Successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentDto'
+        '415':
+          description: Invalid input
+    get:
+      summary: List all agents
+      operationId: getAllAgents
+      tags:
+        - agents
+      parameters:
+        - name: limit
+          in: query
+          description: How many items to return at one time (max 100)
+          required: false
+          schema:
+            type: integer
+            maximum: 100
+            format: int32
+      responses:
+        '200':
+          description: A paged array of agents
+          headers:
+            x-next:
+              description: A link to the next page of responses
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Agents"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /agents/name:
+    get:
+      summary: get the details of one agent
+      operationId: getAgentByName
+      tags:
+        - agents
+      parameters:
+        - name: agentName
+          in: path
+          required: true
+          description: The name of the agent to retrieve
+          schema:
+            type: string
+      responses:
+        '200':
+          description: All details of the called agent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AgentDto"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+
+components:
+  schemas:
+    AgentDto:
+      type: object
+      properties:
+        name:
+          type: string
+        otelVersion:
+          type: string
+        javaversion:
+          type: string
+      required:
+        - name
+    Agents:
+      type: array
+      maxItems: 100
+      items:
+        $ref: "#/components/schemas/AgentDto"
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
