@@ -62,7 +62,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Agents"
+                $ref: "#/components/schemas/ResponseAgents"
         default:
           description: unexpected error
           content:
@@ -88,7 +88,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AgentDto"
+                $ref: "#/components/schemas/AgentResponseDto"
         default:
           description: unexpected error
           content:
@@ -110,11 +110,32 @@ components:
           type: string
       required:
         - name
-    Agents:
+
+    AgentResponseDto:
+          type: object
+          properties:
+            name:
+              type: string
+            healthState:
+              type: string
+            otelversion:
+              type: string
+            javaversion:
+              type: string
+            config:
+              type: string
+          required:
+            - name
+            - healthState
+            - javaversion
+            - otelversion
+            - config
+
+    ResponseAgents:
       type: array
       maxItems: 100
       items:
-        $ref: "#/components/schemas/AgentDto"
+        $ref: "#/components/schemas/AgentResponseDto"
     Error:
       type: object
       required:

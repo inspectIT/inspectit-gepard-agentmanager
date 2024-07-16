@@ -1,0 +1,48 @@
+<template>
+  <header class="relative isolate pt-16">
+    <div class="mx-auto max-w-7xl px-4  sm:px-6 lg:px-8">
+      <div class="mx-auto flex max-w-2xl items-center justify-between gap-x-8 lg:mx-0 lg:max-w-none">
+        <div class="flex items-center gap-x-6">
+          <img src="https://tailwindui.com/img/logos/48x48/tuple.svg" alt="" class="h-16 w-16 flex-none rounded-full ring-1 ring-gray-900/10" />
+          <h1>
+            <div class="text-sm leading-6 text-gray-500">Agent</div>
+            <div class="mt-1 text-base font-semibold leading-6 text-gray-900">{{ agent.name }}</div>
+          </h1>
+        </div>
+        <div class="flex items-center gap-x-4 sm:gap-x-6">
+          <a href="#" class="hidden text-sm font-semibold leading-6 text-gray-900 sm:block">Edit</a>
+          <a href="#" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white
+              shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2
+              focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Promote</a>
+        </div>
+      </div>
+    </div>
+  </header>
+</template>
+
+<script>
+
+export default {
+  name: 'AgentDetailHeader',
+  computed: {
+  },
+  components: {
+  },
+  setup() {
+    const route = useRoute();
+    const agentName = route.params.name;
+    const agentsStore = useAgentsStore();
+
+    const agent = agentsStore.getAgentByName(agentName);
+
+    return {
+      agentName,
+      agent,
+    };
+  },
+};
+</script>
+
+<style scoped>
+
+</style>

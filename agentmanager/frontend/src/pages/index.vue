@@ -1,16 +1,16 @@
 
 <template>
-<!--<AgentDashboard/>-->
-  <SidebarHeader/>
+  <AgentDashboard/>
+<!--  <SidebarHeader/>-->
 </template>
 
 <script>
 
 // app Vue instance
-import AgentDashboard from "~/src/components/AgentDashboard.vue";
-import AgentList from "~/src/pages/AgentList.vue";
+import AgentDashboard from "~/components/AgentDashboard.vue";
+import AgentList from "~/components/AgentList.vue";
 import api from "~/Api.js";
-import SidebarHeader from "~/src/components/SidebarHeader.vue";
+import SidebarHeader from "~/components/SidebarHeader.vue";
 
 const Agents = {
   name: 'Agents',
@@ -42,15 +42,12 @@ const Agents = {
 
   // computed properties
   // http://vuejs.org/guide/computed.html
-  computed: {
-
-  },
+  computed: {},
 
 
   // methods that implement data logic.
   // note there's no DOM manipulation here at all.
-  methods: {
-  },
+  methods: {},
 }
 
 export default Agents

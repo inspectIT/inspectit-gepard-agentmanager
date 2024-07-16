@@ -61,18 +61,17 @@
         </div>
       </div>
 
-      <main class="py-10">
-        <div class="px-4 sm:px-6 lg:px-8">
-          <AgentList/>
-        </div>
-      </main>
+<!--      <main class="py-10">-->
+<!--        <div class="px-4 sm:px-6 lg:px-8">-->
+<!--          <AgentList/>-->
+<!--        </div>-->
+<!--      </main>-->
     </div>
   </div>
 </template>
 
 <script setup>
-import AgentList from "~/src/pages/AgentList.vue";
-
+import AgentList from "~/components/AgentList.vue";
 import {
   Menu,
   MenuButton,
@@ -84,14 +83,12 @@ import {
   ChartPieIcon,
   Cog6ToothIcon,
   DocumentDuplicateIcon,
-  FolderIcon,
   HomeIcon,
-  UsersIcon,
 } from '@heroicons/vue/24/outline'
 import { ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/vue/20/solid'
 
 const navigation = [
-  { name: 'Home', href: '#', icon: HomeIcon, current: true },
+  { name: 'Home', href: '/', icon: HomeIcon, current: true },
   { name: 'Configuration', href: '#', icon: CalendarIcon, current: false },
   { name: 'Self Monitoring', href: '#', icon: DocumentDuplicateIcon, current: false },
   { name: 'Configuration Promotion', href: '#', icon: ChartPieIcon, current: false },

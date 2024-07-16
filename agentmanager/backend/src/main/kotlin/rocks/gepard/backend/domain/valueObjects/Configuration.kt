@@ -1,4 +1,5 @@
 package rocks.gepard.backend.domain.valueObjects
 
-class Configuration {
+class Configuration(configuration: String) {
+
 }

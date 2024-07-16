@@ -1,0 +1,64 @@
+{
+  "name": "ast-walker-scope",
+  "version": "0.6.1",
+  "packageManager": "pnpm@8.15.4",
+  "description": "Traverse Babel AST with scope information.",
+  "type": "module",
+  "license": "MIT",
+  "homepage": "https://github.com/sxzz/ast-walker-scope#readme",
+  "bugs": {
+    "url": "https://github.com/sxzz/ast-walker-scope/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sxzz/ast-walker-scope.git"
+  },
+  "author": "三咲智子 <sxzz@sxzz.moe>",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.js"
+    },
+    "./*": "./*"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@babel/parser": "^7.24.0",
+    "ast-kit": "^0.12.1"
+  },
+  "devDependencies": {
+    "@babel/types": "^7.24.0",
+    "@sxzz/eslint-config": "^3.8.6",
+    "@sxzz/prettier-config": "^2.0.1",
+    "@types/node": "^20.11.28",
+    "bumpp": "^9.4.0",
+    "eslint": "^8.57.0",
+    "fast-glob": "^3.3.2",
+    "magic-string": "^0.30.8",
+    "prettier": "^3.2.5",
+    "tsup": "^8.0.2",
+    "tsx": "^4.7.1",
+    "typescript": "^5.4.2",
+    "vite": "^5.1.6",
+    "vitest": "^1.4.0"
+  },
+  "engines": {
+    "node": ">=16.14.0"
+  },
+  "prettier": "@sxzz/prettier-config",
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "pnpm run lint --fix",
+    "build": "tsup",
+    "test": "vitest",
+    "release": "bumpp && pnpm publish"
+  }
+}

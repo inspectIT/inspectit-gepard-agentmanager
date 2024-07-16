@@ -1,5 +1,5 @@
-/frontend/.nuxt/
-/frontend/node_modules/
+/src/.nuxt/
+/src/node_modules/
 /out/
 .DS_Store
 .idea

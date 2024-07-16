@@ -1,130 +1,94 @@
-<!-- pages/agents/[name].vue -->
 <template>
   <div>
-    <h1>Agent Details</h1>
-    <p>Name: {{ agentName }}</p>
+    <SidebarHeader/>
+    <main>
+      <AgentDetailHeader/>
+      <div class="mx-auto max-w-7xl sm:px-6 lg:px-8 py-16 ">
+        <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+          <div class="mx-auto grid max-w-2xl grid-cols-1 grid-rows-1 items-start gap-x-8 gap-y-8 lg:mx-0 lg:max-w-none lg:grid-cols-3">
+            <AgentSummary/>
+            <YamlPreviewer :code="yamlCode"/>
+            <UpdateFeed/>
+
+          </div>
+        </div>
+      </div>
+    </main>
   </div>
 </template>
 
+<script>
+import AgentList from "~/components/AgentList.vue";
+import SidebarHeader from "~/components/SidebarHeader.vue";
+import YamlPreviewer from "~/components/YamlPreviewer.vue";
 
-<script setup lang="ts">
-import { useRoute } from 'vue-router';
+export default {
+  name: 'AgentDetails',
+  computed: {},
+  components: {
+    Configuration:
+    AgentList,
+    SidebarHeader,
+    YamlPreviewer,
+  },
+  setup() {
+    const route = useRoute();
+    const agentName = route.params.name;
+    const agentsStore = useAgentsStore();
 
-const route = useRoute();
-const agentName = route.params.name;
+    const agent = agentsStore.getAgentByName(agentName);
 
-// When accessing /posts/1, route.params.id will be 1
-console.log("name:", route.params.name)
+
+    // Beispielhafter yamlCode
+    const yamlCode = `
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: nginx-deployment
+    labels:
+      app: nginx
+  spec:
+    replicas: 3
+    selector:
+      matchLabels:
+        app: nginx
+    template:
+      metadata:
+        labels:
+          app: nginx
+      spec:
+        containers:
+          - name: nginx
+            image: nginx:1.14.2
+            ports:
+              - containerPort: 80
+            volumeMounts:
+              - name: nginx-persistent-storage
+                mountPath: /var/www/html
+        volumes:
+          - name: nginx-persistent-storage
+            emptyDir: {}
+  ---
+  apiVersion: v1
+  kind: Service
+  metadata:
+    name: nginx-service
+  spec:
+    selector:
+      app: nginx
+    ports:
+      - protocol: TCP
+        port: 80
+        targetPort: 80
+    type: LoadBalancer
+    `;
+
+
+    return {
+      agentName,
+      agent,
+      yamlCode,
+    };
+  },
+};
 </script>
-
-<!--<script>-->
-<!--//     itemName() {-->
-<!--//       // `this.$route.params.id` gibt den Parameter aus der URL zurück (hier: die ID)-->
-<!--//       // Hier solltest du die Logik implementieren, um den Namen anhand der ID zu finden-->
-<!--//       console.log('this.$route.params', this.$route.params)-->
-<!--//       const itemId = this.$route.params.name-->
-<!--//       const item = this.items.find(item => item.id === Number(itemId))-->
-<!--//       return item ? item.name : 'Unbekannt'-->
-<!--//     }-->
-<!--//   },-->
-<!--//   data() {-->
-<!--//     return {-->
-<!--//       items: [-->
-<!--//         { id: 1, name: 'Item 1' },-->
-<!--//         { id: 2, name: 'Item 2' },-->
-<!--//         { id: 3, name: 'Item 3' },-->
-<!--//         // Weitere Elemente hier-->
-<!--//       ]-->
-<!--//     }-->
-<!--//   }-->
-<!--// }-->
-<!--</script>-->
-
-<!--<script>-->
-<!--import { useAgentsStore } from '~/stores/agentstore.js'-->
-<!--const store = useAgentsStore();-->
-
-
-
-<!--export default {-->
-<!--  // async asyncData({ params }) {-->
-<!--  //   const agentname = params.name-->
-<!--  //   agent = store.getAgentByName(agentname)-->
-<!--  // };-->
-
-
-<!--  // async asyncData({ params }) {-->
-<!--  //   console.log('params', params)-->
-<!--  //-->
-<!--  //   const store = useAgentsStore();-->
-<!--  //   // const agentname = params.name-->
-<!--  //   const agent = store.getAgentByName(agentname)-->
-<!--  //-->
-<!--  //   return { agent }-->
-<!--  //-->
-<!--  //   // Hole die Agentendaten basierend auf der ID aus den params-->
-<!--  //   // Hier wird ein Beispiel-Datenarray verwendet. In einer echten Anwendung würdest du die Daten von einer API holen.-->
-<!--  //   // const agents = [-->
-<!--  //   //   { id: 1, name: 'Egon' },-->
-<!--  //   //   { id: 2, name: 'Pupsi' },-->
-<!--  //   //   { id: 3, name: 'Erna' }-->
-<!--  //   // ];-->
-<!--  //   // const agentname = agents.find(agent => agent.name === params.name);-->
-<!--  //   // return { agent };-->
-<!--  // },-->
-<!--  data() {-->
-<!--    return {-->
-<!--      agent: {}-->
-<!--    };-->
-<!--  }-->
-<!--};-->
-
-<!--</script>-->
-
-
-
-<!--<template>-->
-<!--  <div>-->
-<!--    <h1>Agent Details</h1>-->
-<!--    <p>ID: {{ agent.id }}</p>-->
-<!--    <p>Name: {{ agent.name }}</p>-->
-<!--    &lt;!&ndash; Füge weitere Details hinzu &ndash;&gt;-->
-<!--  </div>-->
-
-<!--</template>-->
-
-<!--<script>-->
-<!--import { useAgentsStore } from '~/stores/agents';-->
-
-<!--export default {-->
-<!--  async asyncData({ params }) {-->
-<!--    console.log('params', params)-->
-
-<!--    const store = useAgentsStore();-->
-<!--    const agentname = params.name-->
-<!--    const agent = store.getAgentByName(agentname)-->
-
-<!--    return { agent }-->
-
-<!--    // Hole die Agentendaten basierend auf der ID aus den params-->
-<!--    // Hier wird ein Beispiel-Datenarray verwendet. In einer echten Anwendung würdest du die Daten von einer API holen.-->
-<!--    // const agents = [-->
-<!--    //   { id: 1, name: 'Egon' },-->
-<!--    //   { id: 2, name: 'Pupsi' },-->
-<!--    //   { id: 3, name: 'Erna' }-->
-<!--    // ];-->
-<!--    // const agentname = agents.find(agent => agent.name === params.name);-->
-<!--    // return { agent };-->
-<!--  },-->
-<!--  data() {-->
-<!--    return {-->
-<!--      agent: {}-->
-<!--    };-->
-<!--  }-->
-<!--};-->
-
-<!--</script>-->
-
-<!--<style scoped>-->
-
-<!--</style>-->
