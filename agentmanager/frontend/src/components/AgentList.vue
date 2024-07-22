@@ -1,11 +1,11 @@
 <template>
   <header>
-    <div class="mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="mx-auto px-12 sm:px-6 lg:px-8">
       <h1 class="text-3xl font-bold leading-tight tracking-tight text-gray-900">Übersicht Agenten</h1>
     </div>
   </header>
   <main class="py-6">
-    <div class="px-8 sm:px-6 lg:px-8">
+    <div class="px-16 sm:px-6 lg:px-8">
       <div class="px-4 sm:px-6 lg:px-8">
         <div class="sm:flex sm:items-center">
         </div>
@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import {useAgentsStore} from "~/stores/agentstore.js";
+import {useAgentsStore} from "~/stores/Agentstore.js";
 
 const statuses = {
   alive: 'text-green-700 bg-green-50 ring-green-600/20',
@@ -100,12 +100,6 @@ export default {
         otelversion: agent.otelversion
       }));
     },
-
-
-    // goToDetail(name) {
-    //   this.$router.push(`/agents/${name}`);
-    // },
-
   },
 };
 

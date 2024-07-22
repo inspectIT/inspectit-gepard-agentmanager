@@ -1,1 +1,1 @@
-export { default } from "file:///Users/jwt/workspace/vhv/gepard/inspectit-gepard-agentmanager/agentmanager/frontend/src/node_modules/@nuxt/vite-builder/dist/runtime/client.manifest.mjs"
+export { default } from "file:///Users/jwt/workspace/vhv/gepard/inspectit-gepard-configurationserver/agentmanager/frontend/src/node_modules/@nuxt/vite-builder/dist/runtime/client.manifest.mjs"

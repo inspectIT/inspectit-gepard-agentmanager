@@ -23,7 +23,7 @@ class AgentControllerTest {
         //GIVEN
         val agentDto = AgentDto()
         agentDto.name = "Hase"
-        agentDto.javaversion = "17"
+        agentDto.javaVersion = "17"
         agentDto.otelVersion = "21"
 
         var gson = Gson()
@@ -56,7 +56,7 @@ class AgentControllerTest {
         //GIVEN
         val agentDto = AgentDto()
         agentDto.name = "Hase"
-        agentDto.javaversion = "17"
+        agentDto.javaVersion = "17"
         agentDto.otelVersion = "21"
 
         var gson = Gson()

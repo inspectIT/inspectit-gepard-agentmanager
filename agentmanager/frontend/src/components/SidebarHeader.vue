@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
+    <div class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:flex-col m-7r-16">
       <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6 pb-4">
         <nav class="flex flex-1 flex-col my-20">
           <ul role="list" class="flex flex-1 flex-col gap-y-7">
@@ -60,12 +60,6 @@
           </div>
         </div>
       </div>
-
-<!--      <main class="py-10">-->
-<!--        <div class="px-4 sm:px-6 lg:px-8">-->
-<!--          <AgentList/>-->
-<!--        </div>-->
-<!--      </main>-->
     </div>
   </div>
 </template>

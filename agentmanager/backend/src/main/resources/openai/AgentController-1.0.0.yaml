@@ -34,7 +34,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AgentDto'
+                $ref: '#/components/schemas/AgentResponseDto'
         '415':
           description: Invalid input
     get:
@@ -69,33 +69,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  /agents/name:
-    get:
-      summary: get the details of one agent
-      operationId: getAgentByName
-      tags:
-        - agents
-      parameters:
-        - name: agentName
-          in: path
-          required: true
-          description: The name of the agent to retrieve
-          schema:
-            type: string
-      responses:
-        '200':
-          description: All details of the called agent
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AgentResponseDto"
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-
 
 components:
   schemas:
@@ -106,7 +79,9 @@ components:
           type: string
         otelVersion:
           type: string
-        javaversion:
+        gepardVersion:
+          type: string
+        javaVersion:
           type: string
       required:
         - name
@@ -124,12 +99,15 @@ components:
               type: string
             config:
               type: string
+            gepardVersion:
+              type: string
           required:
             - name
             - healthState
             - javaversion
             - otelversion
             - config
+            - gepardVersion
 
     ResponseAgents:
       type: array

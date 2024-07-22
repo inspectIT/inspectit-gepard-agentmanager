@@ -37,12 +37,12 @@ const activity = [
   },
   {
     id: 3,
-    person: {name: 'User 3', href: '#'},
+    person: {name: 'User 1', href: '#'},
     date: '6h ago',
   },
   {
     id: 4,
-    person: {name: 'User 4', href: '#'},
+    person: {name: 'User 3', href: '#'},
     date: '2h ago',
   },
 ]

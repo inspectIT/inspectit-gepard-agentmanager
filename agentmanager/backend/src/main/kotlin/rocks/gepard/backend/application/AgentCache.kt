@@ -1,5 +1,7 @@
 package rocks.gepard.backend.application
 
+import rocks.gepard.backend.infrastructure.incoming.model.AgentResponseDto
+
 
 class AgentCache<K, V> : GenericCache<K, V>  {
 
@@ -18,8 +20,7 @@ class AgentCache<K, V> : GenericCache<K, V>  {
 
     override fun clear() = cache.clear()
 
-    fun getAllAgents() : String{
-        return cache.toString();
+    fun getAllAgents() : MutableList<AgentResponseDto>{
+       return TODO()
     }
-
 }

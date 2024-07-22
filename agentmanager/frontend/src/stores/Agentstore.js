@@ -1,5 +1,3 @@
-// stores/agents.js
-
 import { defineStore } from 'pinia';
 
 export const useAgentsStore = defineStore({

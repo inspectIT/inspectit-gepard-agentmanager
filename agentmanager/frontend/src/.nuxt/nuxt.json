@@ -1,7 +1,7 @@
 {
-  "_hash": "H8itORGCyr",
+  "_hash": "t9Ev41GGsl",
   "project": {
-    "rootDir": "/Users/jwt/workspace/vhv/gepard/inspectit-gepard-agentmanager/agentmanager/frontend/src"
+    "rootDir": "/Users/jwt/workspace/vhv/gepard/inspectit-gepard-configurationserver/agentmanager/frontend/src"
   },
   "versions": {
     "nuxt": "3.12.3"
