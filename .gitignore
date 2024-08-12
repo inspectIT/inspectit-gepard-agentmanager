@@ -1,7 +1,7 @@
-/src/.nuxt/
-/src/node_modules/
 /out/
 .DS_Store
 .idea
 *.iml
 
+/agentmanager/frontend/src/.nuxt/
+/agentmanager/frontend/src/node_modules/
