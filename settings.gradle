@@ -1,0 +1,5 @@
+rootProject.name = 'inspectit-gepard-agentmanager'
+include 'backend'
+// Switch between the two client side projects.
+// include 'client'
+include 'frontend'
