@@ -1,6 +1,7 @@
 /* (C) 2024 */
 package rocks.inspectit.gepard.agentmanager.connection.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
@@ -25,6 +26,7 @@ public class ConnectionController {
   private final ConnectionService connectionService;
 
   @PostMapping
+  @Operation(summary = "Connect an agent to the agent manager.")
   public ResponseEntity<Void> connect(@Valid @RequestBody CreateConnectionRequest connectRequest) {
     Connection connection = connectionService.handleConnectRequest(connectRequest);
     return ResponseEntity.created(
@@ -36,11 +38,13 @@ public class ConnectionController {
   }
 
   @GetMapping
+  @Operation(summary = "Get all connections.")
   public ResponseEntity<List<ConnectionDto>> getConnections() {
     return ResponseEntity.ok(connectionService.getConnections());
   }
 
   @GetMapping("/{id}")
+  @Operation(summary = "Get a connection by id.")
   public ResponseEntity<ConnectionDto> getConnection(@PathVariable UUID id) {
     return ResponseEntity.ok(connectionService.getConnection(id));
   }

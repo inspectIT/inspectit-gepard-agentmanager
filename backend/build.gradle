@@ -30,8 +30,18 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     annotationProcessor 'org.projectlombok:lombok'
+
+    // Actuator - for management endpoints
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    // Swagger - for API documentation
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
+
+    // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // Management
+
 }
 
 tasks.named('test') {

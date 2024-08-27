@@ -18,6 +18,18 @@ server:
     bundle: "server"
     enabled-protocols: "TLSv1.3"
 
+management:
+  server:
+    port: 9090
+  endpoints:
+    web:
+      exposure:
+        include: "openapi, swagger-ui"
+
+springdoc:
+  show-actuator: true
+  use-management-port: true
+
 inspectit:
   gepard:
     security:
