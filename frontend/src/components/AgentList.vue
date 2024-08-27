@@ -25,9 +25,9 @@
             </tr>
             </thead>
             <tbody class="divide-y divide-gray-200 bg-white">
-            <tr v-for="agent in agents" :key="agent.name">
+            <tr v-for="agent in agents" :key="agent.serviceName">
               <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">{{
-                  agent.name
+                  agent.serviceName
                 }}
               </td>
               <td class="hidden whitespace-nowrap px-3 py-4 text-sm text-gray-500 sm:table-cell">
@@ -36,13 +36,13 @@
               }}</span>
               </td>
               <td class="hidden whitespace-nowrap px-3 py-4 text-sm text-gray-500 lg:table-cell">{{
-                  agent.javaversion
+                  agent.javaVersion
                 }}
               </td>
-              <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ agent.otelversion }}</td>
+              <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ agent.otelVersion }}</td>
               <td class="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
             <span>
-               <NuxtLink :to="`/agents/${encodeURIComponent(agent.name)}`">Details > </NuxtLink>
+               <NuxtLink :to="`/agents/${encodeURIComponent(agent.id)}`">Details > </NuxtLink>
             </span>
               </td>
             </tr>
@@ -83,7 +83,7 @@ export default {
       store.clear()
 
       try {
-        const response = await fetch('http://localhost:8080/api/v1/agents');
+        const response = await fetch('https://localhost:8080/api/v1/connections');
         const data = await response.json();
         data.forEach(agent => {
           store.addAgent(agent);
@@ -93,11 +93,11 @@ export default {
       }
 
       this.agents = store.agents.map(agent => ({
-        // id: agent.id,
-        name: agent.name,
+        id: agent.id,
+        serviceName: agent.serviceName,
         health: agent.healthState !== null ? agent.healthState : 'missed',
-        javaversion: agent.javaversion,
-        otelversion: agent.otelversion
+        javaVersion: agent.javaVersion,
+        otelVersion: agent.otelVersion
       }));
     },
   },

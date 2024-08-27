@@ -6,7 +6,7 @@
           <img src="/gepardLogo.png" alt="" class="h-16 w-16 flex-none rounded-full ring-1 ring-gray-900/10" />
           <h1>
             <div class="text-sm leading-6 text-gray-500">Agent</div>
-            <div class="mt-1 text-base font-semibold leading-6 text-gray-900">{{ agent.name }}</div>
+            <div class="mt-1 text-base font-semibold leading-6 text-gray-900">{{ agent.serviceName }}</div>
           </h1>
         </div>
         <div class="flex items-center gap-x-4 sm:gap-x-6">
@@ -29,13 +29,15 @@ export default {
   },
   setup() {
     const route = useRoute();
-    const agentName = route.params.name;
+    const agentId = route.params.id;
     const agentsStore = useAgentsStore();
 
-    const agent = agentsStore.getAgentByName(agentName);
+    console.log(agentId);
+
+    const agent = agentsStore.getAgentById(agentId)
 
     return {
-      agentName,
+      agentId,
       agent,
     };
   },

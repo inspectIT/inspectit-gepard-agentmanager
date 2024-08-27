@@ -13,8 +13,8 @@ export const useAgentsStore = defineStore({
         clear() {
             this.agents = []
         },
-        getAgentByName(name) {
-            return this.agents.find(agent => agent.name === name);
+        getAgentById(id) {
+            return this.agents.find(agent => agent.id === id);
         },
     }
 });

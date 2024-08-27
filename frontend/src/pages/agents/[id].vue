@@ -35,13 +35,13 @@ export default {
   },
   setup() {
     const route = useRoute();
-    const agentName = route.params.name;
+    const agentId = route.params.id;
     const agentsStore = useAgentsStore();
 
-    const agent = agentsStore.getAgentByName(agentName);
+    const agent = agentsStore.getAgentById(agentId);
 
     return {
-      agentName,
+      agentId,
       agent,
     };
   },

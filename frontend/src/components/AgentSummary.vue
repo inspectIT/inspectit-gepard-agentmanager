@@ -19,7 +19,7 @@
                   Otelversion:
                 </span>
           </dt>
-          <dd class="text-sm font-medium leading-6 text-gray-900">{{ agent.otelversion }}</dd>
+          <dd class="text-sm font-medium leading-6 text-gray-900">{{ agent.otelVersion }}</dd>
         </div>
         <div class="mt-4 flex w-full flex-none gap-x-4 px-6">
           <dt class="flex-none">
@@ -28,7 +28,7 @@
                 </span>
           </dt>
           <dd class="text-sm font-medium leading-6 text-gray-900">
-            <time datetime="2023-01-31">{{ agent.javaversion }}</time>
+            <time datetime="2023-01-31">{{ agent.javaVersion }}</time>
           </dd>
         </div>
       </dl>
@@ -54,9 +54,9 @@ export default {
   setup() {
 
     const route = useRoute();
-    const agentName = route.params.name;
+    const agentId = route.params.id;
     const agentsStore = useAgentsStore();
-    const agent = agentsStore.getAgentByName(agentName);
+    const agent = agentsStore.getAgentById(agentId);
 
     const environments = {
       Dev: 'text-gray-400 bg-gray-400/10 ring-gray-400/20',
@@ -70,7 +70,7 @@ export default {
     const deployment = agent ? (agent.deployment || defaultDeployment) : defaultDeployment;
 
     return {
-      agentName,
+      agentId,
       agent,
       environments,
       deployment,
