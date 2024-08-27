@@ -7,14 +7,14 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import rocks.inspectit.gepard.agentmanager.connection.model.dto.ConnectionDto;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.CreateConnectionRequest;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.CreateConnectionResponse;
 import rocks.inspectit.gepard.agentmanager.connection.service.ConnectionService;
 
 /**
  * Controller for handling agent connection requests. Holds the POST endpoint for handling
- * connection requests from agents.
+ * connection requests from agents and the GET endpoints for fetching all or one connection by id.
  */
 @RestController
 @RequestMapping("/api/v1/connections")
@@ -24,18 +24,23 @@ public class ConnectionController {
   private final ConnectionService connectionService;
 
   @PostMapping
-  public ResponseEntity<CreateConnectionResponse> connect(
-      @Valid @RequestBody CreateConnectionRequest connectRequest) {
-    return ResponseEntity.ok(connectionService.handleConnectRequest(connectRequest));
+  public ResponseEntity<Void> connect(@Valid @RequestBody CreateConnectionRequest connectRequest) {
+    CreateConnectionResponse connectionDto = connectionService.handleConnectRequest(connectRequest);
+    return ResponseEntity.created(
+            ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(connectionDto.id())
+                .toUri())
+        .build();
   }
 
   @GetMapping
-  public ResponseEntity<List<ConnectionDto>> getConnections() {
+  public ResponseEntity<List<CreateConnectionResponse>> getConnections() {
     return ResponseEntity.ok(connectionService.getConnections());
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<ConnectionDto> getConnection(@PathVariable UUID id) {
+  public ResponseEntity<CreateConnectionResponse> getConnection(@PathVariable UUID id) {
     return ResponseEntity.ok(connectionService.getConnection(id));
   }
 }

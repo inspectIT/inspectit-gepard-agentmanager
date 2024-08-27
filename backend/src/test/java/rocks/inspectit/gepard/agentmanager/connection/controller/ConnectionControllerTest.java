@@ -4,10 +4,10 @@ package rocks.inspectit.gepard.agentmanager.connection.controller;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +15,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import rocks.inspectit.gepard.agentmanager.connection.model.dto.ConnectionDto;
+import rocks.inspectit.gepard.agentmanager.connection.model.Connection;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.CreateConnectionRequest;
+import rocks.inspectit.gepard.agentmanager.connection.model.dto.CreateConnectionResponse;
 import rocks.inspectit.gepard.agentmanager.connection.service.ConnectionService;
 
 @WebMvcTest(controllers = ConnectionController.class)
@@ -58,12 +59,20 @@ class ConnectionControllerTest {
             .javaVersion("11.0.12")
             .build();
 
+    Connection connection = CreateConnectionRequest.toConnection(createConnectionRequest);
+    when(connectionService.handleConnectRequest(createConnectionRequest))
+        .thenReturn(CreateConnectionResponse.fromConnection(connection));
+
     mockMvc
         .perform(
             post("/api/v1/connections")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(createConnectionRequest)))
-        .andExpect(status().isOk());
+        .andExpect(status().isCreated())
+        .andExpect(header().exists("Location"))
+        .andExpect(
+            header()
+                .string("Location", "http://localhost/api/v1/connections/" + connection.getId()));
   }
 
   @Test
@@ -77,8 +86,9 @@ class ConnectionControllerTest {
   @Test
   void get_connection_whenEverythingIsValid_shouldReturnOk() throws Exception {
     UUID uuid = UUID.randomUUID();
-    ConnectionDto connection =
-        new ConnectionDto(uuid, "service name", "5", "7", 42L, 123456789L, "22");
+    CreateConnectionResponse connection =
+        new CreateConnectionResponse(
+            uuid, LocalDateTime.now(), "service name", "5", "7", 42L, 123456789L, "22");
     when(connectionService.getConnection(uuid)).thenReturn(connection);
 
     mockMvc
