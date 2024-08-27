@@ -11,8 +11,17 @@ spring:
             location: "classpath:ssl/igc-dev.p12"
             password: "password"
             type: "PKCS12"
+
 server:
   port: 8080
   ssl:
     bundle: "server"
     enabled-protocols: "TLSv1.3"
+
+inspectit:
+  gepard:
+    security:
+      cors:
+        path-pattern: "/**"
+        allowed-origins: "*"
+        allowed-methods: "*"

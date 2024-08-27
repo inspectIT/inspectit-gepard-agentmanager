@@ -1,6 +1,7 @@
 /* (C) 2024 */
 package rocks.inspectit.gepard.agentmanager.application.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -9,15 +10,22 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class CorsConfiguration implements WebMvcConfigurer {
 
-  // TODO: Get CORS config from application.yaml
+  @Value("${inspectit.gepard.security.cors.path-pattern}")
+  private String pathPattern;
+
+  @Value("${inspectit.gepard.security.cors.allowed-origins}")
+  private String allowedOrigins;
+
+  @Value("${inspectit.gepard.security.cors.allowed-methods}")
+  private String allowedMethods;
 
   /**
    * Adds CORS mappings to the registry. Allow all origins and methods.
    *
-   * @param registry
+   * @param registry The CorsRegistry to add mappings and allowed headers, methods and origins to.
    */
   @Override
   public void addCorsMappings(CorsRegistry registry) {
-    registry.addMapping("/**").allowedOrigins("*").allowedMethods("*");
+    registry.addMapping(pathPattern).allowedOrigins(allowedOrigins).allowedMethods(allowedMethods);
   }
 }
