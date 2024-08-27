@@ -8,8 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import rocks.inspectit.gepard.agentmanager.connection.model.Connection;
+import rocks.inspectit.gepard.agentmanager.connection.model.dto.ConnectionDto;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.CreateConnectionRequest;
-import rocks.inspectit.gepard.agentmanager.connection.model.dto.CreateConnectionResponse;
 import rocks.inspectit.gepard.agentmanager.connection.service.ConnectionService;
 
 /**
@@ -25,22 +26,22 @@ public class ConnectionController {
 
   @PostMapping
   public ResponseEntity<Void> connect(@Valid @RequestBody CreateConnectionRequest connectRequest) {
-    CreateConnectionResponse connectionDto = connectionService.handleConnectRequest(connectRequest);
+    Connection connection = connectionService.handleConnectRequest(connectRequest);
     return ResponseEntity.created(
             ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(connectionDto.id())
+                .buildAndExpand(connection.getId())
                 .toUri())
         .build();
   }
 
   @GetMapping
-  public ResponseEntity<List<CreateConnectionResponse>> getConnections() {
+  public ResponseEntity<List<ConnectionDto>> getConnections() {
     return ResponseEntity.ok(connectionService.getConnections());
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<CreateConnectionResponse> getConnection(@PathVariable UUID id) {
+  public ResponseEntity<ConnectionDto> getConnection(@PathVariable UUID id) {
     return ResponseEntity.ok(connectionService.getConnection(id));
   }
 }

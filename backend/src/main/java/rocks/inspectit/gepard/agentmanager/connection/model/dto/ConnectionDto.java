@@ -8,7 +8,7 @@ import rocks.inspectit.gepard.agentmanager.connection.model.Connection;
 
 /** Represents a connection response. */
 @Builder
-public record CreateConnectionResponse(
+public record ConnectionDto(
     UUID id,
     LocalDateTime registrationTime,
     String serviceName,
@@ -18,8 +18,8 @@ public record CreateConnectionResponse(
     Long startTime,
     String javaVersion) {
 
-  public static CreateConnectionResponse fromConnection(Connection connection) {
-    return CreateConnectionResponse.builder()
+  public static ConnectionDto fromConnection(Connection connection) {
+    return ConnectionDto.builder()
         .id(connection.getId())
         .registrationTime(connection.getRegistrationTime())
         .serviceName(connection.getAgent().getServiceName())

@@ -11,8 +11,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
+import rocks.inspectit.gepard.agentmanager.connection.model.Connection;
+import rocks.inspectit.gepard.agentmanager.connection.model.dto.ConnectionDto;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.CreateConnectionRequest;
-import rocks.inspectit.gepard.agentmanager.connection.model.dto.CreateConnectionResponse;
 
 @ExtendWith(MockitoExtension.class)
 class ConnectionServiceTest {
@@ -31,16 +32,16 @@ class ConnectionServiceTest {
             .serviceName("ServiceName")
             .build();
 
-    CreateConnectionResponse response =
-        connectionService.handleConnectRequest(createConnectionRequest);
+    Connection response = connectionService.handleConnectRequest(createConnectionRequest);
 
-    assertEquals(createConnectionRequest.startTime(), response.startTime());
-    assertEquals(createConnectionRequest.javaVersion(), response.javaVersion());
-    assertEquals(createConnectionRequest.otelVersion(), response.otelVersion());
-    assertEquals(createConnectionRequest.gepardVersion(), response.gepardVersion());
-    assertEquals(createConnectionRequest.pid(), response.pid());
-    assertEquals(createConnectionRequest.serviceName(), response.serviceName());
-    assertNotNull(response.id());
+    assertEquals(
+        createConnectionRequest.startTime(), response.getAgent().getStartTime().toEpochMilli());
+    assertEquals(createConnectionRequest.javaVersion(), response.getAgent().getJavaVersion());
+    assertEquals(createConnectionRequest.otelVersion(), response.getAgent().getOtelVersion());
+    assertEquals(createConnectionRequest.gepardVersion(), response.getAgent().getGepardVersion());
+    assertEquals(createConnectionRequest.pid(), response.getAgent().getPid());
+    assertEquals(createConnectionRequest.serviceName(), response.getAgent().getServiceName());
+    assertNotNull(response.getId());
   }
 
   @Test
@@ -57,14 +58,14 @@ class ConnectionServiceTest {
     connectionService.handleConnectRequest(createConnectionRequest);
     connectionService.handleConnectRequest(createConnectionRequest);
 
-    List<CreateConnectionResponse> response = connectionService.getConnections();
+    List<ConnectionDto> response = connectionService.getConnections();
 
     assertEquals(2, response.size());
   }
 
   @Test
   void testGetConnectionsEmptyResult() {
-    List<CreateConnectionResponse> response = connectionService.getConnections();
+    List<ConnectionDto> response = connectionService.getConnections();
     assertEquals(0, response.size());
   }
 
@@ -79,19 +80,17 @@ class ConnectionServiceTest {
             .pid(4435L)
             .serviceName("ServiceName")
             .build();
-    CreateConnectionResponse createConnectionResponse =
-        connectionService.handleConnectRequest(createConnectionRequest);
+    Connection connection = connectionService.handleConnectRequest(createConnectionRequest);
 
-    CreateConnectionResponse response =
-        connectionService.getConnection(createConnectionResponse.id());
+    ConnectionDto connectionDto = connectionService.getConnection(connection.getId());
 
-    assertEquals(createConnectionResponse.id(), response.id());
-    assertEquals(createConnectionRequest.startTime(), response.startTime());
-    assertEquals(createConnectionRequest.javaVersion(), response.javaVersion());
-    assertEquals(createConnectionRequest.otelVersion(), response.otelVersion());
-    assertEquals(createConnectionRequest.gepardVersion(), response.gepardVersion());
-    assertEquals(createConnectionRequest.pid(), response.pid());
-    assertEquals(createConnectionRequest.serviceName(), response.serviceName());
+    assertEquals(connection.getId(), connectionDto.id());
+    assertEquals(createConnectionRequest.startTime(), connectionDto.startTime());
+    assertEquals(createConnectionRequest.javaVersion(), connectionDto.javaVersion());
+    assertEquals(createConnectionRequest.otelVersion(), connectionDto.otelVersion());
+    assertEquals(createConnectionRequest.gepardVersion(), connectionDto.gepardVersion());
+    assertEquals(createConnectionRequest.pid(), connectionDto.pid());
+    assertEquals(createConnectionRequest.serviceName(), connectionDto.serviceName());
   }
 
   @Test

@@ -16,8 +16,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import rocks.inspectit.gepard.agentmanager.connection.model.Connection;
+import rocks.inspectit.gepard.agentmanager.connection.model.dto.ConnectionDto;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.CreateConnectionRequest;
-import rocks.inspectit.gepard.agentmanager.connection.model.dto.CreateConnectionResponse;
 import rocks.inspectit.gepard.agentmanager.connection.service.ConnectionService;
 
 @WebMvcTest(controllers = ConnectionController.class)
@@ -60,8 +60,7 @@ class ConnectionControllerTest {
             .build();
 
     Connection connection = CreateConnectionRequest.toConnection(createConnectionRequest);
-    when(connectionService.handleConnectRequest(createConnectionRequest))
-        .thenReturn(CreateConnectionResponse.fromConnection(connection));
+    when(connectionService.handleConnectRequest(createConnectionRequest)).thenReturn(connection);
 
     mockMvc
         .perform(
@@ -86,15 +85,15 @@ class ConnectionControllerTest {
   @Test
   void get_connection_whenEverythingIsValid_shouldReturnOk() throws Exception {
     UUID uuid = UUID.randomUUID();
-    CreateConnectionResponse connection =
-        new CreateConnectionResponse(
+    ConnectionDto connectionDto =
+        new ConnectionDto(
             uuid, LocalDateTime.now(), "service name", "5", "7", 42L, 123456789L, "22");
-    when(connectionService.getConnection(uuid)).thenReturn(connection);
+    when(connectionService.getConnection(uuid)).thenReturn(connectionDto);
 
     mockMvc
         .perform(get("/api/v1/connections/{id}", uuid))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json(objectMapper.writeValueAsString(connection)));
+        .andExpect(content().json(objectMapper.writeValueAsString(connectionDto)));
   }
 }
