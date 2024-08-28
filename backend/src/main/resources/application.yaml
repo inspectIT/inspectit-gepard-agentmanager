@@ -1,22 +1,22 @@
 spring:
   application:
     name: backend
-  ssl:
-    bundle:
-      jks:
-        server:
-          key:
-            alias: "igc-dev"
-          keystore:
-            location: "classpath:ssl/igc-dev.p12"
-            password: "password"
-            type: "PKCS12"
+#  ssl:
+#    bundle:
+#      jks:
+#        server:
+#          key:
+#            alias: "igc-dev"
+#          keystore:
+#            location: "classpath:ssl/igc-dev.p12"
+#            password: "password"
+#            type: "PKCS12"
 
 server:
   port: 8080
-  ssl:
-    bundle: "server"
-    enabled-protocols: "TLSv1.3"
+#  ssl:
+#    bundle: "server"
+#    enabled-protocols: "TLSv1.3"
 
 management:
   server:
