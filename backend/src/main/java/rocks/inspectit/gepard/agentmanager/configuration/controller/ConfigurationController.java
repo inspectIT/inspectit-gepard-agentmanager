@@ -27,7 +27,7 @@ public class ConfigurationController {
       return ResponseEntity.noContent().build();
     }
 
-    return ResponseEntity.ok().body(configurationService.getConfiguration());
+    return ResponseEntity.ok().body(configuration);
   }
 
   @PutMapping
