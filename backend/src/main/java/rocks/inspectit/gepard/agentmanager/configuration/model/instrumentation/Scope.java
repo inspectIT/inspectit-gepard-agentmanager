@@ -18,7 +18,7 @@ public class Scope {
 
   @NotNull(message = "Fqn is missing.") private String fqn;
 
-  private List<String> methods = List.of();
+  private List<@NotNull String> methods = List.of();
 
   private boolean enabled = false;
 }

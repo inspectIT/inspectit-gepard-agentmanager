@@ -23,14 +23,8 @@ class ConnectionServiceTest {
   @Test
   void testHandleConnectRequest() {
     CreateConnectionRequest createConnectionRequest =
-        CreateConnectionRequest.builder()
-            .startTime(Instant.now().toEpochMilli())
-            .javaVersion("22")
-            .otelVersion("3")
-            .gepardVersion("4")
-            .pid(4435L)
-            .serviceName("ServiceName")
-            .build();
+        new CreateConnectionRequest(
+            "customer-service-e", "0.0.1", "1.26.8", 67887L, Instant.now().toEpochMilli(), "22");
 
     Connection response = connectionService.handleConnectRequest(createConnectionRequest);
 
@@ -47,14 +41,8 @@ class ConnectionServiceTest {
   @Test
   void testGetConnections() {
     CreateConnectionRequest createConnectionRequest =
-        CreateConnectionRequest.builder()
-            .startTime(Instant.now().toEpochMilli())
-            .javaVersion("22")
-            .otelVersion("3")
-            .gepardVersion("4")
-            .pid(4435L)
-            .serviceName("ServiceName")
-            .build();
+        new CreateConnectionRequest(
+            "customer-service-e", "0.0.1", "1.26.8", 67887L, Instant.now().toEpochMilli(), "22");
     connectionService.handleConnectRequest(createConnectionRequest);
     connectionService.handleConnectRequest(createConnectionRequest);
 
@@ -72,14 +60,8 @@ class ConnectionServiceTest {
   @Test
   void testGetConnection() {
     CreateConnectionRequest createConnectionRequest =
-        CreateConnectionRequest.builder()
-            .startTime(Instant.now().toEpochMilli())
-            .javaVersion("22")
-            .otelVersion("3")
-            .gepardVersion("4")
-            .pid(4435L)
-            .serviceName("ServiceName")
-            .build();
+        new CreateConnectionRequest(
+            "customer-service-e", "0.0.1", "1.26.8", 67887L, Instant.now().toEpochMilli(), "22");
     Connection connection = connectionService.handleConnectRequest(createConnectionRequest);
 
     ConnectionDto connectionDto = connectionService.getConnection(connection.getId());

@@ -1,10 +1,10 @@
 /* (C) 2024 */
 package rocks.inspectit.gepard.agentmanager.connection.service;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ import rocks.inspectit.gepard.agentmanager.connection.model.dto.CreateConnection
 @RequiredArgsConstructor
 public class ConnectionService {
 
-  private final HashMap<UUID, Connection> connectionCache = new HashMap<>();
+  private final ConcurrentHashMap<UUID, Connection> connectionCache = new ConcurrentHashMap<>();
 
   /**
    * Handles a connection request from an agent.

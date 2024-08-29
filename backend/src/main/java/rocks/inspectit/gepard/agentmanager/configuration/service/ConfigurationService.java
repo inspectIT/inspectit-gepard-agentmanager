@@ -7,7 +7,7 @@ import rocks.inspectit.gepard.agentmanager.configuration.model.InspectitConfigur
 @Service
 public class ConfigurationService {
 
-  private InspectitConfiguration inspectitConfiguration;
+  private volatile InspectitConfiguration inspectitConfiguration;
 
   public InspectitConfiguration getConfiguration() {
     return inspectitConfiguration;

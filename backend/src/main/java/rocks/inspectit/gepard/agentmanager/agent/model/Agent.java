@@ -1,32 +1,31 @@
 /* (C) 2024 */
 package rocks.inspectit.gepard.agentmanager.agent.model;
 
-import jakarta.annotation.Nonnull;
+import jakarta.validation.constraints.NotNull;
 import java.time.Instant;
 import lombok.*;
 
 /** Represents an agent which is connected to the config server. */
-@RequiredArgsConstructor
-@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 @ToString
 @Getter
 public class Agent {
   /** The name of the service which is running the agent. */
-  @Nonnull private String serviceName;
+  @NotNull private String serviceName;
 
   /** The process id of the JVM which carries the agent. */
-  @Nonnull private Long pid;
+  @NotNull private Long pid;
 
   /** The Gepard-Version. */
-  @Nonnull private String gepardVersion;
+  @NotNull private String gepardVersion;
 
   /** The OpenTelemetry-Java-Instrumentation-Version. */
-  @Nonnull private String otelVersion;
+  @NotNull private String otelVersion;
 
   /** The start time of the JVM which carries the agent. */
-  @Nonnull private Instant startTime;
+  @NotNull private Instant startTime;
 
   /** The Java version of the JVM which carries the agent. */
-  @Nonnull private String javaVersion;
+  @NotNull private String javaVersion;
 }

@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
@@ -31,33 +32,29 @@ class ConnectionControllerTest {
 
   @Test
   void connect_whenFieldIsMissing_shouldReturnBadRequest() throws Exception {
-    CreateConnectionRequest createConnectionRequest =
-        CreateConnectionRequest.builder()
-            .serviceName("customer-service-e")
-            .pid(67887L)
-            .gepardVersion("0.0.1")
-            .otelVersion("1.26.8")
-            .build();
+    String requestBody =
+        """
+            {
+            "serviceName": "customer-service-e",
+            "gepardVersion: "0.0.1",
+            "otelVersion": "1.26.8"
+
+            }
+            """;
 
     mockMvc
         .perform(
             post("/api/v1/connections")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(createConnectionRequest)))
+                .content(requestBody))
         .andExpect(status().isBadRequest());
   }
 
   @Test
   void connect_whenEverythingIsValid_shouldReturnOk() throws Exception {
     CreateConnectionRequest createConnectionRequest =
-        CreateConnectionRequest.builder()
-            .serviceName("customer-service-e")
-            .pid(67887L)
-            .gepardVersion("0.0.1")
-            .otelVersion("1.26.8")
-            .startTime(213423L)
-            .javaVersion("11.0.12")
-            .build();
+        new CreateConnectionRequest(
+            "customer-service-e", "0.0.1", "1.26.8", 67887L, Instant.now().toEpochMilli(), "22");
 
     Connection connection = CreateConnectionRequest.toConnection(createConnectionRequest);
     when(connectionService.handleConnectRequest(createConnectionRequest)).thenReturn(connection);

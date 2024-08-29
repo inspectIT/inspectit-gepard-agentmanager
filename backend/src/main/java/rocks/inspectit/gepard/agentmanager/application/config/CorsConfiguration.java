@@ -10,13 +10,13 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class CorsConfiguration implements WebMvcConfigurer {
 
-  @Value("${inspectit.gepard.security.cors.path-pattern}")
+  @Value("${inspectit-config-server.security.cors.path-pattern}")
   private String pathPattern;
 
-  @Value("${inspectit.gepard.security.cors.allowed-origins}")
+  @Value("${inspectit-config-server.security.cors.allowed-origins}")
   private String allowedOrigins;
 
-  @Value("${inspectit.gepard.security.cors.allowed-methods}")
+  @Value("${inspectit-config-server.security.cors.allowed-methods}")
   private String allowedMethods;
 
   /**

@@ -2,6 +2,7 @@
 package rocks.inspectit.gepard.agentmanager.configuration.model.instrumentation;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,5 +17,5 @@ import lombok.NoArgsConstructor;
 @Getter
 public class InstrumentationConfiguration {
 
-  @Valid private List<Scope> scopes = List.of();
+  @Valid private List<@NotNull Scope> scopes = List.of();
 }
