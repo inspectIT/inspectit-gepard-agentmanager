@@ -7,7 +7,6 @@ import lombok.*;
 
 /** Represents an agent which is connected to the config server. */
 @AllArgsConstructor
-@Builder
 @ToString
 @Getter
 public class Agent {

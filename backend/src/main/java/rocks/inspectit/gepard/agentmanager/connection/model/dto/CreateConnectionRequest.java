@@ -18,18 +18,15 @@ public record CreateConnectionRequest(
     @NotNull(message = "Java Version missing.") String javaVersion) {
 
   public static Connection toConnection(CreateConnectionRequest createConnectionRequest) {
-    return Connection.builder()
-        .id(UUID.randomUUID())
-        .registrationTime(LocalDateTime.now())
-        .agent(
-            Agent.builder()
-                .gepardVersion(createConnectionRequest.gepardVersion)
-                .javaVersion(createConnectionRequest.javaVersion)
-                .otelVersion(createConnectionRequest.otelVersion)
-                .pid(createConnectionRequest.pid)
-                .serviceName(createConnectionRequest.serviceName)
-                .startTime(Instant.ofEpochMilli(createConnectionRequest.startTime))
-                .build())
-        .build();
+    return new Connection(
+        UUID.randomUUID(),
+        LocalDateTime.now(),
+        new Agent(
+            createConnectionRequest.serviceName,
+            createConnectionRequest.pid,
+            createConnectionRequest.gepardVersion,
+            createConnectionRequest.otelVersion,
+            Instant.ofEpochMilli(createConnectionRequest.startTime),
+            createConnectionRequest.javaVersion));
   }
 }
