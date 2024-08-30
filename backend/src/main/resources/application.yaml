@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: backend
+#  ssl:
+#    bundle:
+#      jks:
+#        server:
+#          key:
+#            alias: "igc-dev"
+#          keystore:
+#            location: "classpath:ssl/igc-dev.p12"
+#            password: "password"
+#            type: "PKCS12"
+
+server:
+  port: 8080
+#  ssl:
+#    bundle: "server"
+#    enabled-protocols: "TLSv1.3"
+
+management:
+  server:
+    port: 9090
+  endpoints:
+    web:
+      exposure:
+        include: "openapi, swagger-ui"
+
+springdoc:
+  show-actuator: true
+  use-management-port: true
+
+inspectit-config-server:
+  security:
+    cors:
+      path-pattern: "/**"
+      allowed-origins: "*"
+      allowed-methods: "*"

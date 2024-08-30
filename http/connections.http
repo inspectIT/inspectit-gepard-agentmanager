@@ -1,0 +1,41 @@
+# This is a collection of Http-Requests to the connections ressource.
+# It can be used with IntelliJs HttpClient to do End-to-End-Testing of the Config-Server Endpoints.
+# Run the server and just start the collection.
+
+### GET request to retrieve all connections
+GET https://localhost:8080/api/v1/connections
+
+### POST request to connections without fields
+
+POST https://127.0.0.1:8080/api/v1/connections
+
+### POST request to connections with missing fields
+ POST https://127.0.0.1:8080/api/v1/connections
+Content-Type: application/json
+
+{
+    "javaVersion": "17",
+    "gepardVersion": "0.0.1-SNAPSHOT",
+    "startTime":  1719850971,
+    "pid": 432423
+
+}
+
+### POST request to connections with all fields
+ POST https://127.0.0.1:8080/api/v1/connections
+Content-Type: application/json
+
+{
+  "serviceName": "test-service",
+  "otelVersion": "1.2.5",
+  "javaVersion": "17",
+  "gepardVersion": "0.0.1-SNAPSHOT",
+  "startTime":  1719850971,
+  "pid": 432423
+}
+
+> {% client.global.set("response_redirect", response.headers.valueOf('Location')); %}
+
+### GET request to connections/{id}
+GET {{response_redirect}}
+
