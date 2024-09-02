@@ -3,8 +3,7 @@ name: Master Branch Continuous Release
 on:
   push:
     branches:
-      - master
-      - feature/vhvapm-547
+      - main
 
 env:
   REGISTRY_IMAGE: inspectit/inspectit-gepard-configserver
