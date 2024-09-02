@@ -1,0 +1,11 @@
+# ---- Runtime Stage ----
+# We use Temurin as it is the default at VHV
+FROM eclipse-temurin:21-jre-jammy
+
+COPY ./inspectit-gepard-agent.jar ./app.jar
+
+# Expose the port on which the app will run
+EXPOSE 8080
+
+# Run the application
+ENTRYPOINT ["java", "-jar", "/app.jar"]

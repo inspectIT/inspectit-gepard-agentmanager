@@ -2,10 +2,11 @@ name: Gradle Build
 
 on:
   push:
+    branches:
+      - feature/**
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     permissions:
       contents: read
