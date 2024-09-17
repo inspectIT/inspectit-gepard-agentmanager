@@ -1,11 +1,12 @@
-name: Gradle Build
+name: Feature Branch Continuous Integration
 
 on:
   push:
+    branches:
+      - feature/**
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     permissions:
       contents: read
