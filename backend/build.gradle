@@ -31,6 +31,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     annotationProcessor 'org.projectlombok:lombok'
 
+    // JGit for accessing configurations in Git repositories
+    implementation 'org.eclipse.jgit:org.eclipse.jgit:7.0.0.202409031743-r'
     // Actuator - for management endpoints
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     // Swagger - for API documentation

@@ -3,6 +3,7 @@ package rocks.inspectit.gepard.agentmanager.configuration.controller;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -52,11 +53,9 @@ class ConfigurationControllerTest {
 
     InspectitConfiguration configuration = createConfiguration();
 
-    when(configurationService.getConfiguration()).thenReturn(configuration);
-
     mockMvc
         .perform(
-            get("/api/v1/agent-configuration")
+            put("/api/v1/agent-configuration")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(configuration)))
         .andExpect(status().isOk());

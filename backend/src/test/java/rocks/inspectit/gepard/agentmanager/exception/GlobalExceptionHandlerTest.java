@@ -85,4 +85,49 @@ class GlobalExceptionHandlerTest {
     assertEquals("requestURI", response.getBody().path());
     assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
   }
+
+  @Test
+  void handleFileNotFoundErrorRuntimeException() {
+    FileNotFoundException exception = Mockito.mock(FileNotFoundException.class);
+    HttpServletRequest httpServletRequest = Mockito.mock(HttpServletRequest.class);
+    Mockito.when(httpServletRequest.getRequestURI()).thenReturn("requestURI");
+    Mockito.when(exception.getMessage()).thenReturn("exception message");
+
+    ResponseEntity<ApiError> response =
+        globalExceptionHandler.handleFileNotFoundError(exception, httpServletRequest);
+
+    assertEquals(List.of("exception message"), Objects.requireNonNull(response.getBody()).errors());
+    assertEquals("requestURI", response.getBody().path());
+    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+  }
+
+  @Test
+  void handleFileNotFoundErrorGitOperationException() {
+    GitOperationException exception = Mockito.mock(GitOperationException.class);
+    HttpServletRequest httpServletRequest = Mockito.mock(HttpServletRequest.class);
+    Mockito.when(httpServletRequest.getRequestURI()).thenReturn("requestURI");
+    Mockito.when(exception.getMessage()).thenReturn("exception message");
+
+    ResponseEntity<ApiError> response =
+        globalExceptionHandler.handleFileNotFoundError(exception, httpServletRequest);
+
+    assertEquals(List.of("exception message"), Objects.requireNonNull(response.getBody()).errors());
+    assertEquals("requestURI", response.getBody().path());
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+  }
+
+  @Test
+  void handleJsonParseError() {
+    JsonParseException exception = Mockito.mock(JsonParseException.class);
+    HttpServletRequest httpServletRequest = Mockito.mock(HttpServletRequest.class);
+    Mockito.when(httpServletRequest.getRequestURI()).thenReturn("requestURI");
+    Mockito.when(exception.getMessage()).thenReturn("exception message");
+
+    ResponseEntity<ApiError> response =
+        globalExceptionHandler.handleJsonParseError(exception, httpServletRequest);
+
+    assertEquals(List.of("exception message"), Objects.requireNonNull(response.getBody()).errors());
+    assertEquals("requestURI", response.getBody().path());
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+  }
 }

@@ -3,6 +3,7 @@
 
 # User-specific stuff
 .idea/
+.config/
 
 # File-based project format
 *.iws

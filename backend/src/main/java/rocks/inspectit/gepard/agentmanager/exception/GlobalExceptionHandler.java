@@ -43,7 +43,7 @@ public class GlobalExceptionHandler {
    * @param ex the exception
    * @return the response entity
    */
-  @ExceptionHandler({HttpMessageNotReadableException.class})
+  @ExceptionHandler(HttpMessageNotReadableException.class)
   public ResponseEntity<ApiError> handleBadRequestError(
       HttpMessageNotReadableException ex, HttpServletRequest request) {
     ApiError apiError =
@@ -82,5 +82,41 @@ public class GlobalExceptionHandler {
             HttpStatus.NOT_FOUND.value(),
             LocalDateTime.now());
     return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
+  }
+
+  @ExceptionHandler(FileNotFoundException.class)
+  public ResponseEntity<ApiError> handleFileNotFoundError(
+      FileNotFoundException ex, HttpServletRequest request) {
+    ApiError apiError =
+        new ApiError(
+            request.getRequestURI(),
+            List.of(ex.getMessage()),
+            HttpStatus.NOT_FOUND.value(),
+            LocalDateTime.now());
+    return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
+  }
+
+  @ExceptionHandler(GitOperationException.class)
+  public ResponseEntity<ApiError> handleFileNotFoundError(
+      GitOperationException ex, HttpServletRequest request) {
+    ApiError apiError =
+        new ApiError(
+            request.getRequestURI(),
+            List.of(ex.getMessage()),
+            HttpStatus.NOT_FOUND.value(),
+            LocalDateTime.now());
+    return new ResponseEntity<>(apiError, HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+
+  @ExceptionHandler(JsonParseException.class)
+  public ResponseEntity<ApiError> handleJsonParseError(
+      JsonParseException ex, HttpServletRequest request) {
+    ApiError apiError =
+        new ApiError(
+            request.getRequestURI(),
+            List.of(ex.getMessage()),
+            HttpStatus.NOT_FOUND.value(),
+            LocalDateTime.now());
+    return new ResponseEntity<>(apiError, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 }
