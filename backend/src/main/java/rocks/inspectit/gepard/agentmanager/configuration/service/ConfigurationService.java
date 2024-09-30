@@ -16,6 +16,11 @@ public class ConfigurationService {
 
   private final ObjectMapper objectMapper;
 
+  /**
+   * Retrieves the current configuration from the local Git repository.
+   *
+   * @return a valid {@link InspectitConfiguration}
+   */
   public InspectitConfiguration getConfiguration() {
     try {
       return objectMapper.readValue(gitService.getFileContent(), InspectitConfiguration.class);
@@ -25,6 +30,11 @@ public class ConfigurationService {
     }
   }
 
+  /**
+   * Updates or creates an {@link InspectitConfiguration }
+   *
+   * @param configuration The configuration to be saved
+   */
   public void updateConfiguration(InspectitConfiguration configuration) {
     try {
       String jsonContent = objectMapper.writeValueAsString(configuration);

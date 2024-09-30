@@ -87,29 +87,29 @@ class GlobalExceptionHandlerTest {
   }
 
   @Test
-  void handleFileNotFoundErrorRuntimeException() {
-    FileNotFoundException exception = Mockito.mock(FileNotFoundException.class);
+  void handleFileAccessException() {
+    FileAccessException exception = Mockito.mock(FileAccessException.class);
     HttpServletRequest httpServletRequest = Mockito.mock(HttpServletRequest.class);
     Mockito.when(httpServletRequest.getRequestURI()).thenReturn("requestURI");
     Mockito.when(exception.getMessage()).thenReturn("exception message");
 
     ResponseEntity<ApiError> response =
-        globalExceptionHandler.handleFileNotFoundError(exception, httpServletRequest);
+        globalExceptionHandler.handleFileAccessException(exception, httpServletRequest);
 
     assertEquals(List.of("exception message"), Objects.requireNonNull(response.getBody()).errors());
     assertEquals("requestURI", response.getBody().path());
-    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
   }
 
   @Test
-  void handleFileNotFoundErrorGitOperationException() {
+  void handleGitOperationException() {
     GitOperationException exception = Mockito.mock(GitOperationException.class);
     HttpServletRequest httpServletRequest = Mockito.mock(HttpServletRequest.class);
     Mockito.when(httpServletRequest.getRequestURI()).thenReturn("requestURI");
     Mockito.when(exception.getMessage()).thenReturn("exception message");
 
     ResponseEntity<ApiError> response =
-        globalExceptionHandler.handleFileNotFoundError(exception, httpServletRequest);
+        globalExceptionHandler.handleGitOperationException(exception, httpServletRequest);
 
     assertEquals(List.of("exception message"), Objects.requireNonNull(response.getBody()).errors());
     assertEquals("requestURI", response.getBody().path());

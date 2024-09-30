@@ -5,7 +5,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import org.eclipse.jgit.api.AddCommand;
@@ -22,12 +24,16 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+import rocks.inspectit.gepard.agentmanager.configuration.file.FileAccessor;
+import rocks.inspectit.gepard.agentmanager.exception.FileAccessException;
 import rocks.inspectit.gepard.agentmanager.exception.GitOperationException;
 
 @ExtendWith(MockitoExtension.class)
 class GitServiceTest {
 
   @Mock private Git git;
+
+  @Mock private FileAccessor fileAccessor;
 
   @InjectMocks private GitService gitService;
 
@@ -78,35 +84,31 @@ class GitServiceTest {
 
   @Test
   void testUpdateFileContentSuccess() throws IOException {
-    String content = "{\"key\": \"value\"}";
-    File testFile = new File(tempRepoPath, "configuration.json");
+    gitService.updateFileContent("content");
 
-    gitService.updateFileContent(content);
-
-    assertTrue(testFile.exists());
-    String fileContent = Files.readString(testFile.toPath());
-    assertEquals(content, fileContent);
+    verify(fileAccessor, times(1)).writeFile("content");
   }
 
   @Test
-  void testUpdateFileContentFailure() {
-    ReflectionTestUtils.setField(gitService, "localRepoPath", "/invalid-path");
+  void testUpdateFileContentFailure() throws IOException {
+    doThrow(AccessDeniedException.class).when(fileAccessor).writeFile("content");
 
-    GitOperationException exception =
+    FileAccessException exception =
         assertThrows(
-            GitOperationException.class,
+            FileAccessException.class,
             () -> {
               gitService.updateFileContent("content");
             });
 
     assertTrue(exception.getMessage().contains("Failed to update file content"));
+    assertTrue(exception.getCause() instanceof AccessDeniedException);
   }
 
   @Test
   void testGetFileContentSuccess() throws IOException {
     String content = "{\"key\": \"value\"}";
-    Path filePath = Path.of(tempRepoPath, "configuration.json");
-    Files.writeString(filePath, content);
+
+    when(fileAccessor.readFile()).thenReturn(content);
 
     String result = gitService.getFileContent();
 
@@ -114,15 +116,17 @@ class GitServiceTest {
   }
 
   @Test
-  void testGetFileContentFileNotFound() {
-    GitOperationException exception =
+  void testGetFileContentFileNotFound() throws IOException {
+    when(fileAccessor.readFile()).thenThrow(FileNotFoundException.class);
+    FileAccessException exception =
         assertThrows(
-            GitOperationException.class,
+            FileAccessException.class,
             () -> {
               gitService.getFileContent();
             });
 
     assertTrue(exception.getMessage().contains("Failed to read file content"));
+    assertTrue(exception.getCause() instanceof FileNotFoundException);
   }
 
   @Test
@@ -131,6 +135,7 @@ class GitServiceTest {
 
     InitCommand initCommand = mock(InitCommand.class);
     try (MockedStatic<Git> mockedGit = Mockito.mockStatic(Git.class)) {
+      mockedGit.when(() -> Git.open(any(File.class))).thenThrow(IOException.class);
       mockedGit.when(Git::init).thenReturn(initCommand);
       when(initCommand.setDirectory(any())).thenReturn(initCommand);
       when(initCommand.call()).thenReturn(mock(Git.class));
@@ -150,7 +155,7 @@ class GitServiceTest {
 
       gitService.initializeLocalRepository();
 
-      mockedGit.verify(() -> Git.open(new File(tempRepoPath)), times(1));
+      mockedGit.verify(() -> Git.open(new File(tempRepoPath)), times(2));
       mockedGit.verify(() -> Git.init(), times(0));
     }
   }
@@ -162,6 +167,7 @@ class GitServiceTest {
 
     InitCommand initCommand = mock(InitCommand.class);
     try (MockedStatic<Git> mockedGit = Mockito.mockStatic(Git.class)) {
+      mockedGit.when(() -> Git.open(any(File.class))).thenThrow(IOException.class);
       mockedGit.when(Git::init).thenReturn(initCommand);
       when(initCommand.setDirectory(any())).thenReturn(initCommand);
       when(initCommand.call()).thenThrow(new GitAPIException("Git error") {});
@@ -180,16 +186,16 @@ class GitServiceTest {
   @Test
   void testInitializeLocalRepositoryWhenRepoAlreadyExistsWithIOException() {
     assertTrue(Files.exists(Path.of(tempRepoPath)));
+    ;
 
     try (MockedStatic<Git> mockedGit = Mockito.mockStatic(Git.class)) {
-      mockedGit.when(() -> Git.open(any(File.class))).thenThrow(IOException.class);
+      mockedGit
+          .when(() -> Git.open(any(File.class)))
+          .thenCallRealMethod()
+          .thenThrow(IOException.class);
 
       GitOperationException exception =
-          assertThrows(
-              GitOperationException.class,
-              () -> {
-                gitService.initializeLocalRepository();
-              });
+          assertThrows(GitOperationException.class, () -> gitService.initializeLocalRepository());
 
       assertTrue(exception.getMessage().contains("Failed to open local repository"));
     }
