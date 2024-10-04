@@ -23,6 +23,7 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 import rocks.inspectit.gepard.agentmanager.configuration.file.FileAccessor;
 import rocks.inspectit.gepard.agentmanager.exception.FileAccessException;
@@ -73,11 +74,7 @@ class GitServiceTest {
         .thenThrow(new GitAPIException("Git error") {});
 
     GitOperationException exception =
-        assertThrows(
-            GitOperationException.class,
-            () -> {
-              gitService.commit();
-            });
+        assertThrows(GitOperationException.class, () -> gitService.commit());
 
     assertTrue(exception.getMessage().contains("Failed to commit changes"));
   }
@@ -94,14 +91,10 @@ class GitServiceTest {
     doThrow(AccessDeniedException.class).when(fileAccessor).writeFile("content");
 
     FileAccessException exception =
-        assertThrows(
-            FileAccessException.class,
-            () -> {
-              gitService.updateFileContent("content");
-            });
+        assertThrows(FileAccessException.class, () -> gitService.updateFileContent("content"));
 
     assertTrue(exception.getMessage().contains("Failed to update file content"));
-    assertTrue(exception.getCause() instanceof AccessDeniedException);
+    assertInstanceOf(AccessDeniedException.class, exception.getCause());
   }
 
   @Test
@@ -117,16 +110,28 @@ class GitServiceTest {
 
   @Test
   void testGetFileContentFileNotFound() throws IOException {
-    when(fileAccessor.readFile()).thenThrow(FileNotFoundException.class);
+    FileAccessException fileAccessException =
+        new FileAccessException(
+            "File not found", new FileNotFoundException(), HttpStatus.NOT_FOUND);
+    when(fileAccessor.readFile()).thenThrow(fileAccessException);
     FileAccessException exception =
-        assertThrows(
-            FileAccessException.class,
-            () -> {
-              gitService.getFileContent();
-            });
+        assertThrows(FileAccessException.class, () -> gitService.getFileContent());
 
-    assertTrue(exception.getMessage().contains("Failed to read file content"));
-    assertTrue(exception.getCause() instanceof FileNotFoundException);
+    assertTrue(exception.getMessage().contains("File not found"));
+    assertInstanceOf(FileNotFoundException.class, exception.getCause());
+  }
+
+  @Test
+  void testGetFileContentFileFailedToRead() throws IOException {
+    FileAccessException fileAccessException =
+        new FileAccessException(
+            "File failed to read", new IOException(), HttpStatus.INTERNAL_SERVER_ERROR);
+    when(fileAccessor.readFile()).thenThrow(fileAccessException);
+    FileAccessException exception =
+        assertThrows(FileAccessException.class, () -> gitService.getFileContent());
+
+    assertTrue(exception.getMessage().contains("File failed to read"));
+    assertInstanceOf(IOException.class, exception.getCause());
   }
 
   @Test
@@ -173,11 +178,7 @@ class GitServiceTest {
       when(initCommand.call()).thenThrow(new GitAPIException("Git error") {});
 
       GitOperationException exception =
-          assertThrows(
-              GitOperationException.class,
-              () -> {
-                gitService.initializeLocalRepository();
-              });
+          assertThrows(GitOperationException.class, () -> gitService.initializeLocalRepository());
 
       assertTrue(exception.getMessage().contains("Failed to initialize local repository"));
     }

@@ -82,9 +82,9 @@ public class GlobalExceptionHandler {
         new ApiError(
             request.getRequestURI(),
             List.of(ex.getMessage()),
-            HttpStatus.NOT_FOUND.value(),
+            ex.getHttpStatus().value(),
             LocalDateTime.now());
-    return new ResponseEntity<>(apiError, HttpStatus.INTERNAL_SERVER_ERROR);
+    return new ResponseEntity<>(apiError, ex.getHttpStatus());
   }
 
   /**
@@ -98,7 +98,7 @@ public class GlobalExceptionHandler {
         new ApiError(
             request.getRequestURI(),
             List.of(ex.getMessage()),
-            HttpStatus.NOT_FOUND.value(),
+            HttpStatus.INTERNAL_SERVER_ERROR.value(),
             LocalDateTime.now());
     return new ResponseEntity<>(apiError, HttpStatus.INTERNAL_SERVER_ERROR);
   }
@@ -111,7 +111,7 @@ public class GlobalExceptionHandler {
         new ApiError(
             request.getRequestURI(),
             List.of(ex.getMessage()),
-            HttpStatus.NOT_FOUND.value(),
+            HttpStatus.INTERNAL_SERVER_ERROR.value(),
             LocalDateTime.now());
     return new ResponseEntity<>(apiError, HttpStatus.INTERNAL_SERVER_ERROR);
   }
