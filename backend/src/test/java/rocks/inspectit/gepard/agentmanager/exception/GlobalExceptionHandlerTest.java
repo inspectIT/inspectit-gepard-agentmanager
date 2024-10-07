@@ -85,4 +85,66 @@ class GlobalExceptionHandlerTest {
     assertEquals("requestURI", response.getBody().path());
     assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
   }
+
+  @Test
+  void handleFileAccessException_INTERNAL_SERVER_ERROR() {
+    FileAccessException exception = Mockito.mock(FileAccessException.class);
+    HttpServletRequest httpServletRequest = Mockito.mock(HttpServletRequest.class);
+    Mockito.when(httpServletRequest.getRequestURI()).thenReturn("requestURI");
+    Mockito.when(exception.getMessage()).thenReturn("exception message");
+    Mockito.when(exception.getHttpStatus()).thenReturn(HttpStatus.INTERNAL_SERVER_ERROR);
+
+    ResponseEntity<ApiError> response =
+        globalExceptionHandler.handleFileAccessException(exception, httpServletRequest);
+
+    assertEquals(List.of("exception message"), Objects.requireNonNull(response.getBody()).errors());
+    assertEquals("requestURI", response.getBody().path());
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+  }
+
+  @Test
+  void handleFileAccessException_NOT_FOUND() {
+    FileAccessException exception = Mockito.mock(FileAccessException.class);
+    HttpServletRequest httpServletRequest = Mockito.mock(HttpServletRequest.class);
+    Mockito.when(httpServletRequest.getRequestURI()).thenReturn("requestURI");
+    Mockito.when(exception.getMessage()).thenReturn("exception message");
+    Mockito.when(exception.getHttpStatus()).thenReturn(HttpStatus.NOT_FOUND);
+
+    ResponseEntity<ApiError> response =
+        globalExceptionHandler.handleFileAccessException(exception, httpServletRequest);
+
+    assertEquals(List.of("exception message"), Objects.requireNonNull(response.getBody()).errors());
+    assertEquals("requestURI", response.getBody().path());
+    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+  }
+
+  @Test
+  void handleGitOperationException() {
+    GitOperationException exception = Mockito.mock(GitOperationException.class);
+    HttpServletRequest httpServletRequest = Mockito.mock(HttpServletRequest.class);
+    Mockito.when(httpServletRequest.getRequestURI()).thenReturn("requestURI");
+    Mockito.when(exception.getMessage()).thenReturn("exception message");
+
+    ResponseEntity<ApiError> response =
+        globalExceptionHandler.handleGitOperationException(exception, httpServletRequest);
+
+    assertEquals(List.of("exception message"), Objects.requireNonNull(response.getBody()).errors());
+    assertEquals("requestURI", response.getBody().path());
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+  }
+
+  @Test
+  void handleJsonParseError() {
+    JsonParseException exception = Mockito.mock(JsonParseException.class);
+    HttpServletRequest httpServletRequest = Mockito.mock(HttpServletRequest.class);
+    Mockito.when(httpServletRequest.getRequestURI()).thenReturn("requestURI");
+    Mockito.when(exception.getMessage()).thenReturn("exception message");
+
+    ResponseEntity<ApiError> response =
+        globalExceptionHandler.handleJsonParseError(exception, httpServletRequest);
+
+    assertEquals(List.of("exception message"), Objects.requireNonNull(response.getBody()).errors());
+    assertEquals("requestURI", response.getBody().path());
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+  }
 }

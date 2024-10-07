@@ -18,12 +18,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-  /**
-   * Handles MethodArgumentNotValidException (e.g. if a NotNull-Field isn´t present).
-   *
-   * @param ex the exception
-   * @return the response entity
-   */
+  /** Handles MethodArgumentNotValidException (e.g. if a NotNull-Field isn´t present). */
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<ApiError> handleValidationErrors(
       MethodArgumentNotValidException ex, HttpServletRequest request) {
@@ -37,13 +32,8 @@ public class GlobalExceptionHandler {
     return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
   }
 
-  /**
-   * Handles HttpMessageNotReadableException (e.g. if no request body is provided).
-   *
-   * @param ex the exception
-   * @return the response entity
-   */
-  @ExceptionHandler({HttpMessageNotReadableException.class})
+  /** Handles HttpMessageNotReadableException (e.g. if no request body is provided). */
+  @ExceptionHandler(HttpMessageNotReadableException.class)
   public ResponseEntity<ApiError> handleBadRequestError(
       HttpMessageNotReadableException ex, HttpServletRequest request) {
     ApiError apiError =
@@ -82,5 +72,47 @@ public class GlobalExceptionHandler {
             HttpStatus.NOT_FOUND.value(),
             LocalDateTime.now());
     return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
+  }
+
+  /** Handles FileAccessException (e.g. if a file could not be read). */
+  @ExceptionHandler(FileAccessException.class)
+  public ResponseEntity<ApiError> handleFileAccessException(
+      FileAccessException ex, HttpServletRequest request) {
+    ApiError apiError =
+        new ApiError(
+            request.getRequestURI(),
+            List.of(ex.getMessage()),
+            ex.getHttpStatus().value(),
+            LocalDateTime.now());
+    return new ResponseEntity<>(apiError, ex.getHttpStatus());
+  }
+
+  /**
+   * Handles GitOperationException (e.g. if the initialization of the local repository fails or if
+   * it fails to open the local repository)
+   */
+  @ExceptionHandler(GitOperationException.class)
+  public ResponseEntity<ApiError> handleGitOperationException(
+      GitOperationException ex, HttpServletRequest request) {
+    ApiError apiError =
+        new ApiError(
+            request.getRequestURI(),
+            List.of(ex.getMessage()),
+            HttpStatus.INTERNAL_SERVER_ERROR.value(),
+            LocalDateTime.now());
+    return new ResponseEntity<>(apiError, HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+
+  /** Handles JsonParseException (e.g. if (de-) serialization of JSON fails */
+  @ExceptionHandler(JsonParseException.class)
+  public ResponseEntity<ApiError> handleJsonParseError(
+      JsonParseException ex, HttpServletRequest request) {
+    ApiError apiError =
+        new ApiError(
+            request.getRequestURI(),
+            List.of(ex.getMessage()),
+            HttpStatus.INTERNAL_SERVER_ERROR.value(),
+            LocalDateTime.now());
+    return new ResponseEntity<>(apiError, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 }

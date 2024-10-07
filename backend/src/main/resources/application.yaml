@@ -36,3 +36,5 @@ inspectit-config-server:
       path-pattern: "/**"
       allowed-origins: "*"
       allowed-methods: "*"
+  configurations:
+    local-path: ".config"

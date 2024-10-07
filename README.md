@@ -13,5 +13,13 @@ It´s purpose is to replace the InspectIT Ocelot project with a more modern and 
 Currently, the project is in an early stage of development and not yet ready for production use.
 However, if you want to try it out, you can follow the instructions in [CONTRIBUTING](./CONTRIBUTING.md).
 
+## Local Setup
+To persist the Config-Server configuration, we create a local Git repository. The path to the repository needs to be provided in the `application.yaml` with the property `inspectit-config-server.configurations.local-path`, e.g.
+```
+inspectit-config-server:
+  configurations:
+    local-path: ".config"
+```
+
 ## Useful Links
 - [SonarCloud](https://sonarcloud.io/)
