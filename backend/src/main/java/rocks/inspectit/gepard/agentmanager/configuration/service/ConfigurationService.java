@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import rocks.inspectit.gepard.agentmanager.configuration.model.InspectitConfiguration;
+import rocks.inspectit.gepard.config.model.InspectitConfiguration;
 import rocks.inspectit.gepard.agentmanager.exception.JsonParseException;
 
 @Service

@@ -7,7 +7,7 @@ import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import rocks.inspectit.gepard.agentmanager.configuration.model.InspectitConfiguration;
+import rocks.inspectit.gepard.config.model.InspectitConfiguration;
 import rocks.inspectit.gepard.agentmanager.configuration.service.ConfigurationService;
 
 @RestController

@@ -7,7 +7,7 @@ import static org.mockito.Mockito.*;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,9 +15,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import rocks.inspectit.gepard.agentmanager.configuration.model.InspectitConfiguration;
-import rocks.inspectit.gepard.agentmanager.configuration.model.instrumentation.InstrumentationConfiguration;
-import rocks.inspectit.gepard.agentmanager.configuration.model.instrumentation.Scope;
+import rocks.inspectit.gepard.agentmanager.testutils.InspectitConfigurationTestUtil;
+import rocks.inspectit.gepard.config.model.InspectitConfiguration;
 import rocks.inspectit.gepard.agentmanager.exception.JsonParseException;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,11 +31,8 @@ class ConfigurationServiceTest {
   private InspectitConfiguration configuration;
 
   @BeforeEach
-  public void setUp() {
-    Scope scope = new Scope("org.domain.test", List.of("method1", "method2"), true);
-    InstrumentationConfiguration instrumentationConfiguration =
-        new InstrumentationConfiguration(List.of(scope));
-    configuration = new InspectitConfiguration(instrumentationConfiguration);
+  void setUp() {
+    configuration = InspectitConfigurationTestUtil.createConfiguration();
   }
 
   @Test
@@ -44,19 +40,24 @@ class ConfigurationServiceTest {
     String fileContent =
         """
                 {
-                    "instrumentation": {
-                        "scopes": [
-                            {
-                                "fqn": "org.domain.test1",
-                                "methods": [
-                                    "method1",
-                                    "method2"
-                                ],
-                                "enabled": true
-                            }
-                        ]
-                    }
-                }
+                   "instrumentation": {
+                     "scopes": {
+                       "s_controller": {
+                         "fqn": "io.opentelemetry.smoketest.springboot.controller.WebController"
+                       }
+                     },
+                     "rules": {
+                       "r_controller": {
+                         "scopes": {
+                           "s_controller": true
+                         },
+                         "tracing": {
+                           "startSpan": true
+                         }
+                       }
+                     }
+                   }
+                 }
                 """;
     when(gitService.getFileContent()).thenReturn(fileContent);
     when(objectMapper.readValue(fileContent, InspectitConfiguration.class))
