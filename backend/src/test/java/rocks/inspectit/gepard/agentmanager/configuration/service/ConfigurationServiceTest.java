@@ -7,17 +7,15 @@ import static org.mockito.Mockito.*;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import rocks.inspectit.gepard.agentmanager.exception.JsonParseException;
 import rocks.inspectit.gepard.agentmanager.testutils.InspectitConfigurationTestUtil;
 import rocks.inspectit.gepard.config.model.InspectitConfiguration;
-import rocks.inspectit.gepard.agentmanager.exception.JsonParseException;
 
 @ExtendWith(MockitoExtension.class)
 class ConfigurationServiceTest {
@@ -28,12 +26,8 @@ class ConfigurationServiceTest {
 
   @Spy private ObjectMapper objectMapper;
 
-  private InspectitConfiguration configuration;
-
-  @BeforeEach
-  void setUp() {
-    configuration = InspectitConfigurationTestUtil.createConfiguration();
-  }
+  private static final InspectitConfiguration configuration =
+      InspectitConfigurationTestUtil.createConfiguration();
 
   @Test
   void testGetConfiguration_SuccessfulDeserialization() throws JsonProcessingException {

@@ -1,16 +1,13 @@
 /* (C) 2024 */
 package rocks.inspectit.gepard.agentmanager.testutils;
 
+import java.util.Collections;
+import java.util.Map;
 import rocks.inspectit.gepard.config.model.InspectitConfiguration;
 import rocks.inspectit.gepard.config.model.instrumentation.InstrumentationConfiguration;
 import rocks.inspectit.gepard.config.model.instrumentation.rules.RuleConfiguration;
 import rocks.inspectit.gepard.config.model.instrumentation.rules.RuleTracingConfiguration;
 import rocks.inspectit.gepard.config.model.instrumentation.scopes.ScopeConfiguration;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class InspectitConfigurationTestUtil {
 
