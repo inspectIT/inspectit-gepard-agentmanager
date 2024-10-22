@@ -23,6 +23,7 @@ on:
 
 env:
   REGISTRY_IMAGE: inspectit/inspectit-gepard-configserver
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   build-configserver:
