@@ -8,17 +8,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import rocks.inspectit.gepard.agentmanager.configuration.model.InspectitConfiguration;
-import rocks.inspectit.gepard.agentmanager.configuration.model.instrumentation.InstrumentationConfiguration;
-import rocks.inspectit.gepard.agentmanager.configuration.model.instrumentation.Scope;
 import rocks.inspectit.gepard.agentmanager.configuration.service.ConfigurationService;
+import rocks.inspectit.gepard.agentmanager.testutils.InspectitConfigurationTestUtil;
+import rocks.inspectit.gepard.config.model.InspectitConfiguration;
 
 @WebMvcTest(controllers = ConfigurationController.class)
 class ConfigurationControllerTest {
@@ -50,8 +48,7 @@ class ConfigurationControllerTest {
 
   @Test
   void updateConfiguration_shouldReturnOkAndConfiguration() throws Exception {
-
-    InspectitConfiguration configuration = createConfiguration();
+    InspectitConfiguration configuration = InspectitConfigurationTestUtil.createConfiguration();
 
     mockMvc
         .perform(
@@ -59,12 +56,5 @@ class ConfigurationControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(configuration)))
         .andExpect(status().isOk());
-  }
-
-  private InspectitConfiguration createConfiguration() {
-    Scope scope = new Scope("org.test.package", List.of("testMethod"), true);
-    InstrumentationConfiguration instrumentationConfiguration =
-        new InstrumentationConfiguration(List.of(scope));
-    return new InspectitConfiguration(instrumentationConfiguration);
   }
 }

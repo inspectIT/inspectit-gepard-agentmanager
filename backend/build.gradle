@@ -8,6 +8,7 @@ plugins {
 
 group = 'rocks.inspectit.gepard'
 version = '0.0.1-SNAPSHOT'
+def configVersion = '3.0.2-dev'
 
 java {
     sourceCompatibility = '17'
@@ -21,9 +22,19 @@ configurations {
 
 repositories {
     mavenCentral()
+    maven {
+        name = "inspectit-gepard-config"
+        url = uri("https://maven.pkg.github.com/inspectIT/inspectit-gepard-config")
+        credentials {
+            username = project.findProperty("gpr.inspectit.gepard.user") ?: System.getenv("GITHUB_ACTOR")
+            password = project.findProperty("gpr.inspectit.gepard.token") ?: System.getenv("GITHUB_TOKEN")
+        }
+    }
 }
 
 dependencies {
+    // Agent configuration model
+    implementation("rocks.inspectit.gepard:inspectit-gepard-config:${configVersion}")
 
     // Starters
     implementation 'org.springframework.boot:spring-boot-starter-web'
