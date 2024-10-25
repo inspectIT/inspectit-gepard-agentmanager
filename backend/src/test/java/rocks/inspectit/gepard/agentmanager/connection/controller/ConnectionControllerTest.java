@@ -53,7 +53,7 @@ class ConnectionControllerTest {
   @Test
   void connect_whenEverythingIsValid_shouldReturnOk() throws Exception {
     CreateConnectionRequest createConnectionRequest =
-        new CreateConnectionRequest(
+        CreateConnectionRequest.of(
             "customer-service-e", "0.0.1", "1.26.8", 67887L, Instant.now().toEpochMilli(), "22");
 
     Connection connection = CreateConnectionRequest.toConnection(createConnectionRequest);
@@ -83,7 +83,7 @@ class ConnectionControllerTest {
   void get_connection_whenEverythingIsValid_shouldReturnOk() throws Exception {
     UUID uuid = UUID.randomUUID();
     ConnectionDto connectionDto =
-        new ConnectionDto(
+        ConnectionDto.of(
             uuid, LocalDateTime.now(), "service name", "5", "7", 42L, 123456789L, "22");
     when(connectionService.getConnection(uuid)).thenReturn(connectionDto);
 

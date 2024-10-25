@@ -3,6 +3,7 @@ package rocks.inspectit.gepard.agentmanager.connection.model.dto;
 
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.UUID;
 import rocks.inspectit.gepard.agentmanager.connection.model.Connection;
 
@@ -15,7 +16,29 @@ public record ConnectionDto(
     @NotNull(message = "Open-Telemetry Version missing.") String otelVersion,
     @NotNull(message = "Process ID is missing.") Long pid,
     @NotNull(message = "Start-Time missing.") Long startTime,
-    @NotNull(message = "Java Version missing.") String javaVersion) {
+    @NotNull(message = "Java Version missing.") String javaVersion,
+    Map<String, String> attributes) {
+
+  public static ConnectionDto of(
+      UUID id,
+      LocalDateTime registrationTime,
+      String serviceName,
+      String gepardVersion,
+      String otelVersion,
+      Long pid,
+      Long startTime,
+      String javaVersion) {
+    return new ConnectionDto(
+        id,
+        registrationTime,
+        serviceName,
+        gepardVersion,
+        otelVersion,
+        pid,
+        startTime,
+        javaVersion,
+        Map.of());
+  }
 
   public static ConnectionDto fromConnection(Connection connection) {
     return new ConnectionDto(
@@ -26,6 +49,7 @@ public record ConnectionDto(
         connection.getAgent().getOtelVersion(),
         connection.getAgent().getPid(),
         connection.getAgent().getStartTime().toEpochMilli(),
-        connection.getAgent().getJavaVersion());
+        connection.getAgent().getJavaVersion(),
+        connection.getAgent().getAttributes());
   }
 }

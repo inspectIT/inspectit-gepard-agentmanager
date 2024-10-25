@@ -3,6 +3,7 @@ package rocks.inspectit.gepard.agentmanager.agent.model;
 
 import jakarta.validation.constraints.NotNull;
 import java.time.Instant;
+import java.util.Map;
 import lombok.*;
 
 /** Represents an agent which is connected to the config server. */
@@ -27,4 +28,7 @@ public class Agent {
 
   /** The Java version of the JVM which carries the agent. */
   @NotNull private String javaVersion;
+
+  /** The custom attributes of the agent. */
+  @NotNull private Map<String, String> attributes;
 }

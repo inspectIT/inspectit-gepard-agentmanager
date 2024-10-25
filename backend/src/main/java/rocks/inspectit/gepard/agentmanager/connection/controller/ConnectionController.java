@@ -12,6 +12,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import rocks.inspectit.gepard.agentmanager.connection.model.Connection;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.ConnectionDto;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.CreateConnectionRequest;
+import rocks.inspectit.gepard.agentmanager.connection.model.dto.QueryConnectionRequest;
 import rocks.inspectit.gepard.agentmanager.connection.service.ConnectionService;
 
 /**
@@ -41,6 +42,13 @@ public class ConnectionController {
   @Operation(summary = "Get all connections.")
   public ResponseEntity<List<ConnectionDto>> getConnections() {
     return ResponseEntity.ok(connectionService.getConnections());
+  }
+
+  @PostMapping("/query")
+  @Operation(summary = "Query connections")
+  public ResponseEntity<List<ConnectionDto>> queryConnections(
+      @RequestBody QueryConnectionRequest query) {
+    return ResponseEntity.ok(connectionService.queryConnections(query));
   }
 
   @GetMapping("/{id}")

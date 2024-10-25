@@ -1,29 +1,43 @@
 /* (C) 2024 */
 package rocks.inspectit.gepard.agentmanager.connection.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
+import rocks.inspectit.gepard.agentmanager.agent.model.Agent;
 import rocks.inspectit.gepard.agentmanager.connection.model.Connection;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.ConnectionDto;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.CreateConnectionRequest;
+import rocks.inspectit.gepard.agentmanager.connection.model.dto.QueryConnectionRequest;
 
 @ExtendWith(MockitoExtension.class)
 class ConnectionServiceTest {
 
   @InjectMocks private ConnectionService connectionService;
+  private ConcurrentHashMap<UUID, Connection> connectionCache;
+
+  @BeforeEach
+  public void setUp() {
+    connectionCache = new ConcurrentHashMap<>();
+    connectionService = new ConnectionService(connectionCache);
+  }
 
   @Test
   void testHandleConnectRequest() {
     CreateConnectionRequest createConnectionRequest =
-        new CreateConnectionRequest(
+        CreateConnectionRequest.of(
             "customer-service-e", "0.0.1", "1.26.8", 67887L, Instant.now().toEpochMilli(), "22");
 
     Connection response = connectionService.handleConnectRequest(createConnectionRequest);
@@ -41,7 +55,7 @@ class ConnectionServiceTest {
   @Test
   void testGetConnections() {
     CreateConnectionRequest createConnectionRequest =
-        new CreateConnectionRequest(
+        CreateConnectionRequest.of(
             "customer-service-e", "0.0.1", "1.26.8", 67887L, Instant.now().toEpochMilli(), "22");
     connectionService.handleConnectRequest(createConnectionRequest);
     connectionService.handleConnectRequest(createConnectionRequest);
@@ -60,7 +74,7 @@ class ConnectionServiceTest {
   @Test
   void testGetConnection() {
     CreateConnectionRequest createConnectionRequest =
-        new CreateConnectionRequest(
+        CreateConnectionRequest.of(
             "customer-service-e", "0.0.1", "1.26.8", 67887L, Instant.now().toEpochMilli(), "22");
     Connection connection = connectionService.handleConnectRequest(createConnectionRequest);
 
@@ -81,5 +95,163 @@ class ConnectionServiceTest {
     Exception exception =
         assertThrows(NoSuchElementException.class, () -> connectionService.getConnection(id));
     assertEquals("No connection with id " + id + " found in cache.", exception.getMessage());
+  }
+
+  @Test
+  void testQueryShouldReturnEmptyListWhenNoConnections() {
+    QueryConnectionRequest query = new QueryConnectionRequest(null, null, null);
+    List<ConnectionDto> result = connectionService.queryConnections(query);
+    assertTrue(result.isEmpty());
+  }
+
+  @Test
+  void testQueryShouldFindConnectionById() {
+    // given
+    UUID id = UUID.randomUUID();
+    Connection connection = createTestConnection(id);
+    connectionCache.put(id, connection);
+    QueryConnectionRequest query = new QueryConnectionRequest(id, null, null);
+
+    // when
+    List<ConnectionDto> result = connectionService.queryConnections(query);
+
+    // then
+    assertThat(result).hasSize(1);
+    assertThat(result.get(0).id()).isEqualTo(id);
+  }
+
+  @Test
+  void testQueryShouldFindConnectionByRegistrationTime() {
+    // given
+    UUID id = UUID.randomUUID();
+    LocalDateTime registrationTime = LocalDateTime.now();
+    Connection connection = createTestConnection(id, registrationTime);
+    connectionCache.put(id, connection);
+
+    QueryConnectionRequest query = new QueryConnectionRequest(null, registrationTime, null);
+
+    // when
+    List<ConnectionDto> result = connectionService.queryConnections(query);
+
+    // then
+    assertThat(result).hasSize(1);
+    assertThat(result.get(0).registrationTime()).isEqualTo(registrationTime);
+  }
+
+  @Test
+  void testQueryShouldFindConnectionByAgentServiceName() {
+    // given
+    UUID id = UUID.randomUUID();
+    Connection connection = createTestConnection(id);
+    connectionCache.put(id, connection);
+
+    QueryConnectionRequest query =
+        new QueryConnectionRequest(
+            null,
+            null,
+            new QueryConnectionRequest.QueryAgentRequest(
+                "testService", null, null, null, null, null, null));
+
+    // when
+    List<ConnectionDto> result = connectionService.queryConnections(query);
+
+    // then
+    assertThat(result).hasSize(1);
+    assertThat(result.get(0).serviceName()).isEqualTo("testService");
+  }
+
+  @Test
+  void testQueryShouldFindConnectionByAgentAttributes() {
+    // given
+    UUID id = UUID.randomUUID();
+    Map<String, String> attributes = Map.of("custom", "attribute");
+    Connection connection = createTestConnectionWithAttributes(id, attributes);
+    connectionCache.put(id, connection);
+
+    QueryConnectionRequest query =
+        new QueryConnectionRequest(
+            null,
+            null,
+            new QueryConnectionRequest.QueryAgentRequest(
+                null, null, null, null, null, null, attributes));
+
+    // when
+    List<ConnectionDto> result = connectionService.queryConnections(query);
+
+    // then
+    assertThat(result).hasSize(1);
+    assertThat(result.get(0).attributes()).containsAllEntriesOf(attributes);
+  }
+
+  @Test
+  void testQueryShouldNotFindConnectionWhenAttributesDontMatch() {
+    // given
+    UUID id = UUID.randomUUID();
+    Connection connection = createTestConnectionWithAttributes(id, Map.of("key1", "value1"));
+    connectionCache.put(id, connection);
+
+    QueryConnectionRequest query =
+        new QueryConnectionRequest(
+            null,
+            null,
+            new QueryConnectionRequest.QueryAgentRequest(
+                null, null, null, null, null, null, Map.of("key2", "value2")));
+
+    // when
+    List<ConnectionDto> result = connectionService.queryConnections(query);
+
+    // then
+    assertThat(result).isEmpty();
+  }
+
+  @Test
+  void testQueryShouldFindConnectionWithMultipleCriteria() {
+    // given
+    UUID id = UUID.randomUUID();
+    LocalDateTime registrationTime = LocalDateTime.now();
+    Map<String, String> attributes = Map.of("custom", "attribute");
+    Connection connection = createTestConnectionWithAttributes(id, registrationTime, attributes);
+    connectionCache.put(id, connection);
+
+    QueryConnectionRequest query =
+        new QueryConnectionRequest(
+            id,
+            registrationTime,
+            new QueryConnectionRequest.QueryAgentRequest(
+                "testService", 1234L, "1.0", "1.0", null, "17", attributes));
+
+    // when
+    List<ConnectionDto> result = connectionService.queryConnections(query);
+
+    // then
+    assertThat(result).hasSize(1);
+    ConnectionDto dto = result.get(0);
+    assertThat(dto.id()).isEqualTo(id);
+    assertThat(dto.registrationTime()).isEqualTo(registrationTime);
+    assertThat(dto.serviceName()).isEqualTo("testService");
+    assertThat(dto.attributes()).containsAllEntriesOf(attributes);
+  }
+
+  private Connection createTestConnection(UUID id) {
+    return createTestConnection(id, LocalDateTime.now());
+  }
+
+  private Connection createTestConnection(UUID id, LocalDateTime registrationTime) {
+    return new Connection(
+        id,
+        registrationTime,
+        new Agent("testService", 1234L, "1.0", "1.0", Instant.now(), "17", Map.of()));
+  }
+
+  private Connection createTestConnectionWithAttributes(UUID id, Map<String, String> attributes) {
+    return createTestConnectionWithAttributes(id, LocalDateTime.now(), attributes);
+  }
+
+  private Connection createTestConnectionWithAttributes(
+      UUID id, LocalDateTime registrationTime, Map<String, String> attributes) {
+    return new Connection(
+        id,
+        registrationTime,
+        new Agent("testService", 1234L, "1.0", "1.0", Instant.now(), "17", attributes));
   }
 }

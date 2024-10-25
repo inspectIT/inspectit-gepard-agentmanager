@@ -3,14 +3,14 @@
 # Run the server and just start the collection.
 
 ### GET request to retrieve all connections
-GET https://localhost:8080/api/v1/connections
+GET http://localhost:8080/api/v1/connections
 
 ### POST request to connections without fields
 
-POST https://127.0.0.1:8080/api/v1/connections
+POST http://127.0.0.1:8080/api/v1/connections
 
 ### POST request to connections with missing fields
- POST https://127.0.0.1:8080/api/v1/connections
+ POST http://127.0.0.1:8080/api/v1/connections
 Content-Type: application/json
 
 {
@@ -22,7 +22,7 @@ Content-Type: application/json
 }
 
 ### POST request to connections with all fields
- POST https://127.0.0.1:8080/api/v1/connections
+POST http://127.0.0.1:8080/api/v1/connections
 Content-Type: application/json
 
 {
@@ -30,12 +30,27 @@ Content-Type: application/json
   "otelVersion": "1.2.5",
   "javaVersion": "17",
   "gepardVersion": "0.0.1-SNAPSHOT",
-  "startTime":  1719850971,
-  "pid": 432423
+  "startTime": 1719850971,
+  "pid": 432423,
+  "attributes": {
+    "custom": "property"
+  }
 }
 
 > {% client.global.set("response_redirect", response.headers.valueOf('Location')); %}
 
 ### GET request to connections/{id}
 GET {{response_redirect}}
+
+### POST request to connections/query
+POST http://127.0.0.1:8080/api/v1/connections/query
+Content-Type:  application/json
+
+{
+  "serviceName": "test-service",
+  "otelVersion": "1.2.5",
+  "attributes": {
+    "custom": "property"
+  }
+}
 
