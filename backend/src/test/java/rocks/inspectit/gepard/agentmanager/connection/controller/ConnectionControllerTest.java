@@ -9,6 +9,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import rocks.inspectit.gepard.agentmanager.connection.model.Connection;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.ConnectionDto;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.CreateConnectionRequest;
+import rocks.inspectit.gepard.agentmanager.connection.model.dto.QueryConnectionRequest;
 import rocks.inspectit.gepard.agentmanager.connection.service.ConnectionService;
 
 @WebMvcTest(controllers = ConnectionController.class)
@@ -92,5 +95,66 @@ class ConnectionControllerTest {
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(content().json(objectMapper.writeValueAsString(connectionDto)));
+  }
+
+  @Test
+  void queryConnections_whenMultipleParametersAreDefined_shouldReturnOk() throws Exception {
+    QueryConnectionRequest queryRequest = new QueryConnectionRequest(
+            UUID.randomUUID(),
+            LocalDateTime.now(),
+            new QueryConnectionRequest.QueryAgentRequest(
+                    "service-name",
+                    12345L,
+                    "0.0.1",
+                    "1.26.8",
+                    67887L,
+                    "22",
+                    Map.of("key", "value")
+            )
+    );
+
+    List<ConnectionDto> connectionDtos = List.of(
+            ConnectionDto.of(
+                    UUID.randomUUID(),
+                    LocalDateTime.now(),
+                    "service-name",
+                    "0.0.1",
+                    "1.26.8",
+                    67887L,
+                    123456789L,
+                    "22"
+            )
+    );
+
+    when(connectionService.queryConnections(queryRequest)).thenReturn(connectionDtos);
+
+    mockMvc
+            .perform(
+                    post("/api/v1/connections/query")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(queryRequest))
+            )
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(content().json(objectMapper.writeValueAsString(connectionDtos)));
+  }
+
+  @Test
+  void queryConnections_whenUnknownFieldIsProvided_shouldReturnBadRequest() throws Exception {
+    String requestBody =
+            """
+            {
+                "id": "123e4567-e89b-12d3-a456-426614174000",
+                "unknownField": "value"
+            }
+            """;
+
+    mockMvc
+            .perform(
+                    post("/api/v1/connections/query")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(requestBody)
+            )
+            .andExpect(status().isBadRequest());
   }
 }
