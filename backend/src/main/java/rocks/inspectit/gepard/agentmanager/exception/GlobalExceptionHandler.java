@@ -1,6 +1,7 @@
 /* (C) 2024 */
 package rocks.inspectit.gepard.agentmanager.exception;
 
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -114,5 +115,18 @@ public class GlobalExceptionHandler {
             HttpStatus.INTERNAL_SERVER_ERROR.value(),
             LocalDateTime.now());
     return new ResponseEntity<>(apiError, HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+
+  @ExceptionHandler(UnrecognizedPropertyException.class)
+  public ResponseEntity<ApiError> handleUnrecognizedProperty(
+      UnrecognizedPropertyException ex, HttpServletRequest request) {
+    ApiError apiError =
+        new ApiError(
+            request.getRequestURI(),
+            List.of(ex.getMessage()),
+            HttpStatus.BAD_REQUEST.value(),
+            LocalDateTime.now());
+
+    return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
   }
 }

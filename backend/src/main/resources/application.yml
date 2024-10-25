@@ -1,6 +1,10 @@
 spring:
   application:
     name: backend
+  jackson:
+    deserialization:
+      FAIL_ON_UNKNOWN_PROPERTIES: true
+
 #  ssl:
 #    bundle:
 #      jks:

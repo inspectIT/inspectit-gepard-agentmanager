@@ -41,6 +41,8 @@ public record CreateConnectionRequest(
             createConnectionRequest.otelVersion,
             Instant.ofEpochMilli(createConnectionRequest.startTime),
             createConnectionRequest.javaVersion,
-            createConnectionRequest.attributes));
+            createConnectionRequest.attributes != null
+                ? createConnectionRequest.attributes
+                : Map.of()));
   }
 }

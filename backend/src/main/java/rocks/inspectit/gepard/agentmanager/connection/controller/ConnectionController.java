@@ -47,7 +47,7 @@ public class ConnectionController {
   @PostMapping("/query")
   @Operation(summary = "Query connections")
   public ResponseEntity<List<ConnectionDto>> queryConnections(
-      @RequestBody QueryConnectionRequest query) {
+      @Valid @RequestBody QueryConnectionRequest query) {
     return ResponseEntity.ok(connectionService.queryConnections(query));
   }
 

@@ -17,7 +17,7 @@ public record ConnectionDto(
     @NotNull(message = "Process ID is missing.") Long pid,
     @NotNull(message = "Start-Time missing.") Long startTime,
     @NotNull(message = "Java Version missing.") String javaVersion,
-    Map<String, String> attributes) {
+    @NotNull(message = "Attributes are missing.") Map<String, String> attributes) {
 
   public static ConnectionDto of(
       UUID id,
