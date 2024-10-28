@@ -64,6 +64,7 @@ public class ConnectionService {
    *
    * @param id The id of the connection.
    * @return ConnectionDto The connection.
+   * @throws NoSuchElementException if no connection with the given id is found in the cache.
    */
   public ConnectionDto getConnection(UUID id) {
     if (!connectionCache.containsKey(id)) {
@@ -72,13 +73,20 @@ public class ConnectionService {
     return ConnectionDto.fromConnection(connectionCache.get(id));
   }
 
+  /**
+   * Checks if a connection matches the given query.
+   *
+   * @param connection The connection to check.
+   * @param query The query to match against.
+   * @return true if the connection matches the query, false otherwise.
+   */
   private boolean matchesConnection(Connection connection, QueryConnectionRequest query) {
-    if (query.id() != null && !query.id().equals(connection.getId())) {
+    if (query.id() != null && !connection.getId().toString().matches(query.id())) {
       return false;
     }
 
     if (query.registrationTime() != null
-        && !query.registrationTime().equals(connection.getRegistrationTime())) {
+        && !connection.getRegistrationTime().toString().matches(query.registrationTime())) {
       return false;
     }
 
@@ -89,33 +97,55 @@ public class ConnectionService {
     return true;
   }
 
+  /**
+   * Checks if an agent matches the given query.
+   *
+   * @param agent The agent to check.
+   * @param query The query to match against.
+   * @return true if the agent matches the query, false otherwise.
+   */
   private boolean matchesAgent(Agent agent, QueryConnectionRequest.QueryAgentRequest query) {
-    if (query.serviceName() != null && !query.serviceName().equals(agent.getServiceName())) {
+    if (query.serviceName() != null && !agent.getServiceName().matches(query.serviceName())) {
       return false;
     }
 
-    if (query.gepardVersion() != null && !query.gepardVersion().equals(agent.getGepardVersion())) {
+    if (query.gepardVersion() != null && !agent.getGepardVersion().matches(query.gepardVersion())) {
       return false;
     }
 
-    if (query.otelVersion() != null && !query.otelVersion().equals(agent.getOtelVersion())) {
+    if (query.otelVersion() != null && !agent.getOtelVersion().matches(query.otelVersion())) {
       return false;
     }
 
-    if (query.javaVersion() != null && !query.javaVersion().equals(agent.getJavaVersion())) {
+    if (query.javaVersion() != null && !agent.getJavaVersion().matches(query.javaVersion())) {
       return false;
     }
 
     if (query.attributes() != null && !query.attributes().isEmpty()) {
       Map<String, String> agentAttributes = agent.getAttributes();
 
-      return query.attributes().entrySet().stream()
-          .allMatch(
-              entry ->
-                  agentAttributes.containsKey(entry.getKey())
-                      && agentAttributes.get(entry.getKey()).equals(entry.getValue()));
+      return matchesAttributes(agentAttributes, query.attributes());
     }
 
     return true;
+  }
+
+  /**
+   * Checks if a set of agent attributes matches the given query attributes.
+   *
+   * @param agentAttributes The agent attributes to check.
+   * @param queryAttributes The query attributes to match against.
+   * @return true if the agent attributes match the query attributes, false otherwise.
+   */
+  private boolean matchesAttributes(
+      Map<String, String> agentAttributes, Map<String, String> queryAttributes) {
+    return queryAttributes.entrySet().stream()
+        .allMatch(
+            entry -> {
+              String key = entry.getKey();
+              String pattern = entry.getValue();
+              String agentValue = agentAttributes.get(key);
+              return agentValue != null && agentValue.matches(pattern);
+            });
   }
 }

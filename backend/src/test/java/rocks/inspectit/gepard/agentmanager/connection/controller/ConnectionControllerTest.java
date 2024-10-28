@@ -37,13 +37,13 @@ class ConnectionControllerTest {
   void connect_whenFieldIsMissing_shouldReturnBadRequest() throws Exception {
     String requestBody =
         """
-            {
-            "serviceName": "customer-service-e",
-            "gepardVersion: "0.0.1",
-            "otelVersion": "1.26.8"
+                {
+                "serviceName": "customer-service-e",
+                "gepardVersion: "0.0.1",
+                "otelVersion": "1.26.8"
 
-            }
-            """;
+                }
+                """;
 
     mockMvc
         .perform(
@@ -107,8 +107,8 @@ class ConnectionControllerTest {
   void queryConnections_whenMultipleParametersAreDefined_shouldReturnOk() throws Exception {
     QueryConnectionRequest queryRequest =
         new QueryConnectionRequest(
-            UUID.randomUUID(),
-            LocalDateTime.now(),
+            UUID.randomUUID().toString(),
+            LocalDateTime.now().toString(),
             new QueryConnectionRequest.QueryAgentRequest(
                 "service-name", 12345L, "0.0.1", "1.26.8", 67887L, "22", Map.of("key", "value")));
 
@@ -153,5 +153,45 @@ class ConnectionControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody))
         .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void queryConnections_whenRegexInParameters_shouldReturnOk() throws Exception {
+    QueryConnectionRequest queryRequest =
+        new QueryConnectionRequest(
+            "^123e4567-e89b-12d3-a456-[0-9a-f]+$",
+            "^2023-04-[0-9]+T[0-9:]+Z$",
+            new QueryConnectionRequest.QueryAgentRequest(
+                "^service-.*",
+                12345L,
+                "0\\.0\\.1",
+                "1\\.26\\.8",
+                67887L,
+                "22",
+                Map.of("key", "^value.*")));
+
+    List<ConnectionDto> connectionDtos =
+        List.of(
+            new ConnectionDto(
+                UUID.fromString("123e4567-e89b-12d3-a456-426614174000"),
+                LocalDateTime.parse("2023-04-15T12:34:56"),
+                "service-name",
+                "0.0.1",
+                "1.26.8",
+                67887L,
+                123456789L,
+                "22",
+                Map.of("key", "value-123")));
+
+    when(connectionService.queryConnections(queryRequest)).thenReturn(connectionDtos);
+
+    mockMvc
+        .perform(
+            post("/api/v1/connections/query")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(queryRequest)))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json(objectMapper.writeValueAsString(connectionDtos)));
   }
 }
