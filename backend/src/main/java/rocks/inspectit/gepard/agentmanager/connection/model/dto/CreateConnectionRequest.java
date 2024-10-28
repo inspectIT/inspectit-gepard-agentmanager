@@ -4,6 +4,7 @@ package rocks.inspectit.gepard.agentmanager.connection.model.dto;
 import jakarta.validation.constraints.NotNull;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.UUID;
 import rocks.inspectit.gepard.agentmanager.agent.model.Agent;
 import rocks.inspectit.gepard.agentmanager.connection.model.Connection;
@@ -15,7 +16,8 @@ public record CreateConnectionRequest(
     @NotNull(message = "Open-Telemetry Version missing.") String otelVersion,
     @NotNull(message = "Process ID is missing.") Long pid,
     @NotNull(message = "Start-Time missing.") Long startTime,
-    @NotNull(message = "Java Version missing.") String javaVersion) {
+    @NotNull(message = "Java Version missing.") String javaVersion,
+    Map<String, String> attributes) {
 
   public static Connection toConnection(CreateConnectionRequest createConnectionRequest) {
     return new Connection(
@@ -27,6 +29,9 @@ public record CreateConnectionRequest(
             createConnectionRequest.gepardVersion,
             createConnectionRequest.otelVersion,
             Instant.ofEpochMilli(createConnectionRequest.startTime),
-            createConnectionRequest.javaVersion));
+            createConnectionRequest.javaVersion,
+            createConnectionRequest.attributes != null
+                ? createConnectionRequest.attributes
+                : Map.of()));
   }
 }

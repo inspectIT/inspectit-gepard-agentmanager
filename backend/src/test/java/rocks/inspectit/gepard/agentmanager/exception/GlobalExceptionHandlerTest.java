@@ -3,6 +3,7 @@ package rocks.inspectit.gepard.agentmanager.exception;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -146,5 +147,20 @@ class GlobalExceptionHandlerTest {
     assertEquals(List.of("exception message"), Objects.requireNonNull(response.getBody()).errors());
     assertEquals("requestURI", response.getBody().path());
     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+  }
+
+  @Test
+  void handleUnrecognizedPropertyError() {
+    UnrecognizedPropertyException exception = Mockito.mock(UnrecognizedPropertyException.class);
+    HttpServletRequest httpServletRequest = Mockito.mock(HttpServletRequest.class);
+    Mockito.when(httpServletRequest.getRequestURI()).thenReturn("requestURI");
+    Mockito.when(exception.getMessage()).thenReturn("exception message");
+
+    ResponseEntity<ApiError> response =
+        globalExceptionHandler.handleUnrecognizedProperty(exception, httpServletRequest);
+
+    assertEquals(List.of("exception message"), Objects.requireNonNull(response.getBody()).errors());
+    assertEquals("requestURI", response.getBody().path());
+    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
   }
 }
