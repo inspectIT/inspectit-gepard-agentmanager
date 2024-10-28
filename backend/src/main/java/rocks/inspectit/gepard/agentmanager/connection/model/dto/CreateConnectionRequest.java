@@ -19,17 +19,6 @@ public record CreateConnectionRequest(
     @NotNull(message = "Java Version missing.") String javaVersion,
     Map<String, String> attributes) {
 
-  public static CreateConnectionRequest of(
-      String serviceName,
-      String gepardVersion,
-      String otelVersion,
-      Long pid,
-      Long startTime,
-      String javaVersion) {
-    return new CreateConnectionRequest(
-        serviceName, gepardVersion, otelVersion, pid, startTime, javaVersion, Map.of());
-  }
-
   public static Connection toConnection(CreateConnectionRequest createConnectionRequest) {
     return new Connection(
         UUID.randomUUID(),

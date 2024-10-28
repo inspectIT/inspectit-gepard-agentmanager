@@ -19,27 +19,6 @@ public record ConnectionDto(
     @NotNull(message = "Java Version missing.") String javaVersion,
     @NotNull(message = "Attributes are missing.") Map<String, String> attributes) {
 
-  public static ConnectionDto of(
-      UUID id,
-      LocalDateTime registrationTime,
-      String serviceName,
-      String gepardVersion,
-      String otelVersion,
-      Long pid,
-      Long startTime,
-      String javaVersion) {
-    return new ConnectionDto(
-        id,
-        registrationTime,
-        serviceName,
-        gepardVersion,
-        otelVersion,
-        pid,
-        startTime,
-        javaVersion,
-        Map.of());
-  }
-
   public static ConnectionDto fromConnection(Connection connection) {
     return new ConnectionDto(
         connection.getId(),

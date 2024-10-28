@@ -36,9 +36,9 @@ class ConnectionServiceTest {
 
   @Test
   void testHandleConnectRequest() {
-    CreateConnectionRequest createConnectionRequest =
-        CreateConnectionRequest.of(
-            "customer-service-e", "0.0.1", "1.26.8", 67887L, Instant.now().toEpochMilli(), "22");
+    CreateConnectionRequest createConnectionRequest = new
+        CreateConnectionRequest(
+            "customer-service-e", "0.0.1", "1.26.8", 67887L, Instant.now().toEpochMilli(), "22", Map.of());
 
     Connection response = connectionService.handleConnectRequest(createConnectionRequest);
 
@@ -54,9 +54,9 @@ class ConnectionServiceTest {
 
   @Test
   void testGetConnections() {
-    CreateConnectionRequest createConnectionRequest =
-        CreateConnectionRequest.of(
-            "customer-service-e", "0.0.1", "1.26.8", 67887L, Instant.now().toEpochMilli(), "22");
+    CreateConnectionRequest createConnectionRequest = new
+        CreateConnectionRequest(
+            "customer-service-e", "0.0.1", "1.26.8", 67887L, Instant.now().toEpochMilli(), "22", Map.of());
     connectionService.handleConnectRequest(createConnectionRequest);
     connectionService.handleConnectRequest(createConnectionRequest);
 
@@ -73,9 +73,9 @@ class ConnectionServiceTest {
 
   @Test
   void testGetConnection() {
-    CreateConnectionRequest createConnectionRequest =
-        CreateConnectionRequest.of(
-            "customer-service-e", "0.0.1", "1.26.8", 67887L, Instant.now().toEpochMilli(), "22");
+    CreateConnectionRequest createConnectionRequest = new
+        CreateConnectionRequest(
+            "customer-service-e", "0.0.1", "1.26.8", 67887L, Instant.now().toEpochMilli(), "22", Map.of());
     Connection connection = connectionService.handleConnectRequest(createConnectionRequest);
 
     ConnectionDto connectionDto = connectionService.getConnection(connection.getId());
@@ -230,6 +230,26 @@ class ConnectionServiceTest {
     assertThat(dto.registrationTime()).isEqualTo(registrationTime);
     assertThat(dto.serviceName()).isEqualTo("testService");
     assertThat(dto.attributes()).containsAllEntriesOf(attributes);
+  }
+
+  @Test
+  void testQueryShouldFindAllConnectionsWithoutCriterias() {
+    // given
+    UUID id1 = UUID.randomUUID();
+    UUID id2 = UUID.randomUUID();
+    Connection connection1 = createTestConnection(id1);
+    Connection connection2 = createTestConnection(id2);
+    connectionCache.put(id1, connection1);
+    connectionCache.put(id2, connection2);
+
+    QueryConnectionRequest query = new QueryConnectionRequest(null, null, null);
+
+    // when
+    List<ConnectionDto> result = connectionService.queryConnections(query);
+
+    // then
+    assertThat(result).hasSize(2);
+    assertThat(result).extracting(ConnectionDto::id).containsExactlyInAnyOrder(id1, id2);
   }
 
   private Connection createTestConnection(UUID id) {

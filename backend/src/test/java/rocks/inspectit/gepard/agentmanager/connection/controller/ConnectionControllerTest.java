@@ -56,8 +56,14 @@ class ConnectionControllerTest {
   @Test
   void connect_whenEverythingIsValid_shouldReturnOk() throws Exception {
     CreateConnectionRequest createConnectionRequest =
-        CreateConnectionRequest.of(
-            "customer-service-e", "0.0.1", "1.26.8", 67887L, Instant.now().toEpochMilli(), "22");
+        new CreateConnectionRequest(
+            "customer-service-e",
+            "0.0.1",
+            "1.26.8",
+            67887L,
+            Instant.now().toEpochMilli(),
+            "22",
+            Map.of());
 
     Connection connection = CreateConnectionRequest.toConnection(createConnectionRequest);
     when(connectionService.handleConnectRequest(createConnectionRequest)).thenReturn(connection);
@@ -86,8 +92,8 @@ class ConnectionControllerTest {
   void get_connection_whenEverythingIsValid_shouldReturnOk() throws Exception {
     UUID uuid = UUID.randomUUID();
     ConnectionDto connectionDto =
-        ConnectionDto.of(
-            uuid, LocalDateTime.now(), "service name", "5", "7", 42L, 123456789L, "22");
+        new ConnectionDto(
+            uuid, LocalDateTime.now(), "service name", "5", "7", 42L, 123456789L, "22", Map.of());
     when(connectionService.getConnection(uuid)).thenReturn(connectionDto);
 
     mockMvc
@@ -108,7 +114,7 @@ class ConnectionControllerTest {
 
     List<ConnectionDto> connectionDtos =
         List.of(
-            ConnectionDto.of(
+            new ConnectionDto(
                 UUID.randomUUID(),
                 LocalDateTime.now(),
                 "service-name",
@@ -116,7 +122,8 @@ class ConnectionControllerTest {
                 "1.26.8",
                 67887L,
                 123456789L,
-                "22"));
+                "22",
+                Map.of()));
 
     when(connectionService.queryConnections(queryRequest)).thenReturn(connectionDtos);
 
