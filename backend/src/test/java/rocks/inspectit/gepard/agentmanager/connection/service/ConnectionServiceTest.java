@@ -36,9 +36,15 @@ class ConnectionServiceTest {
 
   @Test
   void testHandleConnectRequest() {
-    CreateConnectionRequest createConnectionRequest = new
-        CreateConnectionRequest(
-            "customer-service-e", "0.0.1", "1.26.8", 67887L, Instant.now().toEpochMilli(), "22", Map.of());
+    CreateConnectionRequest createConnectionRequest =
+        new CreateConnectionRequest(
+            "customer-service-e",
+            "0.0.1",
+            "1.26.8",
+            67887L,
+            Instant.now().toEpochMilli(),
+            "22",
+            Map.of());
 
     Connection response = connectionService.handleConnectRequest(createConnectionRequest);
 
@@ -54,9 +60,15 @@ class ConnectionServiceTest {
 
   @Test
   void testGetConnections() {
-    CreateConnectionRequest createConnectionRequest = new
-        CreateConnectionRequest(
-            "customer-service-e", "0.0.1", "1.26.8", 67887L, Instant.now().toEpochMilli(), "22", Map.of());
+    CreateConnectionRequest createConnectionRequest =
+        new CreateConnectionRequest(
+            "customer-service-e",
+            "0.0.1",
+            "1.26.8",
+            67887L,
+            Instant.now().toEpochMilli(),
+            "22",
+            Map.of());
     connectionService.handleConnectRequest(createConnectionRequest);
     connectionService.handleConnectRequest(createConnectionRequest);
 
@@ -73,9 +85,15 @@ class ConnectionServiceTest {
 
   @Test
   void testGetConnection() {
-    CreateConnectionRequest createConnectionRequest = new
-        CreateConnectionRequest(
-            "customer-service-e", "0.0.1", "1.26.8", 67887L, Instant.now().toEpochMilli(), "22", Map.of());
+    CreateConnectionRequest createConnectionRequest =
+        new CreateConnectionRequest(
+            "customer-service-e",
+            "0.0.1",
+            "1.26.8",
+            67887L,
+            Instant.now().toEpochMilli(),
+            "22",
+            Map.of());
     Connection connection = connectionService.handleConnectRequest(createConnectionRequest);
 
     ConnectionDto connectionDto = connectionService.getConnection(connection.getId());
