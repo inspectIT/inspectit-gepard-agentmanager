@@ -128,7 +128,7 @@ class ConnectionServiceTest {
     UUID id = UUID.randomUUID();
     Connection connection = createTestConnection(id);
     connectionCache.put(id, connection);
-    QueryConnectionRequest query = new QueryConnectionRequest(id, null, null);
+    QueryConnectionRequest query = new QueryConnectionRequest(id.toString(), null, null);
 
     // when
     List<ConnectionDto> result = connectionService.queryConnections(query);
@@ -146,7 +146,8 @@ class ConnectionServiceTest {
     Connection connection = createTestConnection(id, registrationTime);
     connectionCache.put(id, connection);
 
-    QueryConnectionRequest query = new QueryConnectionRequest(null, registrationTime, null);
+    QueryConnectionRequest query =
+        new QueryConnectionRequest(null, registrationTime.toString(), null);
 
     // when
     List<ConnectionDto> result = connectionService.queryConnections(query);
@@ -233,8 +234,8 @@ class ConnectionServiceTest {
 
     QueryConnectionRequest query =
         new QueryConnectionRequest(
-            id,
-            registrationTime,
+            id.toString(),
+            registrationTime.toString(),
             new QueryConnectionRequest.QueryAgentRequest(
                 "testService", 1234L, "1.0", "1.0", null, "17", attributes));
 
@@ -270,15 +271,123 @@ class ConnectionServiceTest {
     assertThat(result).extracting(ConnectionDto::id).containsExactlyInAnyOrder(id1, id2);
   }
 
+  @Test
+  void testQueryShouldFindConnectionsByRegexId() {
+    // given
+    UUID id1 = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
+    UUID id2 = UUID.fromString("123e4567-e89b-12d3-a456-426614174001");
+    Connection connection1 = createTestConnection(id1);
+    Connection connection2 = createTestConnection(id2);
+    connectionCache.put(id1, connection1);
+    connectionCache.put(id2, connection2);
+
+    QueryConnectionRequest query =
+        new QueryConnectionRequest("^123e4567-e89b-12d3-a456-[0-9a-f]+$", null, null);
+
+    // when
+    List<ConnectionDto> result = connectionService.queryConnections(query);
+
+    // then
+    assertThat(result).hasSize(2);
+    assertThat(result).extracting(ConnectionDto::id).containsExactlyInAnyOrder(id1, id2);
+  }
+
+  @Test
+  void testQueryShouldFindConnectionsByRegexRegistrationTime() {
+    // given
+    LocalDateTime registrationTime1 = LocalDateTime.parse("2023-04-15T12:34:56");
+    LocalDateTime registrationTime2 = LocalDateTime.parse("2023-04-16T12:34:56");
+    Connection connection1 = createTestConnection(UUID.randomUUID(), registrationTime1);
+    Connection connection2 = createTestConnection(UUID.randomUUID(), registrationTime2);
+    connectionCache.put(connection1.getId(), connection1);
+    connectionCache.put(connection2.getId(), connection2);
+
+    QueryConnectionRequest query =
+        new QueryConnectionRequest(null, "^2023-04-[0-9]+T[0-9:]+$", null);
+
+    // when
+    List<ConnectionDto> result = connectionService.queryConnections(query);
+
+    // then
+    assertThat(result).hasSize(2);
+    assertThat(result)
+        .extracting(ConnectionDto::registrationTime)
+        .containsExactlyInAnyOrder(registrationTime1, registrationTime2);
+  }
+
+  @Test
+  void testQueryShouldFindConnectionsByRegexAgentServiceName() {
+    // given
+    UUID id1 = UUID.randomUUID();
+    UUID id2 = UUID.randomUUID();
+    Connection connection1 = createTestConnection(id1, "service-a");
+    Connection connection2 = createTestConnection(id2, "service-b");
+    connectionCache.put(id1, connection1);
+    connectionCache.put(id2, connection2);
+
+    QueryConnectionRequest query =
+        new QueryConnectionRequest(
+            null,
+            null,
+            new QueryConnectionRequest.QueryAgentRequest(
+                "^service-.*", null, null, null, null, null, null));
+
+    // when
+    List<ConnectionDto> result = connectionService.queryConnections(query);
+
+    // then
+    assertThat(result).hasSize(2);
+    assertThat(result)
+        .extracting(ConnectionDto::serviceName)
+        .containsExactlyInAnyOrder("service-a", "service-b");
+  }
+
+  @Test
+  void testQueryShouldFindConnectionsByRegexAgentAttributes() {
+    // given
+    UUID id1 = UUID.randomUUID();
+    UUID id2 = UUID.randomUUID();
+    Map<String, String> attributes1 = Map.of("key1", "value-123");
+    Map<String, String> attributes2 = Map.of("key2", "value-456");
+    Connection connection1 = createTestConnectionWithAttributes(id1, attributes1);
+    Connection connection2 = createTestConnectionWithAttributes(id2, attributes2);
+    connectionCache.put(id1, connection1);
+    connectionCache.put(id2, connection2);
+
+    QueryConnectionRequest query =
+        new QueryConnectionRequest(
+            null,
+            null,
+            new QueryConnectionRequest.QueryAgentRequest(
+                null, null, null, null, null, null, Map.of("key1", "^value-.*")));
+
+    // when
+    List<ConnectionDto> result = connectionService.queryConnections(query);
+
+    // then
+    assertThat(result).hasSize(1);
+    assertThat(result).extracting(ConnectionDto::id).containsExactly(id1);
+    assertThat(result.get(0).attributes()).containsEntry("key1", "value-123");
+  }
+
   private Connection createTestConnection(UUID id) {
-    return createTestConnection(id, LocalDateTime.now());
+    return createTestConnection(id, LocalDateTime.now(), "testService");
   }
 
   private Connection createTestConnection(UUID id, LocalDateTime registrationTime) {
+    return createTestConnection(id, registrationTime, "testService");
+  }
+
+  private Connection createTestConnection(UUID id, String serviceName) {
+    return createTestConnection(id, LocalDateTime.now(), serviceName);
+  }
+
+  private Connection createTestConnection(
+      UUID id, LocalDateTime registrationTime, String serviceName) {
     return new Connection(
         id,
         registrationTime,
-        new Agent("testService", 1234L, "1.0", "1.0", Instant.now(), "17", Map.of()));
+        new Agent(serviceName, 1234L, "1.0", "1.0", Instant.now(), "17", Map.of()));
   }
 
   private Connection createTestConnectionWithAttributes(UUID id, Map<String, String> attributes) {
