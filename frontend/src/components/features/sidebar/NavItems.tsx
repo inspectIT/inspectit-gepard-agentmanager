@@ -7,7 +7,7 @@ Adding new pages in the router might require adding a new item here.
 export const NAV_ITEMS = [
   {
     title: "Connections",
-    href: "/connections/",
+    href: ["/connections", "/connections/", "/", ""],
     icon: MdOutlineSupportAgent,
     color: "text-sky-500",
   },

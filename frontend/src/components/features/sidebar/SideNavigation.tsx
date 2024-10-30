@@ -22,14 +22,15 @@ export default function SideNavigation({ className, setOpen }: SideNavProps) {
       {items.map((item) => (
         <Link
           key={item.title}
-          to={item.href}
+          to={item.href[0]}
           onClick={() => {
             if (setOpen) setOpen(false);
           }}
           className={cn(
             buttonVariants({ variant: "ghost" }),
             "group relative flex h-12 justify-start",
-            path.pathname === item.href && "bg-muted font-bold hover:bg-muted"
+            item.href.includes(path.pathname) &&
+              "bg-muted font-bold hover:bg-muted"
           )}
         >
           <item.icon className={cn("h-5 w-5", item.color)} />
