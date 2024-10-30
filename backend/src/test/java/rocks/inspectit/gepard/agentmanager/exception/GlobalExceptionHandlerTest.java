@@ -8,6 +8,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.regex.PatternSyntaxException;
+import org.eclipse.jgit.errors.InvalidPatternException;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
@@ -158,6 +160,36 @@ class GlobalExceptionHandlerTest {
 
     ResponseEntity<ApiError> response =
         globalExceptionHandler.handleUnrecognizedProperty(exception, httpServletRequest);
+
+    assertEquals(List.of("exception message"), Objects.requireNonNull(response.getBody()).errors());
+    assertEquals("requestURI", response.getBody().path());
+    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+  }
+
+  @Test
+  void handleInvalidPattern() {
+    InvalidPatternException exception = Mockito.mock(InvalidPatternException.class);
+    HttpServletRequest httpServletRequest = Mockito.mock(HttpServletRequest.class);
+    Mockito.when(httpServletRequest.getRequestURI()).thenReturn("requestURI");
+    Mockito.when(exception.getMessage()).thenReturn("exception message");
+
+    ResponseEntity<ApiError> response =
+        globalExceptionHandler.handleInvalidPattern(exception, httpServletRequest);
+
+    assertEquals(List.of("exception message"), Objects.requireNonNull(response.getBody()).errors());
+    assertEquals("requestURI", response.getBody().path());
+    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+  }
+
+  @Test
+  void handleInvalidPatternSyntax() {
+    PatternSyntaxException exception = Mockito.mock(PatternSyntaxException.class);
+    HttpServletRequest httpServletRequest = Mockito.mock(HttpServletRequest.class);
+    Mockito.when(httpServletRequest.getRequestURI()).thenReturn("requestURI");
+    Mockito.when(exception.getMessage()).thenReturn("exception message");
+
+    ResponseEntity<ApiError> response =
+        globalExceptionHandler.handleInvalidPatternSyntax(exception, httpServletRequest);
 
     assertEquals(List.of("exception message"), Objects.requireNonNull(response.getBody()).errors());
     assertEquals("requestURI", response.getBody().path());

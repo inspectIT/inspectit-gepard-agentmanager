@@ -7,7 +7,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.regex.PatternSyntaxException;
-
 import org.eclipse.jgit.errors.InvalidPatternException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -134,25 +133,27 @@ public class GlobalExceptionHandler {
   }
 
   @ExceptionHandler(InvalidPatternException.class)
-  public ResponseEntity<ApiError> handleInvalidPattern(InvalidPatternException ex, HttpServletRequest request) {
+  public ResponseEntity<ApiError> handleInvalidPattern(
+      InvalidPatternException ex, HttpServletRequest request) {
     ApiError apiError =
-            new ApiError(
-                    request.getRequestURI(),
-                    List.of(ex.getMessage()),
-                    HttpStatus.BAD_REQUEST.value(),
-                    LocalDateTime.now());
+        new ApiError(
+            request.getRequestURI(),
+            List.of(ex.getMessage()),
+            HttpStatus.BAD_REQUEST.value(),
+            LocalDateTime.now());
 
     return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
   }
 
   @ExceptionHandler(PatternSyntaxException.class)
-  public ResponseEntity<ApiError> handleInvalidPatternSyntax(PatternSyntaxException ex, HttpServletRequest request) {
+  public ResponseEntity<ApiError> handleInvalidPatternSyntax(
+      PatternSyntaxException ex, HttpServletRequest request) {
     ApiError apiError =
-            new ApiError(
-                    request.getRequestURI(),
-                    List.of(ex.getMessage()),
-                    HttpStatus.BAD_REQUEST.value(),
-                    LocalDateTime.now());
+        new ApiError(
+            request.getRequestURI(),
+            List.of(ex.getMessage()),
+            HttpStatus.BAD_REQUEST.value(),
+            LocalDateTime.now());
 
     return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
   }

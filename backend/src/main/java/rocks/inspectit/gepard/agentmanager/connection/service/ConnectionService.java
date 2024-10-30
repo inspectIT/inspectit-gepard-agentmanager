@@ -1,10 +1,7 @@
 /* (C) 2024 */
 package rocks.inspectit.gepard.agentmanager.connection.service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +12,7 @@ import rocks.inspectit.gepard.agentmanager.connection.model.Connection;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.ConnectionDto;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.CreateConnectionRequest;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.QueryConnectionRequest;
+import rocks.inspectit.gepard.agentmanager.regex.RegexQueryService;
 
 /** Service-Implementation for handling agent connection requests. */
 @Slf4j
@@ -23,6 +21,8 @@ import rocks.inspectit.gepard.agentmanager.connection.model.dto.QueryConnectionR
 public class ConnectionService {
 
   private final ConcurrentHashMap<UUID, Connection> connectionCache;
+
+  private final RegexQueryService regexQueryService;
 
   /**
    * Handles a connection request from an agent.
@@ -81,20 +81,26 @@ public class ConnectionService {
    * @return true if the connection matches the query, false otherwise.
    */
   private boolean matchesConnection(Connection connection, QueryConnectionRequest query) {
-    if (query.id() != null && !connection.getId().toString().matches(query.id())) {
-      return false;
-    }
+    boolean matches = true;
 
-    if (query.registrationTime() != null
-        && !connection.getRegistrationTime().toString().matches(query.registrationTime())) {
-      return false;
-    }
+    matches &= regexQueryService.matches(connection.getId().toString(), query.id());
+    matches &=
+        regexQueryService.matches(
+            connection.getRegistrationTime().toString(), query.registrationTime());
 
     if (query.agent() != null) {
-      return matchesAgent(connection.getAgent(), query.agent());
+
+      QueryConnectionRequest.QueryAgentRequest queryAgent = query.agent();
+      Agent agent = connection.getAgent();
+
+      matches &= matchesAgent(agent, queryAgent);
+
+      if (queryAgent.attributes() != null && !queryAgent.attributes().isEmpty()) {
+        matches &= matchesAttributes(agent.getAttributes(), queryAgent.attributes());
+      }
     }
 
-    return true;
+    return matches;
   }
 
   /**
@@ -105,29 +111,20 @@ public class ConnectionService {
    * @return true if the agent matches the query, false otherwise.
    */
   private boolean matchesAgent(Agent agent, QueryConnectionRequest.QueryAgentRequest query) {
-    if (query.serviceName() != null && !agent.getServiceName().matches(query.serviceName())) {
-      return false;
-    }
 
-    if (query.gepardVersion() != null && !agent.getGepardVersion().matches(query.gepardVersion())) {
-      return false;
-    }
+    boolean matches = true;
 
-    if (query.otelVersion() != null && !agent.getOtelVersion().matches(query.otelVersion())) {
-      return false;
-    }
-
-    if (query.javaVersion() != null && !agent.getJavaVersion().matches(query.javaVersion())) {
-      return false;
-    }
+    matches &= regexQueryService.matches(agent.getServiceName(), query.serviceName());
+    matches &= regexQueryService.matchesLong(agent.getPid(), query.pid());
+    matches &= regexQueryService.matches(agent.getGepardVersion(), query.gepardVersion());
+    matches &= regexQueryService.matches(agent.getOtelVersion(), query.otelVersion());
+    matches &= regexQueryService.matchesInstant(agent.getStartTime(), query.startTime());
+    matches &= regexQueryService.matches(agent.getJavaVersion(), query.javaVersion());
 
     if (query.attributes() != null && !query.attributes().isEmpty()) {
-      Map<String, String> agentAttributes = agent.getAttributes();
-
-      return matchesAttributes(agentAttributes, query.attributes());
+      matches &= matchesAttributes(agent.getAttributes(), query.attributes());
     }
-
-    return true;
+    return matches;
   }
 
   /**
@@ -141,11 +138,10 @@ public class ConnectionService {
       Map<String, String> agentAttributes, Map<String, String> queryAttributes) {
     return queryAttributes.entrySet().stream()
         .allMatch(
-            entry -> {
-              String key = entry.getKey();
-              String pattern = entry.getValue();
-              String agentValue = agentAttributes.get(key);
-              return agentValue != null && agentValue.matches(pattern);
+            queryEntry -> {
+              String actualValue = agentAttributes.get(queryEntry.getKey());
+              return actualValue != null
+                  && regexQueryService.matches(actualValue, queryEntry.getValue());
             });
   }
 }
