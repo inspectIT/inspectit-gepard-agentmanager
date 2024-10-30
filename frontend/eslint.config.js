@@ -8,11 +8,15 @@ import react from 'eslint-plugin-react'
 export default tseslint.config(
   { ignores: ['dist'] },
   {
-    settings: { react: { version: '18.3' } },
-    plugins: {
-      react,
+    settings: {
+      react: {
+        version: '18.3'
+      }
     },
-    extends: [js.configs.recommended, ...tseslint.configs.strictTypeChecked],
+    extends: [
+      js.configs.recommended,
+      ...tseslint.configs.strictTypeChecked
+    ],
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
       ecmaVersion: 2020,
@@ -23,6 +27,7 @@ export default tseslint.config(
       },
     },
     plugins: {
+      'react': react,
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
     },
@@ -36,5 +41,4 @@ export default tseslint.config(
       ],
     },
   },
-
 )
