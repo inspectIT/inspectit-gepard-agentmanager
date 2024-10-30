@@ -3,7 +3,7 @@ package rocks.inspectit.gepard.agentmanager.connection.model.dto;
 
 import jakarta.validation.Valid;
 import java.util.Map;
-import rocks.inspectit.gepard.agentmanager.regex.ValidRegexPattern;
+import rocks.inspectit.gepard.agentmanager.connection.validation.ValidRegexPattern;
 
 /**
  * Represents a request against the {@code ConnectionController} Query-Endpoint.

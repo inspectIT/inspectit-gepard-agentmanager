@@ -1,7 +1,7 @@
 /* (C) 2024 */
-package rocks.inspectit.gepard.agentmanager.regex;
+package rocks.inspectit.gepard.agentmanager.connection.validation;
 
-import static rocks.inspectit.gepard.agentmanager.regex.RegexQueryService.REGEX_INDICATOR;
+import static rocks.inspectit.gepard.agentmanager.connection.validation.RegexQueryService.REGEX_INDICATOR;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

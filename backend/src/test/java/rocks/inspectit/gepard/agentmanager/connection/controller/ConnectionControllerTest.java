@@ -159,16 +159,16 @@ class ConnectionControllerTest {
   void queryConnections_whenRegexInParameters_shouldReturnOk() throws Exception {
     QueryConnectionRequest queryRequest =
         new QueryConnectionRequest(
-            "^123e4567-e89b-12d3-a456-[0-9a-f]+$",
+            "regex:^123e4567-e89b-12d3-a456-[0-9a-f]+$",
             "^2023-04-[0-9]+T[0-9:]+Z$",
             new QueryConnectionRequest.QueryAgentRequest(
-                "^service-.*",
+                "regex:^service-.*",
                 "12345L",
                 "0\\.0\\.1",
                 "1\\.26\\.8",
                 "67887L",
                 "22",
-                Map.of("key", "^value.*")));
+                Map.of("key", "regex:^value.*")));
 
     List<ConnectionDto> connectionDtos =
         List.of(
@@ -202,7 +202,7 @@ class ConnectionControllerTest {
             null,
             null,
             new QueryConnectionRequest.QueryAgentRequest(
-                "*service-.*", null, null, null, null, null, null));
+                "regex:*service-.*", null, null, null, null, null, null));
 
     mockMvc
         .perform(

@@ -1,5 +1,5 @@
 /* (C) 2024 */
-package rocks.inspectit.gepard.agentmanager.regex;
+package rocks.inspectit.gepard.agentmanager.connection.validation;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;

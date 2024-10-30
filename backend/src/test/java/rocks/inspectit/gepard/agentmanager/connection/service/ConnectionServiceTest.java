@@ -22,7 +22,7 @@ import rocks.inspectit.gepard.agentmanager.connection.model.Connection;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.ConnectionDto;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.CreateConnectionRequest;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.QueryConnectionRequest;
-import rocks.inspectit.gepard.agentmanager.regex.RegexQueryService;
+import rocks.inspectit.gepard.agentmanager.connection.validation.RegexQueryService;
 
 @ExtendWith(MockitoExtension.class)
 class ConnectionServiceTest {

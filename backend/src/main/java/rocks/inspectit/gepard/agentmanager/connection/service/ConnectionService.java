@@ -12,7 +12,7 @@ import rocks.inspectit.gepard.agentmanager.connection.model.Connection;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.ConnectionDto;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.CreateConnectionRequest;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.QueryConnectionRequest;
-import rocks.inspectit.gepard.agentmanager.regex.RegexQueryService;
+import rocks.inspectit.gepard.agentmanager.connection.validation.RegexQueryService;
 
 /** Service-Implementation for handling agent connection requests. */
 @Slf4j
@@ -94,10 +94,6 @@ public class ConnectionService {
       Agent agent = connection.getAgent();
 
       matches &= matchesAgent(agent, queryAgent);
-
-      if (queryAgent.attributes() != null && !queryAgent.attributes().isEmpty()) {
-        matches &= matchesAttributes(agent.getAttributes(), queryAgent.attributes());
-      }
     }
 
     return matches;

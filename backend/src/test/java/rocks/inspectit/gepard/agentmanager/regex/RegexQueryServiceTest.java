@@ -7,6 +7,7 @@ import java.time.Instant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import rocks.inspectit.gepard.agentmanager.connection.validation.RegexQueryService;
 
 class RegexQueryServiceTest {
 
