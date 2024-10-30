@@ -3,6 +3,7 @@ import { useState } from "react";
 import { BsArrowLeftShort } from "react-icons/bs";
 import { cn } from "@/lib/utils";
 import SideNavigation from "./SideNavigation";
+import { useSidebarStore } from "@/stores/useSidebarStore";
 // import { useSidebarStore } from "./useSidebarStore";
 interface SidebarProps {
   className?: string;
@@ -15,13 +16,12 @@ You can toggle the sidebar with the arrow icon.
 The big version with a width of 52rem is default. Toggling the sidebar will change the width to 78px and only show the Icon.
 */
 export default function Sidebar({ className }: SidebarProps) {
-  // const { isOpen, toggle } = useSidebarStore();
-  const isOpen = true;
+  const { isOpen, toggle } = useSidebarStore();
   const [status, setStatus] = useState(false);
 
   const handleToggle = () => {
     setStatus(true);
-    // toggle();
+    toggle();
     setTimeout(() => setStatus(false), 500);
   };
 
