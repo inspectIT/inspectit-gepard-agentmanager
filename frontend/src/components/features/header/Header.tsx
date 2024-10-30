@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
 import { Boxes } from "lucide-react";
 import { Link } from "react-router-dom";
+import MobileSidebar from "../sidebar/MobileSidebar";
 
 export default function Header() {
   return (
@@ -13,7 +14,9 @@ export default function Header() {
           <Boxes className="h-6 w-6" />
           <h1 className="text-lg font-semibold">Gepard Configuration Server</h1>
         </Link>
-        <div className={cn("block md:!hidden")}>{/* <MobileSidebar /> */}</div>
+        <div className={cn("block md:!hidden")}>
+          <MobileSidebar />
+        </div>
 
         <div className="flex items-center gap-2">{/* <ThemeToggle /> */}</div>
       </nav>
