@@ -4,7 +4,6 @@ import { BsArrowLeftShort } from "react-icons/bs";
 import { cn } from "@/lib/utils";
 import SideNavigation from "./SideNavigation";
 import { useSidebarStore } from "@/stores/useSidebarStore";
-// import { useSidebarStore } from "./useSidebarStore";
 interface SidebarProps {
   className?: string;
 }
@@ -22,7 +21,9 @@ export default function Sidebar({ className }: SidebarProps) {
   const handleToggle = () => {
     setStatus(true);
     toggle();
-    setTimeout(() => setStatus(false), 500);
+    setTimeout(() => {
+      setStatus(false);
+    }, 500);
   };
 
   return (
