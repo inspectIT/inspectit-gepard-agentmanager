@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const ConnectionSchema = z.object({
   id: z.string().uuid(),
-  registrationTime: z.string().datetime(),
+  registrationTime: z.string(),
   serviceName: z.string(),
   gepardVersion: z.string(),
   otelVersion: z.string(),
