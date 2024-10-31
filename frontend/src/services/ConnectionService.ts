@@ -1,14 +1,14 @@
-import { Connection, ConnectionSchema } from "../types/Connection";
-import { http } from "./kySetup";
 import { z } from "zod";
+import { kyInstance } from "./ky.setup";
+import { ConnectionSchema } from "@/types/Connection";
 
 const ROUTES = {
-  FIND_ALL: "/connections",
+  FIND_ALL: "connections",
 };
 
 export const ConnectionService = {
-  async getAllConnections() {
-    const data = await http.get<Connection[]>(ROUTES.FIND_ALL).json();
+  findAll: async () => {
+    const data = await kyInstance.get(ROUTES.FIND_ALL).json();
     return z.array(ConnectionSchema).parse(data);
   },
 };

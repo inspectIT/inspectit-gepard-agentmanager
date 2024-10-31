@@ -2,7 +2,7 @@ import ky from "ky";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL as string;
 
-export const http = ky.extend({
+export const kyInstance = ky.extend({
   prefixUrl: API_URL,
   hooks: {
     beforeRequest: [
