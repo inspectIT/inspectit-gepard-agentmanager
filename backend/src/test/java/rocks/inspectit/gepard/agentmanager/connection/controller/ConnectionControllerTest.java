@@ -110,7 +110,7 @@ class ConnectionControllerTest {
             UUID.randomUUID().toString(),
             LocalDateTime.now().toString(),
             new QueryConnectionRequest.QueryAgentRequest(
-                "service-name", 12345L, "0.0.1", "1.26.8", 67887L, "22", Map.of("key", "value")));
+                "service-name", "12345", "0.0.1", "1.26.8", "67887", "22", Map.of("key", "value")));
 
     List<ConnectionDto> connectionDtos =
         List.of(
@@ -159,16 +159,16 @@ class ConnectionControllerTest {
   void queryConnections_whenRegexInParameters_shouldReturnOk() throws Exception {
     QueryConnectionRequest queryRequest =
         new QueryConnectionRequest(
-            "^123e4567-e89b-12d3-a456-[0-9a-f]+$",
+            "regex:^123e4567-e89b-12d3-a456-[0-9a-f]+$",
             "^2023-04-[0-9]+T[0-9:]+Z$",
             new QueryConnectionRequest.QueryAgentRequest(
-                "^service-.*",
-                12345L,
+                "regex:^service-.*",
+                "12345L",
                 "0\\.0\\.1",
                 "1\\.26\\.8",
-                67887L,
+                "67887L",
                 "22",
-                Map.of("key", "^value.*")));
+                Map.of("key", "regex:^value.*")));
 
     List<ConnectionDto> connectionDtos =
         List.of(
@@ -193,5 +193,22 @@ class ConnectionControllerTest {
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(content().json(objectMapper.writeValueAsString(connectionDtos)));
+  }
+
+  @Test
+  void queryConnections_whenRegexInParametersIsInvalid_shouldReturnBadRequest() throws Exception {
+    QueryConnectionRequest queryRequest =
+        new QueryConnectionRequest(
+            null,
+            null,
+            new QueryConnectionRequest.QueryAgentRequest(
+                "regex:*service-.*", null, null, null, null, null, null));
+
+    mockMvc
+        .perform(
+            post("/api/v1/connections/query")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(queryRequest)))
+        .andExpect(status().isBadRequest());
   }
 }

@@ -16,11 +16,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import rocks.inspectit.gepard.agentmanager.agent.model.Agent;
 import rocks.inspectit.gepard.agentmanager.connection.model.Connection;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.ConnectionDto;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.CreateConnectionRequest;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.QueryConnectionRequest;
+import rocks.inspectit.gepard.agentmanager.connection.validation.RegexQueryService;
 
 @ExtendWith(MockitoExtension.class)
 class ConnectionServiceTest {
@@ -28,10 +30,13 @@ class ConnectionServiceTest {
   @InjectMocks private ConnectionService connectionService;
   private ConcurrentHashMap<UUID, Connection> connectionCache;
 
+  @MockBean private RegexQueryService regexQueryService;
+
   @BeforeEach
   public void setUp() {
     connectionCache = new ConcurrentHashMap<>();
-    connectionService = new ConnectionService(connectionCache);
+    regexQueryService = new RegexQueryService();
+    connectionService = new ConnectionService(connectionCache, regexQueryService);
   }
 
   @Test
@@ -237,7 +242,7 @@ class ConnectionServiceTest {
             id.toString(),
             registrationTime.toString(),
             new QueryConnectionRequest.QueryAgentRequest(
-                "testService", 1234L, "1.0", "1.0", null, "17", attributes));
+                "testService", "1234", "1.0", "1.0", null, "17", attributes));
 
     // when
     List<ConnectionDto> result = connectionService.queryConnections(query);
@@ -282,7 +287,7 @@ class ConnectionServiceTest {
     connectionCache.put(id2, connection2);
 
     QueryConnectionRequest query =
-        new QueryConnectionRequest("^123e4567-e89b-12d3-a456-[0-9a-f]+$", null, null);
+        new QueryConnectionRequest("regex:^123e4567-e89b-12d3-a456-[0-9a-f]+$", null, null);
 
     // when
     List<ConnectionDto> result = connectionService.queryConnections(query);
@@ -303,7 +308,7 @@ class ConnectionServiceTest {
     connectionCache.put(connection2.getId(), connection2);
 
     QueryConnectionRequest query =
-        new QueryConnectionRequest(null, "^2023-04-[0-9]+T[0-9:]+$", null);
+        new QueryConnectionRequest(null, "regex:^2023-04-[0-9]+T[0-9:]+$", null);
 
     // when
     List<ConnectionDto> result = connectionService.queryConnections(query);
@@ -330,7 +335,7 @@ class ConnectionServiceTest {
             null,
             null,
             new QueryConnectionRequest.QueryAgentRequest(
-                "^service-.*", null, null, null, null, null, null));
+                "regex:^service-.*", null, null, null, null, null, null));
 
     // when
     List<ConnectionDto> result = connectionService.queryConnections(query);
@@ -340,6 +345,39 @@ class ConnectionServiceTest {
     assertThat(result)
         .extracting(ConnectionDto::serviceName)
         .containsExactlyInAnyOrder("service-a", "service-b");
+  }
+
+  @Test
+  void testQueryShouldFindConnectionByRegexAgentStartTime() {
+    // given
+    UUID id = UUID.randomUUID();
+    Connection connection = createTestConnection(id);
+
+    Instant nearStartTime = Instant.now();
+
+    connectionCache.put(id, connection);
+
+    // Create regex pattern that matches ISO-8601 format for the current time
+    // Format: 2024-10-29T10:15:30.123Z
+    String timeRegex = "regex:" + nearStartTime.toString().substring(0, 16) + ".*Z";
+
+    QueryConnectionRequest query =
+        new QueryConnectionRequest(
+            null,
+            null,
+            new QueryConnectionRequest.QueryAgentRequest(
+                null, null, null, null, timeRegex, null, null));
+
+    // when
+    List<ConnectionDto> result = connectionService.queryConnections(query);
+
+    // then
+    assertThat(result).hasSize(1);
+
+    // Assert that start time of result is within 1 second of nearStartTime
+    Instant resultStartTime = Instant.ofEpochMilli(result.get(0).startTime());
+    assertThat(resultStartTime)
+        .isBetween(nearStartTime.minusSeconds(1), nearStartTime.plusSeconds(1));
   }
 
   @Test
@@ -359,7 +397,7 @@ class ConnectionServiceTest {
             null,
             null,
             new QueryConnectionRequest.QueryAgentRequest(
-                null, null, null, null, null, null, Map.of("key1", "^value-.*")));
+                null, null, null, null, null, null, Map.of("key1", "regex:^value-.*")));
 
     // when
     List<ConnectionDto> result = connectionService.queryConnections(query);
