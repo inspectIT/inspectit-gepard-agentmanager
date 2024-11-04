@@ -15,8 +15,7 @@ export default function Connections() {
   }
 
   if (connectionsQuery.isError) {
-    console.log(connectionsQuery.error);
-    throw new Error("We were not able to fetch connections.");
+    throw new Error(connectionsQuery.error.message);
   }
 
   if (connectionsQuery.isSuccess) {
