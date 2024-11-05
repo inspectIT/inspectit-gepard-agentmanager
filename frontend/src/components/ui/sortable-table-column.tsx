@@ -19,7 +19,9 @@ export default function SortableTableColumn<T>({
     <Button
       variant="ghost"
       // when the button is clicked, the sorting direction is toggled
-      onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      onClick={() => {
+        column.toggleSorting(column.getIsSorted() === "asc");
+      }}
     >
       {title}
       <ArrowUpDown className="ml-2 h-4 w-4" />

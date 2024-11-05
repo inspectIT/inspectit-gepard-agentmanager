@@ -28,8 +28,10 @@ export default function ConnectionsView({
         <CardContent>
           <div className="pb-6">
             <DebouncedInput
-              value={globalFilter ?? ""}
-              onChange={(value) => setGlobalFilter(String(value))}
+              value={globalFilter && ""}
+              onChange={(value) => {
+                setGlobalFilter(String(value));
+              }}
               className="p-2 font-lg shadow border border-block"
               placeholder="Search all columns..."
             />

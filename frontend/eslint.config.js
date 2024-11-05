@@ -10,7 +10,7 @@ export default tseslint.config(
   {
     settings: {
       react: {
-        version: '18.3'
+        version: '18.3',
       }
     },
     extends: [
@@ -39,6 +39,8 @@ export default tseslint.config(
         'warn',
         { allowConstantExport: true },
       ],
+      'react/prop-types': [2, { ignore: ['className', 'orientation'] }],
+      '@typescript-eslint/no-confusing-void-expression': 'off',
     },
   },
 )

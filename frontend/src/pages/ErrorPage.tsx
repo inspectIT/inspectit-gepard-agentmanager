@@ -2,8 +2,8 @@ import { isRouteErrorResponse, useRouteError } from "react-router-dom";
 
 export default function ErrorPage() {
   const error = useRouteError();
-  console.error(error);
-
+  console.log(error);
+  console.log(isRouteErrorResponse(error));
   return (
     <div id="error-page">
       <h1>Oops!</h1>
@@ -12,7 +12,9 @@ export default function ErrorPage() {
         <i>
           {isRouteErrorResponse(error)
             ? error.statusText
-            : error instanceof Error && error.message}
+            : error instanceof Error
+            ? error.message
+            : "error of unknown type occured"}
         </i>
       </p>
     </div>
