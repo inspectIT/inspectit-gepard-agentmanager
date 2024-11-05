@@ -14,8 +14,11 @@ public class Agent {
   /** The name of the service which is running the agent. */
   @NotNull private String serviceName;
 
-  /** The process id of the JVM which carries the agent. */
-  @NotNull private Long pid;
+  /** The id of the JVM process carries the agent. */
+  @NotNull private String vmId;
+
+  /** The hashed id of the agent. */
+  @NotNull private String agentId;
 
   /** The Gepard-Version. */
   @NotNull private String gepardVersion;

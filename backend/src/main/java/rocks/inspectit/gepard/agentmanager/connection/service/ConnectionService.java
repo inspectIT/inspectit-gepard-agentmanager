@@ -111,7 +111,7 @@ public class ConnectionService {
     boolean matches = true;
 
     matches &= regexQueryService.matches(agent.getServiceName(), query.serviceName());
-    matches &= regexQueryService.matchesLong(agent.getPid(), query.pid());
+    matches &= regexQueryService.matches(agent.getVmId(), query.vmId());
     matches &= regexQueryService.matches(agent.getGepardVersion(), query.gepardVersion());
     matches &= regexQueryService.matches(agent.getOtelVersion(), query.otelVersion());
     matches &= regexQueryService.matchesInstant(agent.getStartTime(), query.startTime());

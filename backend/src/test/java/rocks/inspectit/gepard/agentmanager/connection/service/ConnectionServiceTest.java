@@ -46,7 +46,8 @@ class ConnectionServiceTest {
             "customer-service-e",
             "0.0.1",
             "1.26.8",
-            67887L,
+            "67887@localhost",
+            "7e4686b7998c88427b14700f1c2aa69304a1c2fdb899067efe8ba9542fc02029",
             Instant.now().toEpochMilli(),
             "22",
             Map.of());
@@ -58,7 +59,7 @@ class ConnectionServiceTest {
     assertEquals(createConnectionRequest.javaVersion(), response.getAgent().getJavaVersion());
     assertEquals(createConnectionRequest.otelVersion(), response.getAgent().getOtelVersion());
     assertEquals(createConnectionRequest.gepardVersion(), response.getAgent().getGepardVersion());
-    assertEquals(createConnectionRequest.pid(), response.getAgent().getPid());
+    assertEquals(createConnectionRequest.vmId(), response.getAgent().getVmId());
     assertEquals(createConnectionRequest.serviceName(), response.getAgent().getServiceName());
     assertNotNull(response.getId());
   }
@@ -70,7 +71,8 @@ class ConnectionServiceTest {
             "customer-service-e",
             "0.0.1",
             "1.26.8",
-            67887L,
+            "67887@localhost",
+            "7e4686b7998c88427b14700f1c2aa69304a1c2fdb899067efe8ba9542fc02029",
             Instant.now().toEpochMilli(),
             "22",
             Map.of());
@@ -95,7 +97,8 @@ class ConnectionServiceTest {
             "customer-service-e",
             "0.0.1",
             "1.26.8",
-            67887L,
+            "67887@localhost",
+            "7e4686b7998c88427b14700f1c2aa69304a1c2fdb899067efe8ba9542fc02029",
             Instant.now().toEpochMilli(),
             "22",
             Map.of());
@@ -108,7 +111,7 @@ class ConnectionServiceTest {
     assertEquals(createConnectionRequest.javaVersion(), connectionDto.javaVersion());
     assertEquals(createConnectionRequest.otelVersion(), connectionDto.otelVersion());
     assertEquals(createConnectionRequest.gepardVersion(), connectionDto.gepardVersion());
-    assertEquals(createConnectionRequest.pid(), connectionDto.pid());
+    assertEquals(createConnectionRequest.vmId(), connectionDto.vmId());
     assertEquals(createConnectionRequest.serviceName(), connectionDto.serviceName());
   }
 
@@ -242,7 +245,7 @@ class ConnectionServiceTest {
             id.toString(),
             registrationTime.toString(),
             new QueryConnectionRequest.QueryAgentRequest(
-                "testService", "1234", "1.0", "1.0", null, "17", attributes));
+                "testService", "1234@localhost", "1.0", "1.0", null, "17", attributes));
 
     // when
     List<ConnectionDto> result = connectionService.queryConnections(query);
@@ -425,7 +428,8 @@ class ConnectionServiceTest {
     return new Connection(
         id,
         registrationTime,
-        new Agent(serviceName, 1234L, "1.0", "1.0", Instant.now(), "17", Map.of()));
+        new Agent(
+            serviceName, "1234@localhost", "12345", "1.0", "1.0", Instant.now(), "17", Map.of()));
   }
 
   private Connection createTestConnectionWithAttributes(UUID id, Map<String, String> attributes) {
@@ -437,6 +441,14 @@ class ConnectionServiceTest {
     return new Connection(
         id,
         registrationTime,
-        new Agent("testService", 1234L, "1.0", "1.0", Instant.now(), "17", attributes));
+        new Agent(
+            "testService",
+            "1234@localhost",
+            "12345",
+            "1.0",
+            "1.0",
+            Instant.now(),
+            "17",
+            attributes));
   }
 }

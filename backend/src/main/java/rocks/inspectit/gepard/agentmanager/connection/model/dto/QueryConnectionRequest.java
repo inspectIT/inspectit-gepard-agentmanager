@@ -17,8 +17,7 @@ public record QueryConnectionRequest(
 
   public record QueryAgentRequest(
       @ValidRegexPattern(message = "Invalid service name pattern") String serviceName,
-      @ValidRegexPattern(message = "Invalid process ID pattern")
-          String pid, // pid just has to be a number
+      @ValidRegexPattern(message = "Invalid VM-ID pattern") String vmId,
       @ValidRegexPattern(message = "Invalid Gepard version pattern") String gepardVersion,
       @ValidRegexPattern(message = "Invalid OpenTelemetry version pattern") String otelVersion,
       @ValidRegexPattern(message = "Invalid start time pattern")

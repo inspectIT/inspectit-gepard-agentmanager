@@ -13,8 +13,9 @@ import rocks.inspectit.gepard.agentmanager.connection.model.Connection;
 public record CreateConnectionRequest(
     @NotNull(message = "Service Name missing.") String serviceName,
     @NotNull(message = "Gepard Version missing.") String gepardVersion,
-    @NotNull(message = "Open-Telemetry Version missing.") String otelVersion,
-    @NotNull(message = "Process ID is missing.") Long pid,
+    @NotNull(message = "OpenTelemetry Version missing.") String otelVersion,
+    @NotNull(message = "VM-ID is missing.") String vmId,
+    @NotNull(message = "Agent-ID is missing") String agentId,
     @NotNull(message = "Start-Time missing.") Long startTime,
     @NotNull(message = "Java Version missing.") String javaVersion,
     Map<String, String> attributes) {
@@ -25,7 +26,8 @@ public record CreateConnectionRequest(
         LocalDateTime.now(),
         new Agent(
             createConnectionRequest.serviceName,
-            createConnectionRequest.pid,
+            createConnectionRequest.vmId,
+            createConnectionRequest.agentId,
             createConnectionRequest.gepardVersion,
             createConnectionRequest.otelVersion,
             Instant.ofEpochMilli(createConnectionRequest.startTime),

@@ -13,8 +13,9 @@ public record ConnectionDto(
     @NotNull(message = "Registration Time missing.") LocalDateTime registrationTime,
     @NotNull(message = "Service Name missing.") String serviceName,
     @NotNull(message = "Gepard Version missing.") String gepardVersion,
-    @NotNull(message = "Open-Telemetry Version missing.") String otelVersion,
-    @NotNull(message = "Process ID is missing.") Long pid,
+    @NotNull(message = "OpenTelemetry Version missing.") String otelVersion,
+    @NotNull(message = "VM-ID is missing.") String vmId,
+    @NotNull(message = "Agent-ID is missing") String agentId,
     @NotNull(message = "Start-Time missing.") Long startTime,
     @NotNull(message = "Java Version missing.") String javaVersion,
     @NotNull(message = "Attributes are missing.") Map<String, String> attributes) {
@@ -26,7 +27,8 @@ public record ConnectionDto(
         connection.getAgent().getServiceName(),
         connection.getAgent().getGepardVersion(),
         connection.getAgent().getOtelVersion(),
-        connection.getAgent().getPid(),
+        connection.getAgent().getVmId(),
+        connection.getAgent().getAgentId(),
         connection.getAgent().getStartTime().toEpochMilli(),
         connection.getAgent().getJavaVersion(),
         connection.getAgent().getAttributes());
