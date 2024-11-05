@@ -19,6 +19,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import rocks.inspectit.gepard.agentmanager.connection.model.Connection;
+import rocks.inspectit.gepard.agentmanager.connection.model.ConnectionStatus;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.ConnectionDto;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.CreateConnectionRequest;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.QueryConnectionRequest;
@@ -96,6 +97,7 @@ class ConnectionControllerTest {
         new ConnectionDto(
             uuid,
             LocalDateTime.now(),
+            ConnectionStatus.CONNECTED,
             "service name",
             "5",
             "7",
@@ -127,6 +129,7 @@ class ConnectionControllerTest {
             new ConnectionDto(
                 UUID.randomUUID(),
                 LocalDateTime.now(),
+                ConnectionStatus.CONNECTED,
                 "service-name",
                 "0.0.1",
                 "1.26.8",
@@ -186,6 +189,7 @@ class ConnectionControllerTest {
             new ConnectionDto(
                 UUID.fromString("123e4567-e89b-12d3-a456-426614174000"),
                 LocalDateTime.parse("2023-04-15T12:34:56"),
+                ConnectionStatus.CONNECTED,
                 "service-name",
                 "0.0.1",
                 "1.26.8",

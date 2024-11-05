@@ -12,6 +12,7 @@ import rocks.inspectit.gepard.agentmanager.connection.model.Connection;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.ConnectionDto;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.CreateConnectionRequest;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.QueryConnectionRequest;
+import rocks.inspectit.gepard.agentmanager.connection.model.dto.UpdateConnectionRequest;
 import rocks.inspectit.gepard.agentmanager.connection.validation.RegexQueryService;
 
 /** Service-Implementation for handling agent connection requests. */
@@ -34,6 +35,23 @@ public class ConnectionService {
     Connection connection = CreateConnectionRequest.toConnection(connectRequest);
     connectionCache.put(connection.getId(), connection);
 
+    return connection;
+  }
+
+  /**
+   * Handles an update request from an agent.
+   *
+   * @param updateRequest The request to update an existing connection.
+   * @return Connection The updated connection.
+   */
+  public Connection handleUpdateRequest(UpdateConnectionRequest updateRequest) {
+    String agentId = updateRequest.agentId();
+    // TODO We need to use the agentIds as keys instead of random uuids
+    Connection connection = connectionCache.get(UUID.fromString(agentId));
+    if (connection == null)
+      throw new NoSuchElementException("Connection not found for agent: " + agentId);
+
+    connection.setConnectionStatus(updateRequest.connectionStatus());
     return connection;
   }
 

@@ -6,11 +6,13 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 import rocks.inspectit.gepard.agentmanager.connection.model.Connection;
+import rocks.inspectit.gepard.agentmanager.connection.model.ConnectionStatus;
 
 /** Represents a connection response. */
 public record ConnectionDto(
     @NotNull(message = "ID missing.") UUID id,
     @NotNull(message = "Registration Time missing.") LocalDateTime registrationTime,
+    @NotNull(message = "Connection status is missing") ConnectionStatus connectionStatus,
     @NotNull(message = "Service Name missing.") String serviceName,
     @NotNull(message = "Gepard Version missing.") String gepardVersion,
     @NotNull(message = "OpenTelemetry Version missing.") String otelVersion,
@@ -24,6 +26,7 @@ public record ConnectionDto(
     return new ConnectionDto(
         connection.getId(),
         connection.getRegistrationTime(),
+        connection.getConnectionStatus(),
         connection.getAgent().getServiceName(),
         connection.getAgent().getGepardVersion(),
         connection.getAgent().getOtelVersion(),

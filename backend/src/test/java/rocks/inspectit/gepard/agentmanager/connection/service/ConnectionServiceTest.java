@@ -19,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import rocks.inspectit.gepard.agentmanager.agent.model.Agent;
 import rocks.inspectit.gepard.agentmanager.connection.model.Connection;
+import rocks.inspectit.gepard.agentmanager.connection.model.ConnectionStatus;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.ConnectionDto;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.CreateConnectionRequest;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.QueryConnectionRequest;
@@ -428,6 +429,7 @@ class ConnectionServiceTest {
     return new Connection(
         id,
         registrationTime,
+        ConnectionStatus.CONNECTED,
         new Agent(
             serviceName, "1234@localhost", "12345", "1.0", "1.0", Instant.now(), "17", Map.of()));
   }
@@ -441,6 +443,7 @@ class ConnectionServiceTest {
     return new Connection(
         id,
         registrationTime,
+        ConnectionStatus.CONNECTED,
         new Agent(
             "testService",
             "1234@localhost",

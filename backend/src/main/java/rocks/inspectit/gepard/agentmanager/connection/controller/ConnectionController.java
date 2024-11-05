@@ -18,6 +18,7 @@ import rocks.inspectit.gepard.agentmanager.connection.model.Connection;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.ConnectionDto;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.CreateConnectionRequest;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.QueryConnectionRequest;
+import rocks.inspectit.gepard.agentmanager.connection.model.dto.UpdateConnectionRequest;
 import rocks.inspectit.gepard.agentmanager.connection.service.ConnectionService;
 import rocks.inspectit.gepard.agentmanager.exception.ApiError;
 
@@ -42,6 +43,14 @@ public class ConnectionController {
                 .buildAndExpand(connection.getId())
                 .toUri())
         .build();
+  }
+
+  @PutMapping
+  @Operation(summary = "Update the agent connection.")
+  public ResponseEntity<Connection> update(
+      @Valid @RequestBody UpdateConnectionRequest updateRequest) {
+    Connection connection = connectionService.handleUpdateRequest(updateRequest);
+    return ResponseEntity.ok(connection);
   }
 
   @GetMapping

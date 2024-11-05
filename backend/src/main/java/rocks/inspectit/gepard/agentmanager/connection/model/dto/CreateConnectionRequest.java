@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.UUID;
 import rocks.inspectit.gepard.agentmanager.agent.model.Agent;
 import rocks.inspectit.gepard.agentmanager.connection.model.Connection;
+import rocks.inspectit.gepard.agentmanager.connection.model.ConnectionStatus;
 
 /** Represents a connection request from an agent. */
 public record CreateConnectionRequest(
@@ -24,6 +25,7 @@ public record CreateConnectionRequest(
     return new Connection(
         UUID.randomUUID(),
         LocalDateTime.now(),
+        ConnectionStatus.CONNECTED,
         new Agent(
             createConnectionRequest.serviceName,
             createConnectionRequest.vmId,

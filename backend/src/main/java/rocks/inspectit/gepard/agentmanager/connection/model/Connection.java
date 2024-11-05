@@ -20,8 +20,11 @@ public class Connection {
   /** The id of the connection. */
   private UUID id;
 
-  /** The registration time * */
+  /** The registration time. * */
   private LocalDateTime registrationTime;
+
+  /** The status of the connection. */
+  private ConnectionStatus connectionStatus;
 
   /** The agent which is connected. */
   private Agent agent;
