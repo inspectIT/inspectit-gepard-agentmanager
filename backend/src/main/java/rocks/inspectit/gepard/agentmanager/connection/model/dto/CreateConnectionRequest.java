@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Map;
-import java.util.UUID;
 import rocks.inspectit.gepard.agentmanager.agent.model.Agent;
 import rocks.inspectit.gepard.agentmanager.connection.model.Connection;
 import rocks.inspectit.gepard.agentmanager.connection.model.ConnectionStatus;
@@ -23,7 +22,6 @@ public record CreateConnectionRequest(
 
   public static Connection toConnection(CreateConnectionRequest createConnectionRequest) {
     return new Connection(
-        UUID.randomUUID(),
         LocalDateTime.now(),
         ConnectionStatus.CONNECTED,
         new Agent(

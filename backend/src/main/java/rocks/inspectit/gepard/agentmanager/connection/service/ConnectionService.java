@@ -21,7 +21,7 @@ import rocks.inspectit.gepard.agentmanager.connection.validation.RegexQueryServi
 @RequiredArgsConstructor
 public class ConnectionService {
 
-  private final ConcurrentHashMap<UUID, Connection> connectionCache;
+  private final ConcurrentHashMap<String, Connection> connectionCache;
 
   private final RegexQueryService regexQueryService;
 
@@ -33,7 +33,8 @@ public class ConnectionService {
    */
   public Connection handleConnectRequest(CreateConnectionRequest connectRequest) {
     Connection connection = CreateConnectionRequest.toConnection(connectRequest);
-    connectionCache.put(connection.getId(), connection);
+    String connectionId = connection.getAgent().getAgentId();
+    connectionCache.put(connectionId, connection);
 
     return connection;
   }
@@ -43,13 +44,13 @@ public class ConnectionService {
    *
    * @param updateRequest The request to update an existing connection.
    * @return Connection The updated connection.
+   * @throws NoSuchElementException if no connection with the given id is found in the cache.
    */
   public Connection handleUpdateRequest(UpdateConnectionRequest updateRequest) {
-    String agentId = updateRequest.agentId();
-    // TODO We need to use the agentIds as keys instead of random uuids
-    Connection connection = connectionCache.get(UUID.fromString(agentId));
+    String connectionId = updateRequest.agentId();
+    Connection connection = connectionCache.get(connectionId);
     if (connection == null)
-      throw new NoSuchElementException("Connection not found for agent: " + agentId);
+      throw new NoSuchElementException("Connection not found for agent: " + connectionId);
 
     connection.setConnectionStatus(updateRequest.connectionStatus());
     return connection;
@@ -84,11 +85,12 @@ public class ConnectionService {
    * @return ConnectionDto The connection.
    * @throws NoSuchElementException if no connection with the given id is found in the cache.
    */
-  public ConnectionDto getConnection(UUID id) {
-    if (!connectionCache.containsKey(id)) {
+  public ConnectionDto getConnection(String id) {
+    Connection connection = connectionCache.get(id);
+    if (connection == null)
       throw new NoSuchElementException("No connection with id " + id + " found in cache.");
-    }
-    return ConnectionDto.fromConnection(connectionCache.get(id));
+
+    return ConnectionDto.fromConnection(connection);
   }
 
   /**
@@ -101,7 +103,6 @@ public class ConnectionService {
   private boolean matchesConnection(Connection connection, QueryConnectionRequest query) {
     boolean matches = true;
 
-    matches &= regexQueryService.matches(connection.getId().toString(), query.id());
     matches &=
         regexQueryService.matches(
             connection.getRegistrationTime().toString(), query.registrationTime());

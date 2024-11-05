@@ -11,7 +11,6 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -79,7 +78,9 @@ class ConnectionControllerTest {
         .andExpect(header().exists("Location"))
         .andExpect(
             header()
-                .string("Location", "http://localhost/api/v1/connections/" + connection.getId()));
+                .string(
+                    "Location",
+                    "http://localhost/api/v1/connections/" + connection.getAgent().getAgentId()));
   }
 
   @Test
@@ -92,24 +93,23 @@ class ConnectionControllerTest {
 
   @Test
   void get_connection_whenEverythingIsValid_shouldReturnOk() throws Exception {
-    UUID uuid = UUID.randomUUID();
+    String agentId = "12345";
     ConnectionDto connectionDto =
         new ConnectionDto(
-            uuid,
             LocalDateTime.now(),
             ConnectionStatus.CONNECTED,
             "service name",
             "5",
             "7",
             "42@localhost",
-            "12345",
+            agentId,
             123456789L,
             "22",
             Map.of());
-    when(connectionService.getConnection(uuid)).thenReturn(connectionDto);
+    when(connectionService.getConnection(agentId)).thenReturn(connectionDto);
 
     mockMvc
-        .perform(get("/api/v1/connections/{id}", uuid))
+        .perform(get("/api/v1/connections/{id}", agentId))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(content().json(objectMapper.writeValueAsString(connectionDto)));
@@ -119,15 +119,20 @@ class ConnectionControllerTest {
   void queryConnections_whenMultipleParametersAreDefined_shouldReturnOk() throws Exception {
     QueryConnectionRequest queryRequest =
         new QueryConnectionRequest(
-            UUID.randomUUID().toString(),
             LocalDateTime.now().toString(),
             new QueryConnectionRequest.QueryAgentRequest(
-                "service-name", "12345", "0.0.1", "1.26.8", "67887", "22", Map.of("key", "value")));
+                "service-name",
+                "12345",
+                "123456",
+                "0.0.1",
+                "1.26.8",
+                "67887",
+                "22",
+                Map.of("key", "value")));
 
     List<ConnectionDto> connectionDtos =
         List.of(
             new ConnectionDto(
-                UUID.randomUUID(),
                 LocalDateTime.now(),
                 ConnectionStatus.CONNECTED,
                 "service-name",
@@ -173,11 +178,11 @@ class ConnectionControllerTest {
   void queryConnections_whenRegexInParameters_shouldReturnOk() throws Exception {
     QueryConnectionRequest queryRequest =
         new QueryConnectionRequest(
-            "regex:^123e4567-e89b-12d3-a456-[0-9a-f]+$",
             "^2023-04-[0-9]+T[0-9:]+Z$",
             new QueryConnectionRequest.QueryAgentRequest(
                 "regex:^service-.*",
                 "12345L",
+                "7e4686b7998c88427b14700f1c2aa69304a1c2fdb899067efe8ba9542fc02029",
                 "0\\.0\\.1",
                 "1\\.26\\.8",
                 "67887L",
@@ -187,7 +192,6 @@ class ConnectionControllerTest {
     List<ConnectionDto> connectionDtos =
         List.of(
             new ConnectionDto(
-                UUID.fromString("123e4567-e89b-12d3-a456-426614174000"),
                 LocalDateTime.parse("2023-04-15T12:34:56"),
                 ConnectionStatus.CONNECTED,
                 "service-name",
@@ -216,9 +220,8 @@ class ConnectionControllerTest {
     QueryConnectionRequest queryRequest =
         new QueryConnectionRequest(
             null,
-            null,
             new QueryConnectionRequest.QueryAgentRequest(
-                "regex:*service-.*", null, null, null, null, null, null));
+                "regex:*service-.*", null, null, null, null, null, null, null));
 
     mockMvc
         .perform(

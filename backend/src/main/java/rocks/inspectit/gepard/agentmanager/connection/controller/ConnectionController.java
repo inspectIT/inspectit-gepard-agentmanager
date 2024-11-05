@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import java.util.List;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,7 +39,7 @@ public class ConnectionController {
     return ResponseEntity.created(
             ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(connection.getId())
+                .buildAndExpand(connection.getAgent().getAgentId())
                 .toUri())
         .build();
   }
@@ -92,7 +91,7 @@ public class ConnectionController {
 
   @GetMapping("/{id}")
   @Operation(summary = "Get a connection by id.")
-  public ResponseEntity<ConnectionDto> getConnection(@PathVariable UUID id) {
+  public ResponseEntity<ConnectionDto> getConnection(@PathVariable String id) {
     return ResponseEntity.ok(connectionService.getConnection(id));
   }
 }

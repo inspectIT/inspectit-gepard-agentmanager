@@ -29,7 +29,7 @@ import rocks.inspectit.gepard.agentmanager.connection.validation.RegexQueryServi
 class ConnectionServiceTest {
 
   @InjectMocks private ConnectionService connectionService;
-  private ConcurrentHashMap<UUID, Connection> connectionCache;
+  private ConcurrentHashMap<String, Connection> connectionCache;
 
   @MockBean private RegexQueryService regexQueryService;
 
@@ -62,7 +62,7 @@ class ConnectionServiceTest {
     assertEquals(createConnectionRequest.gepardVersion(), response.getAgent().getGepardVersion());
     assertEquals(createConnectionRequest.vmId(), response.getAgent().getVmId());
     assertEquals(createConnectionRequest.serviceName(), response.getAgent().getServiceName());
-    assertNotNull(response.getId());
+    assertEquals(createConnectionRequest.agentId(), response.getAgent().getAgentId());
   }
 
   @Test
@@ -105,14 +105,15 @@ class ConnectionServiceTest {
             Map.of());
     Connection connection = connectionService.handleConnectRequest(createConnectionRequest);
 
-    ConnectionDto connectionDto = connectionService.getConnection(connection.getId());
+    ConnectionDto connectionDto =
+        connectionService.getConnection(connection.getAgent().getAgentId());
 
-    assertEquals(connection.getId(), connectionDto.id());
     assertEquals(createConnectionRequest.startTime(), connectionDto.startTime());
     assertEquals(createConnectionRequest.javaVersion(), connectionDto.javaVersion());
     assertEquals(createConnectionRequest.otelVersion(), connectionDto.otelVersion());
     assertEquals(createConnectionRequest.gepardVersion(), connectionDto.gepardVersion());
     assertEquals(createConnectionRequest.vmId(), connectionDto.vmId());
+    assertEquals(createConnectionRequest.agentId(), connectionDto.agentId());
     assertEquals(createConnectionRequest.serviceName(), connectionDto.serviceName());
   }
 
@@ -412,36 +413,33 @@ class ConnectionServiceTest {
     assertThat(result.get(0).attributes()).containsEntry("key1", "value-123");
   }
 
-  private Connection createTestConnection(UUID id) {
-    return createTestConnection(id, LocalDateTime.now(), "testService");
+  private Connection createTestConnection() {
+    return createTestConnection(LocalDateTime.now(), "testService");
   }
 
-  private Connection createTestConnection(UUID id, LocalDateTime registrationTime) {
-    return createTestConnection(id, registrationTime, "testService");
+  private Connection createTestConnection(LocalDateTime registrationTime) {
+    return createTestConnection(registrationTime, "testService");
   }
 
-  private Connection createTestConnection(UUID id, String serviceName) {
-    return createTestConnection(id, LocalDateTime.now(), serviceName);
+  private Connection createTestConnection(String serviceName) {
+    return createTestConnection(LocalDateTime.now(), serviceName);
   }
 
-  private Connection createTestConnection(
-      UUID id, LocalDateTime registrationTime, String serviceName) {
+  private Connection createTestConnection(LocalDateTime registrationTime, String serviceName) {
     return new Connection(
-        id,
         registrationTime,
         ConnectionStatus.CONNECTED,
         new Agent(
             serviceName, "1234@localhost", "12345", "1.0", "1.0", Instant.now(), "17", Map.of()));
   }
 
-  private Connection createTestConnectionWithAttributes(UUID id, Map<String, String> attributes) {
-    return createTestConnectionWithAttributes(id, LocalDateTime.now(), attributes);
+  private Connection createTestConnectionWithAttributes(Map<String, String> attributes) {
+    return createTestConnectionWithAttributes(LocalDateTime.now(), attributes);
   }
 
   private Connection createTestConnectionWithAttributes(
-      UUID id, LocalDateTime registrationTime, Map<String, String> attributes) {
+      LocalDateTime registrationTime, Map<String, String> attributes) {
     return new Connection(
-        id,
         registrationTime,
         ConnectionStatus.CONNECTED,
         new Agent(
