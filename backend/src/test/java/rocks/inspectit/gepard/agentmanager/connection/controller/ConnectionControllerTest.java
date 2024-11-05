@@ -93,7 +93,7 @@ class ConnectionControllerTest {
     UUID uuid = UUID.randomUUID();
     ConnectionDto connectionDto =
         new ConnectionDto(
-            uuid, LocalDateTime.now(), "service name", "5", "7", 42L, 123456789L, "22", Map.of());
+            uuid, Instant.now(), "service name", "5", "7", 42L, Instant.now(), "22", Map.of());
     when(connectionService.getConnection(uuid)).thenReturn(connectionDto);
 
     mockMvc
@@ -116,12 +116,12 @@ class ConnectionControllerTest {
         List.of(
             new ConnectionDto(
                 UUID.randomUUID(),
-                LocalDateTime.now(),
+                Instant.now(),
                 "service-name",
                 "0.0.1",
                 "1.26.8",
                 67887L,
-                123456789L,
+                Instant.now(),
                 "22",
                 Map.of()));
 
@@ -174,12 +174,12 @@ class ConnectionControllerTest {
         List.of(
             new ConnectionDto(
                 UUID.fromString("123e4567-e89b-12d3-a456-426614174000"),
-                LocalDateTime.parse("2023-04-15T12:34:56"),
+                Instant.parse("2023-04-15T12:34:56Z"),
                 "service-name",
                 "0.0.1",
                 "1.26.8",
                 67887L,
-                123456789L,
+                Instant.now(),
                 "22",
                 Map.of("key", "value-123")));
 

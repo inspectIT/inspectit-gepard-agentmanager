@@ -22,7 +22,7 @@ public record CreateConnectionRequest(
   public static Connection toConnection(CreateConnectionRequest createConnectionRequest) {
     return new Connection(
         UUID.randomUUID(),
-        LocalDateTime.now(),
+        Instant.now(),
         new Agent(
             createConnectionRequest.serviceName,
             createConnectionRequest.pid,
