@@ -182,7 +182,7 @@ class ConnectionControllerTest {
     QueryConnectionRequest queryRequest =
         new QueryConnectionRequest(
             "^2023-04-[0-9]+T[0-9:]+Z$",
-                ConnectionStatus.CONNECTED.name(),
+            ConnectionStatus.CONNECTED.name(),
             new QueryConnectionRequest.QueryAgentRequest(
                 "regex:^service-.*",
                 "12345L",
