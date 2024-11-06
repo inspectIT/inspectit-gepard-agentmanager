@@ -3,7 +3,6 @@ package rocks.inspectit.gepard.agentmanager.connection.model.dto;
 
 import jakarta.validation.constraints.NotNull;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.Map;
 import rocks.inspectit.gepard.agentmanager.agent.model.Agent;
 import rocks.inspectit.gepard.agentmanager.connection.model.Connection;
@@ -22,7 +21,7 @@ public record CreateConnectionRequest(
 
   public static Connection toConnection(CreateConnectionRequest createConnectionRequest) {
     return new Connection(
-        LocalDateTime.now(),
+        Instant.now(),
         ConnectionStatus.CONNECTED,
         new Agent(
             createConnectionRequest.serviceName,

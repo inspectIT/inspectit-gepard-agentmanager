@@ -1,7 +1,7 @@
 /* (C) 2024 */
 package rocks.inspectit.gepard.agentmanager.connection.model;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import lombok.*;
 import rocks.inspectit.gepard.agentmanager.agent.model.Agent;
 
@@ -17,7 +17,7 @@ import rocks.inspectit.gepard.agentmanager.agent.model.Agent;
 public class Connection {
 
   /** The registration time. * */
-  private LocalDateTime registrationTime;
+  private Instant registrationTime;
 
   /** The status of the connection. */
   private ConnectionStatus connectionStatus;

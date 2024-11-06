@@ -96,14 +96,14 @@ class ConnectionControllerTest {
     String agentId = "12345";
     ConnectionDto connectionDto =
         new ConnectionDto(
-            LocalDateTime.now(),
+            Instant.now(),
             ConnectionStatus.CONNECTED,
             "service name",
             "5",
             "7",
             "42@localhost",
             agentId,
-            123456789L,
+            Instant.now(),
             "22",
             Map.of());
     when(connectionService.getConnection(agentId)).thenReturn(connectionDto);
@@ -133,14 +133,14 @@ class ConnectionControllerTest {
     List<ConnectionDto> connectionDtos =
         List.of(
             new ConnectionDto(
-                LocalDateTime.now(),
+                Instant.now(),
                 ConnectionStatus.CONNECTED,
                 "service-name",
                 "0.0.1",
                 "1.26.8",
                 "67887@localhost",
                 "7e4686b7998c88427b14700f1c2aa69304a1c2fdb899067efe8ba9542fc02029",
-                123456789L,
+                Instant.now(),
                 "22",
                 Map.of()));
 
@@ -192,14 +192,14 @@ class ConnectionControllerTest {
     List<ConnectionDto> connectionDtos =
         List.of(
             new ConnectionDto(
-                LocalDateTime.parse("2023-04-15T12:34:56"),
+                Instant.parse("2023-04-15T12:34:56"),
                 ConnectionStatus.CONNECTED,
                 "service-name",
                 "0.0.1",
                 "1.26.8",
                 "67887@localhost",
                 "7e4686b7998c88427b14700f1c2aa69304a1c2fdb899067efe8ba9542fc02029",
-                123456789L,
+                Instant.now(),
                 "22",
                 Map.of("key", "value-123")));
 
