@@ -35,6 +35,7 @@ class ConnectionControllerTest {
 
   @Test
   void connect_whenFieldIsMissing_shouldReturnBadRequest() throws Exception {
+    String id = "7e4686b7998c88427b14700f1c2aa69304a1c2fdb899067efe8ba9542fc02029";
     String requestBody =
         """
                 {
@@ -47,7 +48,7 @@ class ConnectionControllerTest {
 
     mockMvc
         .perform(
-            post("/api/v1/connections")
+            post("/api/v1/connections/{id}", id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody))
         .andExpect(status().isBadRequest());
@@ -55,32 +56,30 @@ class ConnectionControllerTest {
 
   @Test
   void connect_whenEverythingIsValid_shouldReturnOk() throws Exception {
+    String id = "7e4686b7998c88427b14700f1c2aa69304a1c2fdb899067efe8ba9542fc02029";
     CreateConnectionRequest createConnectionRequest =
         new CreateConnectionRequest(
             "customer-service-e",
             "0.0.1",
             "1.26.8",
             "67887@localhost",
-            "7e4686b7998c88427b14700f1c2aa69304a1c2fdb899067efe8ba9542fc02029",
+            id,
             Instant.now().toEpochMilli(),
             "22",
             Map.of());
 
     Connection connection = CreateConnectionRequest.toConnection(createConnectionRequest);
-    when(connectionService.handleConnectRequest(createConnectionRequest)).thenReturn(connection);
+    when(connectionService.handleConnectRequest(id, createConnectionRequest))
+        .thenReturn(connection);
 
     mockMvc
         .perform(
-            post("/api/v1/connections")
+            post("/api/v1/connections/{id}", id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(createConnectionRequest)))
         .andExpect(status().isCreated())
         .andExpect(header().exists("Location"))
-        .andExpect(
-            header()
-                .string(
-                    "Location",
-                    "http://localhost/api/v1/connections/" + connection.getAgent().getAgentId()));
+        .andExpect(header().string("Location", "http://localhost/api/v1/connections/" + id));
   }
 
   @Test
@@ -135,7 +134,7 @@ class ConnectionControllerTest {
 
     mockMvc
         .perform(
-            put("/api/v1/connections/{id}", agentId)
+            patch("/api/v1/connections/{id}", agentId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updateRequest)))
         .andExpect(status().isOk())
@@ -155,7 +154,7 @@ class ConnectionControllerTest {
 
     mockMvc
         .perform(
-            put("/api/v1/connections/{id}", agentId)
+            patch("/api/v1/connections/{id}", agentId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(updateRequest))
         .andExpect(status().isBadRequest());

@@ -32,19 +32,16 @@ public class ConnectionController {
 
   private final ConnectionService connectionService;
 
-  @PostMapping
+  @PostMapping("/{id}")
   @Operation(summary = "Connect an agent to the agent manager.")
-  public ResponseEntity<Void> connect(@Valid @RequestBody CreateConnectionRequest connectRequest) {
-    Connection connection = connectionService.handleConnectRequest(connectRequest);
-    return ResponseEntity.created(
-            ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(connection.getAgent().getAgentId())
-                .toUri())
+  public ResponseEntity<Void> connect(
+      @PathVariable String id, @Valid @RequestBody CreateConnectionRequest connectRequest) {
+    Connection connection = connectionService.handleConnectRequest(id, connectRequest);
+    return ResponseEntity.created(ServletUriComponentsBuilder.fromCurrentRequest().build().toUri())
         .build();
   }
 
-  @PutMapping("/{id}")
+  @PatchMapping("/{id}")
   @Operation(summary = "Update the agent connection.")
   public ResponseEntity<ConnectionDto> update(
       @PathVariable String id, @Valid @RequestBody UpdateConnectionRequest updateRequest) {

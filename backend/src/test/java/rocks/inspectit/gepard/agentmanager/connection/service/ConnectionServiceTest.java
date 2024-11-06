@@ -59,18 +59,19 @@ class ConnectionServiceTest {
 
     @Test
     void testGetConnections() {
+      String id = "7e4686b7998c88427b14700f1c2aa69304a1c2fdb899067efe8ba9542fc02029";
       CreateConnectionRequest createConnectionRequest =
           new CreateConnectionRequest(
               "customer-service-e",
               "0.0.1",
               "1.26.8",
               "67887@localhost",
-              "7e4686b7998c88427b14700f1c2aa69304a1c2fdb899067efe8ba9542fc02029",
+              id,
               Instant.now().toEpochMilli(),
               "22",
               Map.of());
-      connectionService.handleConnectRequest(createConnectionRequest);
-      connectionService.handleConnectRequest(createConnectionRequest);
+      connectionService.handleConnectRequest(id, createConnectionRequest);
+      connectionService.handleConnectRequest(id, createConnectionRequest);
 
       List<ConnectionDto> response = connectionService.getConnections();
 
@@ -79,17 +80,18 @@ class ConnectionServiceTest {
 
     @Test
     void testGetConnection() {
+      String id = "7e4686b7998c88427b14700f1c2aa69304a1c2fdb899067efe8ba9542fc02029";
       CreateConnectionRequest createConnectionRequest =
           new CreateConnectionRequest(
               "customer-service-e",
               "0.0.1",
               "1.26.8",
               "67887@localhost",
-              "7e4686b7998c88427b14700f1c2aa69304a1c2fdb899067efe8ba9542fc02029",
+              id,
               Instant.now().toEpochMilli(),
               "22",
               Map.of());
-      Connection connection = connectionService.handleConnectRequest(createConnectionRequest);
+      Connection connection = connectionService.handleConnectRequest(id, createConnectionRequest);
 
       ConnectionDto connectionDto =
           connectionService.getConnection(connection.getAgent().getAgentId());
@@ -110,18 +112,19 @@ class ConnectionServiceTest {
 
     @Test
     void testHandleConnectRequest() {
+      String id = "7e4686b7998c88427b14700f1c2aa69304a1c2fdb899067efe8ba9542fc02029";
       CreateConnectionRequest createConnectionRequest =
           new CreateConnectionRequest(
               "customer-service-e",
               "0.0.1",
               "1.26.8",
               "67887@localhost",
-              "7e4686b7998c88427b14700f1c2aa69304a1c2fdb899067efe8ba9542fc02029",
+              id,
               Instant.now().toEpochMilli(),
               "22",
               Map.of());
 
-      Connection response = connectionService.handleConnectRequest(createConnectionRequest);
+      Connection response = connectionService.handleConnectRequest(id, createConnectionRequest);
 
       assertEquals(
           createConnectionRequest.startTime(), response.getAgent().getStartTime().toEpochMilli());
@@ -139,7 +142,7 @@ class ConnectionServiceTest {
 
     @Test
     void testHandleUpdateRequest() {
-      String id = "12345";
+      String id = "7e4686b7998c88427b14700f1c2aa69304a1c2fdb899067efe8ba9542fc02029";
       Connection connection = createTestConnection(id);
       UpdateConnectionRequest updateConnectionRequest =
           new UpdateConnectionRequest(ConnectionStatus.DISCONNECTED);
@@ -161,7 +164,7 @@ class ConnectionServiceTest {
 
     @Test
     void testHandleUpdateRequestNoSuchElement() {
-      String id = "12345";
+      String id = "7e4686b7998c88427b14700f1c2aa69304a1c2fdb899067efe8ba9542fc02029";
       UpdateConnectionRequest updateConnectionRequest =
           new UpdateConnectionRequest(ConnectionStatus.DISCONNECTED);
 

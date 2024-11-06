@@ -28,12 +28,13 @@ public class ConnectionService {
   /**
    * Handles a connection request from an agent.
    *
+   * @param connectionId The id for the created connection.
    * @param connectRequest The request for the new connection to be created.
    * @return Connection The response containing all saved information.
    */
-  public Connection handleConnectRequest(CreateConnectionRequest connectRequest) {
+  public Connection handleConnectRequest(
+      String connectionId, CreateConnectionRequest connectRequest) {
     Connection connection = CreateConnectionRequest.toConnection(connectRequest);
-    String connectionId = connection.getAgent().getAgentId();
     connectionCache.put(connectionId, connection);
 
     return connection;
