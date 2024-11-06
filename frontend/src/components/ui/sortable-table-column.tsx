@@ -14,7 +14,7 @@ Shows an arrow icon to indicate the sorting direction.
 export default function SortableTableColumn<T>({
   column,
   title,
-}: SortableTableColumnProps<T>) {
+}: Readonly<SortableTableColumnProps<T>>) {
   return (
     <Button
       variant="ghost"

@@ -30,14 +30,12 @@ export default function DebouncedInput({
   }, [value, debounce, onChange]);
 
   return (
-    <>
-      <Input
-        {...props}
-        value={value}
-        onChange={(e) => {
-          setValue(e.target.value);
-        }}
-      />
-    </>
+    <Input
+      {...props}
+      value={value}
+      onChange={(e) => {
+        setValue(e.target.value);
+      }}
+    />
   );
 }

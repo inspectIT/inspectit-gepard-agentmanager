@@ -14,7 +14,7 @@ As soon the viewport is smaller than md, the sidebar is hidden and a mobile side
 You can toggle the sidebar with the arrow icon.
 The big version with a width of 52rem is default. Toggling the sidebar will change the width to 78px and only show the Icon.
 */
-export default function Sidebar({ className }: SidebarProps) {
+export default function Sidebar({ className }: Readonly<SidebarProps>) {
   const { isOpen, toggle } = useSidebarStore();
   const [status, setStatus] = useState(false);
 
@@ -28,7 +28,6 @@ export default function Sidebar({ className }: SidebarProps) {
 
   return (
     <nav
-      role="sidebar"
       className={cn(
         `relative hidden h-screen border-r pt-20 md:block`,
         status && "duration-500",

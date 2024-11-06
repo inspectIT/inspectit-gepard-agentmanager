@@ -6,11 +6,9 @@ export default function Connections() {
 
   if (connectionsQuery.isLoading) {
     return (
-      <>
-        <div className="flex flex-col items-center justify-between h-full">
-          <h1>Loading...</h1>
-        </div>
-      </>
+      <div className="flex flex-col items-center justify-between h-full">
+        <h1>Loading...</h1>
+      </div>
     );
   }
 
@@ -20,11 +18,9 @@ export default function Connections() {
 
   if (connectionsQuery.isSuccess) {
     return (
-      <>
-        <div className="flex flex-col items-center justify-between h-full">
-          <ConnectionsView connections={connectionsQuery.data} />
-        </div>
-      </>
+      <div className="flex flex-col items-center justify-between h-full">
+        <ConnectionsView connections={connectionsQuery.data} />
+      </div>
     );
   }
 }

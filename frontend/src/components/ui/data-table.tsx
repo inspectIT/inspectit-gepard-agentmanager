@@ -34,7 +34,7 @@ export default function DataTable<TData, TValue>({
   data,
   globalFilter,
   setGlobalFilter,
-}: DataTableProps<TData, TValue>) {
+}: Readonly<DataTableProps<TData, TValue>>) {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,

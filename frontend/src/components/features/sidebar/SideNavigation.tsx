@@ -12,7 +12,10 @@ interface SideNavProps {
 /*
 A SideNav component that displays a list of NavItems.
 */
-export default function SideNavigation({ className, setOpen }: SideNavProps) {
+export default function SideNavigation({
+  className,
+  setOpen,
+}: Readonly<SideNavProps>) {
   const path = useLocation();
   const { isOpen } = useSidebarStore();
 
