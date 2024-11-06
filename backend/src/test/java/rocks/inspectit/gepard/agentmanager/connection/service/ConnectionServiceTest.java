@@ -104,7 +104,7 @@ class ConnectionServiceTest {
     ConnectionDto connectionDto = connectionService.getConnection(connection.getId());
 
     assertEquals(connection.getId(), connectionDto.id());
-    assertEquals(createConnectionRequest.startTime(), connectionDto.startTime());
+    assertEquals(Instant.ofEpochMilli(createConnectionRequest.startTime()), connectionDto.startTime());
     assertEquals(createConnectionRequest.javaVersion(), connectionDto.javaVersion());
     assertEquals(createConnectionRequest.otelVersion(), connectionDto.otelVersion());
     assertEquals(createConnectionRequest.gepardVersion(), connectionDto.gepardVersion());
@@ -147,7 +147,7 @@ class ConnectionServiceTest {
   void testQueryShouldFindConnectionByRegistrationTime() {
     // given
     UUID id = UUID.randomUUID();
-    LocalDateTime registrationTime = LocalDateTime.now();
+    Instant registrationTime = Instant.now();
     Connection connection = createTestConnection(id, registrationTime);
     connectionCache.put(id, connection);
 
@@ -232,7 +232,7 @@ class ConnectionServiceTest {
   void testQueryShouldFindConnectionWithMultipleCriteria() {
     // given
     UUID id = UUID.randomUUID();
-    LocalDateTime registrationTime = LocalDateTime.now();
+    Instant registrationTime = Instant.now();
     Map<String, String> attributes = Map.of("custom", "attribute");
     Connection connection = createTestConnectionWithAttributes(id, registrationTime, attributes);
     connectionCache.put(id, connection);
@@ -300,15 +300,15 @@ class ConnectionServiceTest {
   @Test
   void testQueryShouldFindConnectionsByRegexRegistrationTime() {
     // given
-    LocalDateTime registrationTime1 = LocalDateTime.parse("2023-04-15T12:34:56");
-    LocalDateTime registrationTime2 = LocalDateTime.parse("2023-04-16T12:34:56");
+    Instant registrationTime1 = Instant.parse("2023-04-15T12:34:56Z");
+    Instant registrationTime2 = Instant.parse("2023-04-16T12:34:56Z");
     Connection connection1 = createTestConnection(UUID.randomUUID(), registrationTime1);
     Connection connection2 = createTestConnection(UUID.randomUUID(), registrationTime2);
     connectionCache.put(connection1.getId(), connection1);
     connectionCache.put(connection2.getId(), connection2);
 
     QueryConnectionRequest query =
-        new QueryConnectionRequest(null, "regex:^2023-04-[0-9]+T[0-9:]+$", null);
+        new QueryConnectionRequest(null, "regex:^2023-04-[0-9]+T[0-9:]+Z$", null);
 
     // when
     List<ConnectionDto> result = connectionService.queryConnections(query);
@@ -375,7 +375,7 @@ class ConnectionServiceTest {
     assertThat(result).hasSize(1);
 
     // Assert that start time of result is within 1 second of nearStartTime
-    Instant resultStartTime = Instant.ofEpochMilli(result.get(0).startTime());
+    Instant resultStartTime = result.get(0).startTime();
     assertThat(resultStartTime)
         .isBetween(nearStartTime.minusSeconds(1), nearStartTime.plusSeconds(1));
   }
@@ -409,19 +409,19 @@ class ConnectionServiceTest {
   }
 
   private Connection createTestConnection(UUID id) {
-    return createTestConnection(id, LocalDateTime.now(), "testService");
+    return createTestConnection(id, Instant.now(), "testService");
   }
 
-  private Connection createTestConnection(UUID id, LocalDateTime registrationTime) {
+  private Connection createTestConnection(UUID id, Instant registrationTime) {
     return createTestConnection(id, registrationTime, "testService");
   }
 
   private Connection createTestConnection(UUID id, String serviceName) {
-    return createTestConnection(id, LocalDateTime.now(), serviceName);
+    return createTestConnection(id, Instant.now(), serviceName);
   }
 
   private Connection createTestConnection(
-      UUID id, LocalDateTime registrationTime, String serviceName) {
+      UUID id, Instant registrationTime, String serviceName) {
     return new Connection(
         id,
         registrationTime,
@@ -429,11 +429,11 @@ class ConnectionServiceTest {
   }
 
   private Connection createTestConnectionWithAttributes(UUID id, Map<String, String> attributes) {
-    return createTestConnectionWithAttributes(id, LocalDateTime.now(), attributes);
+    return createTestConnectionWithAttributes(id, Instant.now(), attributes);
   }
 
   private Connection createTestConnectionWithAttributes(
-      UUID id, LocalDateTime registrationTime, Map<String, String> attributes) {
+      UUID id, Instant registrationTime, Map<String, String> attributes) {
     return new Connection(
         id,
         registrationTime,

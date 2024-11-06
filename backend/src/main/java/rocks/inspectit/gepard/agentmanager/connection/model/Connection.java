@@ -1,6 +1,7 @@
 /* (C) 2024 */
 package rocks.inspectit.gepard.agentmanager.connection.model;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.*;
@@ -21,7 +22,7 @@ public class Connection {
   private UUID id;
 
   /** The registration time * */
-  private LocalDateTime registrationTime;
+  private Instant registrationTime;
 
   /** The agent which is connected. */
   private Agent agent;
