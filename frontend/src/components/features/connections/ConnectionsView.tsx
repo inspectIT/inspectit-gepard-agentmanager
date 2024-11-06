@@ -20,6 +20,9 @@ export default function ConnectionsView({
 }: Readonly<ConnectionsViewProps>) {
   const [globalFilter, setGlobalFilter] = useState("");
 
+  const [expanded, setExpanded] = useState<true | Record<string, boolean>>({});
+
+  console.log("ConnectionsView", connections);
   return (
     <Card className="w-full border-0 h-full">
       <CardHeader>
@@ -34,7 +37,7 @@ export default function ConnectionsView({
               setGlobalFilter(String(value));
             }}
             className="p-2 font-lg shadow border border-block"
-            placeholder="Search all columns..."
+            placeholder="Quick Search..."
           />
         </div>
         <DataTable
@@ -42,6 +45,9 @@ export default function ConnectionsView({
           data={connections}
           setGlobalFilter={setGlobalFilter}
           globalFilter={globalFilter}
+          setExpanded={setExpanded}
+          expanded={expanded}
+          getRowCanExpand={() => true}
         />
       </CardContent>
     </Card>

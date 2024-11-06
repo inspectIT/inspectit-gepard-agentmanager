@@ -82,4 +82,23 @@ export const ConnectionsTableColumns: ColumnDef<Connection>[] = [
       );
     },
   },
+  {
+    accessorKey: "attributes",
+    header: ({ column }) => {
+      return <SortableTableColumn column={column} title="Attributes" />;
+    },
+    cell: ({ row }) => {
+      console.log(row.getValue("attributes"));
+      return row.getCanExpand() ? (
+        <button
+          onClick={row.getToggleExpandedHandler()}
+          style={{ cursor: "pointer" }}
+        >
+          {row.getIsExpanded() ? "👇" : "👉"}
+        </button>
+      ) : (
+        ""
+      );
+    },
+  },
 ];
