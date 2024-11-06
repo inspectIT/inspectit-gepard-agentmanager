@@ -40,7 +40,7 @@ public class ConnectionService {
   }
 
   /**
-   * Handles an update request from an agent.
+   * Handles an update request from an agent. Currently, we can only update the connection status.
    *
    * @param updateRequest The request to update an existing connection.
    * @return Connection The updated connection.
