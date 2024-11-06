@@ -302,8 +302,8 @@ class ConnectionServiceTest {
   @Test
   void testQueryShouldFindConnectionsByRegexRegistrationTime() {
     // given
-    Instant registrationTime1 = Instant.parse("2023-04-15T12:34:56");
-    Instant registrationTime2 = Instant.parse("2023-04-16T12:34:56");
+    Instant registrationTime1 = Instant.parse("2023-04-15T12:34:56Z");
+    Instant registrationTime2 = Instant.parse("2023-04-16T12:34:56Z");
     Connection connection1 = createTestConnection("7e4686b", registrationTime1);
     String connectionId1 = connection1.getAgent().getAgentId();
     Connection connection2 = createTestConnection("7e4686c", registrationTime2);

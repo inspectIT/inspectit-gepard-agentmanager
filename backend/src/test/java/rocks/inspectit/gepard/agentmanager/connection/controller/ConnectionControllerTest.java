@@ -192,7 +192,7 @@ class ConnectionControllerTest {
     List<ConnectionDto> connectionDtos =
         List.of(
             new ConnectionDto(
-                Instant.parse("2023-04-15T12:34:56"),
+                Instant.parse("2023-04-15T12:34:56Z"),
                 ConnectionStatus.CONNECTED,
                 "service-name",
                 "0.0.1",
