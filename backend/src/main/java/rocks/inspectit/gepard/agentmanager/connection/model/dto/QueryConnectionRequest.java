@@ -12,6 +12,7 @@ import rocks.inspectit.gepard.agentmanager.connection.validation.ValidRegexPatte
  */
 public record QueryConnectionRequest(
     @ValidRegexPattern(message = "Invalid registration time pattern") String registrationTime,
+    @ValidRegexPattern(message = "Invalid connection status pattern") String connectionStatus,
     @Valid QueryAgentRequest agent) {
 
   public record QueryAgentRequest(

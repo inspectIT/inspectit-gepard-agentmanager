@@ -115,11 +115,14 @@ class ConnectionControllerTest {
         .andExpect(content().json(objectMapper.writeValueAsString(connectionDto)));
   }
 
+  // TODO updateConnection tests
+
   @Test
   void queryConnections_whenMultipleParametersAreDefined_shouldReturnOk() throws Exception {
     QueryConnectionRequest queryRequest =
         new QueryConnectionRequest(
             LocalDateTime.now().toString(),
+            ConnectionStatus.CONNECTED.toString(),
             new QueryConnectionRequest.QueryAgentRequest(
                 "service-name",
                 "12345",
@@ -179,6 +182,7 @@ class ConnectionControllerTest {
     QueryConnectionRequest queryRequest =
         new QueryConnectionRequest(
             "^2023-04-[0-9]+T[0-9:]+Z$",
+                ConnectionStatus.CONNECTED.name(),
             new QueryConnectionRequest.QueryAgentRequest(
                 "regex:^service-.*",
                 "12345L",
@@ -219,6 +223,7 @@ class ConnectionControllerTest {
   void queryConnections_whenRegexInParametersIsInvalid_shouldReturnBadRequest() throws Exception {
     QueryConnectionRequest queryRequest =
         new QueryConnectionRequest(
+            null,
             null,
             new QueryConnectionRequest.QueryAgentRequest(
                 "regex:*service-.*", null, null, null, null, null, null, null));

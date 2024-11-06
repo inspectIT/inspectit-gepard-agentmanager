@@ -107,6 +107,10 @@ public class ConnectionService {
         regexQueryService.matches(
             connection.getRegistrationTime().toString(), query.registrationTime());
 
+    matches &=
+        regexQueryService.matches(
+            connection.getConnectionStatus().toString(), query.connectionStatus());
+
     if (query.agent() != null) {
 
       QueryConnectionRequest.QueryAgentRequest queryAgent = query.agent();
