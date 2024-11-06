@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -104,7 +103,8 @@ class ConnectionServiceTest {
     ConnectionDto connectionDto = connectionService.getConnection(connection.getId());
 
     assertEquals(connection.getId(), connectionDto.id());
-    assertEquals(Instant.ofEpochMilli(createConnectionRequest.startTime()), connectionDto.startTime());
+    assertEquals(
+        Instant.ofEpochMilli(createConnectionRequest.startTime()), connectionDto.startTime());
     assertEquals(createConnectionRequest.javaVersion(), connectionDto.javaVersion());
     assertEquals(createConnectionRequest.otelVersion(), connectionDto.otelVersion());
     assertEquals(createConnectionRequest.gepardVersion(), connectionDto.gepardVersion());
@@ -420,8 +420,7 @@ class ConnectionServiceTest {
     return createTestConnection(id, Instant.now(), serviceName);
   }
 
-  private Connection createTestConnection(
-      UUID id, Instant registrationTime, String serviceName) {
+  private Connection createTestConnection(UUID id, Instant registrationTime, String serviceName) {
     return new Connection(
         id,
         registrationTime,

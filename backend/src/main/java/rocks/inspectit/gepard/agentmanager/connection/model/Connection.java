@@ -2,7 +2,6 @@
 package rocks.inspectit.gepard.agentmanager.connection.model;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.*;
 import rocks.inspectit.gepard.agentmanager.agent.model.Agent;

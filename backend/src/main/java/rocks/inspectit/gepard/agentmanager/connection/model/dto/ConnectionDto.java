@@ -2,9 +2,7 @@
 package rocks.inspectit.gepard.agentmanager.connection.model.dto;
 
 import jakarta.validation.constraints.NotNull;
-
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 import rocks.inspectit.gepard.agentmanager.connection.model.Connection;
