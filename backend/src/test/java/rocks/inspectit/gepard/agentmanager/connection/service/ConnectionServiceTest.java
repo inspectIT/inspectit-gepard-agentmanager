@@ -22,6 +22,7 @@ import rocks.inspectit.gepard.agentmanager.connection.model.ConnectionStatus;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.ConnectionDto;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.CreateConnectionRequest;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.QueryConnectionRequest;
+import rocks.inspectit.gepard.agentmanager.connection.model.dto.UpdateConnectionRequest;
 import rocks.inspectit.gepard.agentmanager.connection.validation.RegexQueryService;
 
 @ExtendWith(MockitoExtension.class)
@@ -135,7 +136,39 @@ class ConnectionServiceTest {
 
   @Nested
   class HandleUpdateRequest {
-    // TODO
+
+    @Test
+    void testHandleUpdateRequest() {
+      String id = "12345";
+      Connection connection = createTestConnection(id);
+      UpdateConnectionRequest updateConnectionRequest =
+          new UpdateConnectionRequest(ConnectionStatus.DISCONNECTED);
+      connectionCache.put(id, connection);
+
+      ConnectionDto response = connectionService.handleUpdateRequest(id, updateConnectionRequest);
+
+      assertEquals(connection.getRegistrationTime(), response.registrationTime());
+      assertEquals(updateConnectionRequest.connectionStatus(), response.connectionStatus());
+      assertEquals(connection.getAgent().getServiceName(), response.serviceName());
+      assertEquals(connection.getAgent().getGepardVersion(), response.gepardVersion());
+      assertEquals(connection.getAgent().getOtelVersion(), response.otelVersion());
+      assertEquals(connection.getAgent().getVmId(), response.vmId());
+      assertEquals(connection.getAgent().getAgentId(), response.agentId());
+      assertEquals(connection.getAgent().getStartTime(), response.startTime());
+      assertEquals(connection.getAgent().getJavaVersion(), response.javaVersion());
+      assertEquals(connection.getAgent().getAttributes(), response.attributes());
+    }
+
+    @Test
+    void testHandleUpdateRequestNoSuchElement() {
+      String id = "12345";
+      UpdateConnectionRequest updateConnectionRequest =
+          new UpdateConnectionRequest(ConnectionStatus.DISCONNECTED);
+
+      assertThrows(
+          NoSuchElementException.class,
+          () -> connectionService.handleUpdateRequest(id, updateConnectionRequest));
+    }
   }
 
   @Nested

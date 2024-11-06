@@ -10,5 +10,4 @@ import rocks.inspectit.gepard.agentmanager.connection.model.ConnectionStatus;
  * @param connectionStatus the updated status
  */
 public record UpdateConnectionRequest(
-    @NotNull(message = "Agent-ID is missing") String agentId,
     @NotNull(message = "Connection status is missing") ConnectionStatus connectionStatus) {}

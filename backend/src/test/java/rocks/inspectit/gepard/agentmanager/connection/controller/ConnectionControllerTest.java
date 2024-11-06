@@ -2,8 +2,7 @@
 package rocks.inspectit.gepard.agentmanager.connection.controller;
 
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,6 +21,7 @@ import rocks.inspectit.gepard.agentmanager.connection.model.ConnectionStatus;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.ConnectionDto;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.CreateConnectionRequest;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.QueryConnectionRequest;
+import rocks.inspectit.gepard.agentmanager.connection.model.dto.UpdateConnectionRequest;
 import rocks.inspectit.gepard.agentmanager.connection.service.ConnectionService;
 
 @WebMvcTest(controllers = ConnectionController.class)
@@ -115,7 +115,51 @@ class ConnectionControllerTest {
         .andExpect(content().json(objectMapper.writeValueAsString(connectionDto)));
   }
 
-  // TODO updateConnection tests
+  @Test
+  void update_connection_whenEverythingIsValid_shouldReturnOk() throws Exception {
+    UpdateConnectionRequest updateRequest = new UpdateConnectionRequest(ConnectionStatus.CONNECTED);
+    String agentId = "12345";
+    ConnectionDto connectionDto =
+        new ConnectionDto(
+            Instant.now(),
+            ConnectionStatus.CONNECTED,
+            "service name",
+            "5",
+            "7",
+            "42@localhost",
+            agentId,
+            Instant.now(),
+            "22",
+            Map.of());
+    when(connectionService.handleUpdateRequest(agentId, updateRequest)).thenReturn(connectionDto);
+
+    mockMvc
+        .perform(
+            put("/api/v1/connections/{id}", agentId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateRequest)))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json(objectMapper.writeValueAsString(connectionDto)));
+  }
+
+  @Test
+  void update_connection_whenFieldIsUnknown_shouldReturnBadRequest() throws Exception {
+    String agentId = "12345";
+    String updateRequest =
+        """
+            {
+            "update": "delete"
+            }
+            """;
+
+    mockMvc
+        .perform(
+            put("/api/v1/connections/{id}", agentId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updateRequest))
+        .andExpect(status().isBadRequest());
+  }
 
   @Test
   void queryConnections_whenMultipleParametersAreDefined_shouldReturnOk() throws Exception {

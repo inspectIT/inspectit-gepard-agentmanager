@@ -42,18 +42,19 @@ public class ConnectionService {
   /**
    * Handles an update request from an agent. Currently, we can only update the connection status.
    *
+   * @param connectionId The id of the connection to be updated.
    * @param updateRequest The request to update an existing connection.
    * @return Connection The updated connection.
    * @throws NoSuchElementException if no connection with the given id is found in the cache.
    */
-  public Connection handleUpdateRequest(UpdateConnectionRequest updateRequest) {
-    String connectionId = updateRequest.agentId();
+  public ConnectionDto handleUpdateRequest(
+      String connectionId, UpdateConnectionRequest updateRequest) {
     Connection connection = connectionCache.get(connectionId);
     if (connection == null)
       throw new NoSuchElementException("Connection not found for agent: " + connectionId);
 
     connection.setConnectionStatus(updateRequest.connectionStatus());
-    return connection;
+    return ConnectionDto.fromConnection(connection);
   }
 
   /**

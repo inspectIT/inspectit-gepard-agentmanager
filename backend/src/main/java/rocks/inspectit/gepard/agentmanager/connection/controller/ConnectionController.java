@@ -44,11 +44,11 @@ public class ConnectionController {
         .build();
   }
 
-  @PutMapping
+  @PutMapping("/{id}")
   @Operation(summary = "Update the agent connection.")
-  public ResponseEntity<Connection> update(
-      @Valid @RequestBody UpdateConnectionRequest updateRequest) {
-    Connection connection = connectionService.handleUpdateRequest(updateRequest);
+  public ResponseEntity<ConnectionDto> update(
+      @PathVariable String id, @Valid @RequestBody UpdateConnectionRequest updateRequest) {
+    ConnectionDto connection = connectionService.handleUpdateRequest(id, updateRequest);
     return ResponseEntity.ok(connection);
   }
 
