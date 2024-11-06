@@ -7,7 +7,7 @@ export const generateMockConnection = (serviceName: string): Connection => ({
   gepardVersion: "1.0.0",
   otelVersion: "1.0.0",
   pid: 12345,
-  startTime: Date.now(),
+  startTime: new Date().toISOString(),
   javaVersion: "17.0.1",
   attributes: {
     environment: "test",

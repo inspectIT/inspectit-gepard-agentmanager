@@ -41,6 +41,6 @@ describe("ErrorPage", () => {
 
     const result = render(<ErrorPage />);
 
-    expect(result.getByText(/error of unknown type occured/i));
+    expect(result.getByText(/error of unknown type/i));
   });
 });

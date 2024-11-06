@@ -75,10 +75,9 @@ export const ConnectionsTableColumns: ColumnDef<Connection>[] = [
       return <SortableTableColumn column={column} title="JVM Start Time" />;
     },
     cell: ({ row }) => {
-      const date = new Date(parseInt(row.getValue("startTime")) * 1000);
       return (
         <div className="px-4 align-middle font-medium">
-          {date.toLocaleString()}
+          {row.getValue("startTime")}
         </div>
       );
     },

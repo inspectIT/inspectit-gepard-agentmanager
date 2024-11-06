@@ -50,4 +50,13 @@ describe("ConnectionsView", () => {
       { timeout: 1000 }
     );
   });
+
+  it("renders JVM Start Time Correctly", () => {
+    const iso8601Regex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$/;
+
+    render(<ConnectionsView connections={mockConnections} />);
+    const elements = screen.getAllByText(iso8601Regex);
+    expect(screen.getByText("JVM Start Time")).toBeInTheDocument();
+    expect(elements).toHaveLength(2);
+  });
 });

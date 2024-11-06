@@ -4,7 +4,7 @@ import { useConnectionsQuery } from "@/hooks/features/connections/useConnections
 import { server } from "../../../vitest.setup";
 import { http, HttpResponse } from "msw";
 
-describe("group", () => {
+describe("useConnections", () => {
   it("should return data, if network call was successful", async () => {
     const { result } = renderHook(() => useConnectionsQuery(), {
       wrapper: createWrapper(),
