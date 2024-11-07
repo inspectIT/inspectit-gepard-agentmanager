@@ -94,6 +94,7 @@ class ConnectionControllerTest {
     String agentId = "12345";
     ConnectionDto connectionDto =
         new ConnectionDto(
+                "id",
             Instant.now(),
             ConnectionStatus.CONNECTED,
             "service name",
@@ -118,6 +119,7 @@ class ConnectionControllerTest {
     String agentId = "12345";
     ConnectionDto connectionDto =
         new ConnectionDto(
+                "id",
             Instant.now(),
             ConnectionStatus.CONNECTED,
             "service name",
@@ -169,6 +171,7 @@ class ConnectionControllerTest {
     List<ConnectionDto> connectionDtos =
         List.of(
             new ConnectionDto(
+                    "id",
                 Instant.now(),
                 ConnectionStatus.CONNECTED,
                 "service-name",
@@ -227,6 +230,7 @@ class ConnectionControllerTest {
     List<ConnectionDto> connectionDtos =
         List.of(
             new ConnectionDto(
+                    "id",
                 Instant.parse("2023-04-15T12:34:56Z"),
                 ConnectionStatus.CONNECTED,
                 "service-name",

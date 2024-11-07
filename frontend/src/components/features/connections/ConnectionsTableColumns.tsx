@@ -3,6 +3,7 @@ import SortableTableColumn from "@/components/ui/sortable-table-column";
 import UnsortableTableColumn from "@/components/ui/unsortable-table-column";
 import { Connection } from "@/types/Connection";
 import { ColumnDef } from "@tanstack/react-table";
+import ConnectionStatusBadge from "./ConnectionStatusBadge";
 
 export const ConnectionsTableColumns: ColumnDef<Connection>[] = [
   {
@@ -12,26 +13,40 @@ export const ConnectionsTableColumns: ColumnDef<Connection>[] = [
     },
     cell: ({ row }) => {
       return (
-        <div className="px-4 align-middle font-medium">
+        <div className="px-2 align-middle font-medium">
           {row.getValue("serviceName")}
         </div>
       );
     },
   },
   {
-    accessorKey: "pid",
+    accessorKey: "connectionStatus",
     header: ({ column }) => {
-      return <SortableTableColumn column={column} title="Process ID" />;
+      return <SortableTableColumn column={column} title="Connection Status" />;
     },
     cell: ({ row }) => {
       return (
-        <div className="px-4 align-middle font-medium">
-          {row.getValue("pid")}
+        <div className="px-2 align-middle font-medium">
+          <ConnectionStatusBadge status={row.getValue("connectionStatus")} />
         </div>
       );
     },
-    enableGlobalFilter: true,
   },
+  // {
+  //   accessorKey: "vmId",
+  //   header: ({ column }) => {
+  //     return <SortableTableColumn column={column} title="VM ID" />;
+  //   },
+  //   cell: ({ row }) => {
+  //     return (
+  //       <div className="px-4 align-middle font-medium">
+  //         {row.getValue("vmId")}
+  //       </div>
+  //     );
+  //   },
+  //   enableGlobalFilter: true,
+
+  // },
   {
     accessorKey: "javaVersion",
     header: ({ column }) => {
@@ -39,7 +54,7 @@ export const ConnectionsTableColumns: ColumnDef<Connection>[] = [
     },
     cell: ({ row }) => {
       return (
-        <div className="px-4 align-middle font-medium">
+        <div className="px-2 align-middle font-medium">
           {row.getValue("javaVersion")}
         </div>
       );
@@ -52,7 +67,7 @@ export const ConnectionsTableColumns: ColumnDef<Connection>[] = [
     },
     cell: ({ row }) => {
       return (
-        <div className="px-4 align-middle font-medium">
+        <div className="px-2 align-middle font-medium">
           {row.getValue("otelVersion")}
         </div>
       );
@@ -65,7 +80,7 @@ export const ConnectionsTableColumns: ColumnDef<Connection>[] = [
     },
     cell: ({ row }) => {
       return (
-        <div className="px-4 align-middle font-medium">
+        <div className="px-2 align-middle font-medium">
           {row.getValue("gepardVersion")}
         </div>
       );
@@ -78,7 +93,7 @@ export const ConnectionsTableColumns: ColumnDef<Connection>[] = [
     },
     cell: ({ row }) => {
       return (
-        <div className="px-4 align-middle font-medium">
+        <div className="px-2 align-middle font-medium">
           {row.getValue("startTime")}
         </div>
       );

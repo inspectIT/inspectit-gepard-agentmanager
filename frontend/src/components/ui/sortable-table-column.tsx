@@ -18,6 +18,7 @@ export default function SortableTableColumn<T>({
   return (
     <Button
       variant="ghost"
+      className="px-2"
       // when the button is clicked, the sorting direction is toggled
       onClick={() => {
         column.toggleSorting(column.getIsSorted() === "asc");

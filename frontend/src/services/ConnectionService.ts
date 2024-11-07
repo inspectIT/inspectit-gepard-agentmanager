@@ -29,12 +29,13 @@ export const ConnectionService = {
       );
 
       return {
-        id: item.id,
+        connectionId: item.connectionId,
         registrationTime: item.registrationTime,
+        connectionStatus: item.connectionStatus,
         serviceName: item.serviceName,
         gepardVersion: item.gepardVersion,
         otelVersion: item.otelVersion,
-        pid: item.pid,
+        vmId: item.vmId,
         startTime: item.startTime,
         javaVersion: item.javaVersion,
         attributes: transformedAttributes,
