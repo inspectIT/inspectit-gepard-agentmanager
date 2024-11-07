@@ -16,7 +16,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import rocks.inspectit.gepard.commons.model.agent.Agent;
 import rocks.inspectit.gepard.agentmanager.connection.model.Connection;
 import rocks.inspectit.gepard.agentmanager.connection.model.ConnectionStatus;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.ConnectionDto;
@@ -24,6 +23,7 @@ import rocks.inspectit.gepard.agentmanager.connection.model.dto.CreateConnection
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.QueryConnectionRequest;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.UpdateConnectionRequest;
 import rocks.inspectit.gepard.agentmanager.connection.validation.RegexQueryService;
+import rocks.inspectit.gepard.commons.model.agent.Agent;
 
 @ExtendWith(MockitoExtension.class)
 class ConnectionServiceTest {
@@ -91,8 +91,7 @@ class ConnectionServiceTest {
               Map.of());
       Connection connection = connectionService.handleConnectRequest(id, createConnectionRequest);
 
-      ConnectionDto connectionDto =
-          connectionService.getConnection(id);
+      ConnectionDto connectionDto = connectionService.getConnection(id);
 
       assertEquals(
           Instant.ofEpochMilli(createConnectionRequest.startTime()), connectionDto.startTime());
@@ -460,11 +459,11 @@ class ConnectionServiceTest {
     return createTestConnectionWithAttributes(Instant.now(), attributes);
   }
 
-  private Connection createTestConnectionWithAttributes(Instant registrationTime, Map<String, String> attributes) {
+  private Connection createTestConnectionWithAttributes(
+      Instant registrationTime, Map<String, String> attributes) {
     return new Connection(
         registrationTime,
         ConnectionStatus.CONNECTED,
-        new Agent(
-            "testService", "1234@localhost", "1.0", "1.0", Instant.now(), "17", attributes));
+        new Agent("testService", "1234@localhost", "1.0", "1.0", Instant.now(), "17", attributes));
   }
 }

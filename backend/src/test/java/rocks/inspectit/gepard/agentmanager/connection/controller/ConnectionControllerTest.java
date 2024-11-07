@@ -164,13 +164,7 @@ class ConnectionControllerTest {
             LocalDateTime.now().toString(),
             ConnectionStatus.CONNECTED.toString(),
             new QueryConnectionRequest.QueryAgentRequest(
-                "service-name",
-                "12345",
-                "0.0.1",
-                "1.26.8",
-                "67887",
-                "22",
-                Map.of("key", "value")));
+                "service-name", "12345", "0.0.1", "1.26.8", "67887", "22", Map.of("key", "value")));
 
     List<ConnectionDto> connectionDtos =
         List.of(

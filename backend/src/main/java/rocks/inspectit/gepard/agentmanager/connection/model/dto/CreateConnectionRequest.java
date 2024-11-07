@@ -4,9 +4,9 @@ package rocks.inspectit.gepard.agentmanager.connection.model.dto;
 import jakarta.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.Map;
-import rocks.inspectit.gepard.commons.model.agent.Agent;
 import rocks.inspectit.gepard.agentmanager.connection.model.Connection;
 import rocks.inspectit.gepard.agentmanager.connection.model.ConnectionStatus;
+import rocks.inspectit.gepard.commons.model.agent.Agent;
 
 /** Represents a connection request from an agent. */
 public record CreateConnectionRequest(
