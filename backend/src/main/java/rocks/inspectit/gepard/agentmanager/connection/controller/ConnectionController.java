@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import java.util.List;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +17,7 @@ import rocks.inspectit.gepard.agentmanager.connection.model.Connection;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.ConnectionDto;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.CreateConnectionRequest;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.QueryConnectionRequest;
+import rocks.inspectit.gepard.agentmanager.connection.model.dto.UpdateConnectionRequest;
 import rocks.inspectit.gepard.agentmanager.connection.service.ConnectionService;
 import rocks.inspectit.gepard.agentmanager.exception.ApiError;
 
@@ -32,16 +32,21 @@ public class ConnectionController {
 
   private final ConnectionService connectionService;
 
-  @PostMapping
+  @PostMapping("/{id}")
   @Operation(summary = "Connect an agent to the agent manager.")
-  public ResponseEntity<Void> connect(@Valid @RequestBody CreateConnectionRequest connectRequest) {
-    Connection connection = connectionService.handleConnectRequest(connectRequest);
-    return ResponseEntity.created(
-            ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(connection.getId())
-                .toUri())
+  public ResponseEntity<Void> connect(
+      @PathVariable String id, @Valid @RequestBody CreateConnectionRequest connectRequest) {
+    Connection connection = connectionService.handleConnectRequest(id, connectRequest);
+    return ResponseEntity.created(ServletUriComponentsBuilder.fromCurrentRequest().build().toUri())
         .build();
+  }
+
+  @PatchMapping("/{id}")
+  @Operation(summary = "Update the agent connection.")
+  public ResponseEntity<ConnectionDto> update(
+      @PathVariable String id, @Valid @RequestBody UpdateConnectionRequest updateRequest) {
+    ConnectionDto connection = connectionService.handleUpdateRequest(id, updateRequest);
+    return ResponseEntity.ok(connection);
   }
 
   @GetMapping
@@ -83,7 +88,7 @@ public class ConnectionController {
 
   @GetMapping("/{id}")
   @Operation(summary = "Get a connection by id.")
-  public ResponseEntity<ConnectionDto> getConnection(@PathVariable UUID id) {
+  public ResponseEntity<ConnectionDto> getConnection(@PathVariable String id) {
     return ResponseEntity.ok(connectionService.getConnection(id));
   }
 }

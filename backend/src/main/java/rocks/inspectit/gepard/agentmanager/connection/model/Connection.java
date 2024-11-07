@@ -2,9 +2,8 @@
 package rocks.inspectit.gepard.agentmanager.connection.model;
 
 import java.time.Instant;
-import java.util.UUID;
 import lombok.*;
-import rocks.inspectit.gepard.agentmanager.agent.model.Agent;
+import rocks.inspectit.gepard.commons.model.agent.Agent;
 
 /**
  * Represents a connected agent. It is an internal data structure and not exposed to the API. Acts
@@ -17,11 +16,11 @@ import rocks.inspectit.gepard.agentmanager.agent.model.Agent;
 @ToString
 public class Connection {
 
-  /** The id of the connection. */
-  private UUID id;
-
-  /** The registration time * */
+  /** The registration time. * */
   private Instant registrationTime;
+
+  /** The status of the connection. */
+  private ConnectionStatus connectionStatus;
 
   /** The agent which is connected. */
   private Agent agent;

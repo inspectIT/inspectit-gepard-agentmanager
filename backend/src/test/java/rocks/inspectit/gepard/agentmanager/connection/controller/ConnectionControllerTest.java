@@ -2,8 +2,7 @@
 package rocks.inspectit.gepard.agentmanager.connection.controller;
 
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,7 +10,6 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -19,9 +17,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import rocks.inspectit.gepard.agentmanager.connection.model.Connection;
+import rocks.inspectit.gepard.agentmanager.connection.model.ConnectionStatus;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.ConnectionDto;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.CreateConnectionRequest;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.QueryConnectionRequest;
+import rocks.inspectit.gepard.agentmanager.connection.model.dto.UpdateConnectionRequest;
 import rocks.inspectit.gepard.agentmanager.connection.service.ConnectionService;
 
 @WebMvcTest(controllers = ConnectionController.class)
@@ -35,6 +35,7 @@ class ConnectionControllerTest {
 
   @Test
   void connect_whenFieldIsMissing_shouldReturnBadRequest() throws Exception {
+    String id = "7e4686b7998c88427b14700f1c2aa69304a1c2fdb899067efe8ba9542fc02029";
     String requestBody =
         """
                 {
@@ -47,7 +48,7 @@ class ConnectionControllerTest {
 
     mockMvc
         .perform(
-            post("/api/v1/connections")
+            post("/api/v1/connections/{id}", id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody))
         .andExpect(status().isBadRequest());
@@ -55,29 +56,29 @@ class ConnectionControllerTest {
 
   @Test
   void connect_whenEverythingIsValid_shouldReturnOk() throws Exception {
+    String id = "7e4686b7998c88427b14700f1c2aa69304a1c2fdb899067efe8ba9542fc02029";
     CreateConnectionRequest createConnectionRequest =
         new CreateConnectionRequest(
             "customer-service-e",
             "0.0.1",
             "1.26.8",
-            67887L,
+            "67887@localhost",
             Instant.now().toEpochMilli(),
             "22",
             Map.of());
 
     Connection connection = CreateConnectionRequest.toConnection(createConnectionRequest);
-    when(connectionService.handleConnectRequest(createConnectionRequest)).thenReturn(connection);
+    when(connectionService.handleConnectRequest(id, createConnectionRequest))
+        .thenReturn(connection);
 
     mockMvc
         .perform(
-            post("/api/v1/connections")
+            post("/api/v1/connections/{id}", id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(createConnectionRequest)))
         .andExpect(status().isCreated())
         .andExpect(header().exists("Location"))
-        .andExpect(
-            header()
-                .string("Location", "http://localhost/api/v1/connections/" + connection.getId()));
+        .andExpect(header().string("Location", "http://localhost/api/v1/connections/" + id));
   }
 
   @Test
@@ -90,37 +91,90 @@ class ConnectionControllerTest {
 
   @Test
   void get_connection_whenEverythingIsValid_shouldReturnOk() throws Exception {
-    UUID uuid = UUID.randomUUID();
+    String agentId = "12345";
     ConnectionDto connectionDto =
         new ConnectionDto(
-            uuid, Instant.now(), "service name", "5", "7", 42L, Instant.now(), "22", Map.of());
-    when(connectionService.getConnection(uuid)).thenReturn(connectionDto);
+            Instant.now(),
+            ConnectionStatus.CONNECTED,
+            "service name",
+            "5",
+            "7",
+            "42@localhost",
+            Instant.now(),
+            "22",
+            Map.of());
+    when(connectionService.getConnection(agentId)).thenReturn(connectionDto);
 
     mockMvc
-        .perform(get("/api/v1/connections/{id}", uuid))
+        .perform(get("/api/v1/connections/{id}", agentId))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(content().json(objectMapper.writeValueAsString(connectionDto)));
   }
 
   @Test
+  void update_connection_whenEverythingIsValid_shouldReturnOk() throws Exception {
+    UpdateConnectionRequest updateRequest = new UpdateConnectionRequest(ConnectionStatus.CONNECTED);
+    String agentId = "12345";
+    ConnectionDto connectionDto =
+        new ConnectionDto(
+            Instant.now(),
+            ConnectionStatus.CONNECTED,
+            "service name",
+            "5",
+            "7",
+            "42@localhost",
+            Instant.now(),
+            "22",
+            Map.of());
+    when(connectionService.handleUpdateRequest(agentId, updateRequest)).thenReturn(connectionDto);
+
+    mockMvc
+        .perform(
+            patch("/api/v1/connections/{id}", agentId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateRequest)))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json(objectMapper.writeValueAsString(connectionDto)));
+  }
+
+  @Test
+  void update_connection_whenFieldIsUnknown_shouldReturnBadRequest() throws Exception {
+    String agentId = "12345";
+    String updateRequest =
+        """
+            {
+            "update": "delete"
+            }
+            """;
+
+    mockMvc
+        .perform(
+            patch("/api/v1/connections/{id}", agentId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(updateRequest))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
   void queryConnections_whenMultipleParametersAreDefined_shouldReturnOk() throws Exception {
     QueryConnectionRequest queryRequest =
         new QueryConnectionRequest(
-            UUID.randomUUID().toString(),
             LocalDateTime.now().toString(),
+            ConnectionStatus.CONNECTED.toString(),
             new QueryConnectionRequest.QueryAgentRequest(
                 "service-name", "12345", "0.0.1", "1.26.8", "67887", "22", Map.of("key", "value")));
 
     List<ConnectionDto> connectionDtos =
         List.of(
             new ConnectionDto(
-                UUID.randomUUID(),
                 Instant.now(),
+                ConnectionStatus.CONNECTED,
                 "service-name",
                 "0.0.1",
                 "1.26.8",
-                67887L,
+                "67887@localhost",
                 Instant.now(),
                 "22",
                 Map.of()));
@@ -159,8 +213,8 @@ class ConnectionControllerTest {
   void queryConnections_whenRegexInParameters_shouldReturnOk() throws Exception {
     QueryConnectionRequest queryRequest =
         new QueryConnectionRequest(
-            "regex:^123e4567-e89b-12d3-a456-[0-9a-f]+$",
             "^2023-04-[0-9]+T[0-9:]+Z$",
+            ConnectionStatus.CONNECTED.name(),
             new QueryConnectionRequest.QueryAgentRequest(
                 "regex:^service-.*",
                 "12345L",
@@ -173,12 +227,12 @@ class ConnectionControllerTest {
     List<ConnectionDto> connectionDtos =
         List.of(
             new ConnectionDto(
-                UUID.fromString("123e4567-e89b-12d3-a456-426614174000"),
                 Instant.parse("2023-04-15T12:34:56Z"),
+                ConnectionStatus.CONNECTED,
                 "service-name",
                 "0.0.1",
                 "1.26.8",
-                67887L,
+                "67887@localhost",
                 Instant.now(),
                 "22",
                 Map.of("key", "value-123")));

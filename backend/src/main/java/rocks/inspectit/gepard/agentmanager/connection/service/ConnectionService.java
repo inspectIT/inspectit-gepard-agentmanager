@@ -7,12 +7,13 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import rocks.inspectit.gepard.agentmanager.agent.model.Agent;
 import rocks.inspectit.gepard.agentmanager.connection.model.Connection;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.ConnectionDto;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.CreateConnectionRequest;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.QueryConnectionRequest;
+import rocks.inspectit.gepard.agentmanager.connection.model.dto.UpdateConnectionRequest;
 import rocks.inspectit.gepard.agentmanager.connection.validation.RegexQueryService;
+import rocks.inspectit.gepard.commons.model.agent.Agent;
 
 /** Service-Implementation for handling agent connection requests. */
 @Slf4j
@@ -20,21 +21,41 @@ import rocks.inspectit.gepard.agentmanager.connection.validation.RegexQueryServi
 @RequiredArgsConstructor
 public class ConnectionService {
 
-  private final ConcurrentHashMap<UUID, Connection> connectionCache;
+  private final ConcurrentHashMap<String, Connection> connectionCache;
 
   private final RegexQueryService regexQueryService;
 
   /**
    * Handles a connection request from an agent.
    *
+   * @param connectionId The id for the created connection.
    * @param connectRequest The request for the new connection to be created.
    * @return Connection The response containing all saved information.
    */
-  public Connection handleConnectRequest(CreateConnectionRequest connectRequest) {
+  public Connection handleConnectRequest(
+      String connectionId, CreateConnectionRequest connectRequest) {
     Connection connection = CreateConnectionRequest.toConnection(connectRequest);
-    connectionCache.put(connection.getId(), connection);
+    connectionCache.put(connectionId, connection);
 
     return connection;
+  }
+
+  /**
+   * Handles an update request from an agent. Currently, we can only update the connection status.
+   *
+   * @param connectionId The id of the connection to be updated.
+   * @param updateRequest The request to update an existing connection.
+   * @return Connection The updated connection.
+   * @throws NoSuchElementException if no connection with the given id is found in the cache.
+   */
+  public ConnectionDto handleUpdateRequest(
+      String connectionId, UpdateConnectionRequest updateRequest) {
+    Connection connection = connectionCache.get(connectionId);
+    if (connection == null)
+      throw new NoSuchElementException("Connection not found for agent: " + connectionId);
+
+    connection.setConnectionStatus(updateRequest.connectionStatus());
+    return ConnectionDto.fromConnection(connection);
   }
 
   /**
@@ -66,11 +87,12 @@ public class ConnectionService {
    * @return ConnectionDto The connection.
    * @throws NoSuchElementException if no connection with the given id is found in the cache.
    */
-  public ConnectionDto getConnection(UUID id) {
-    if (!connectionCache.containsKey(id)) {
+  public ConnectionDto getConnection(String id) {
+    Connection connection = connectionCache.get(id);
+    if (connection == null)
       throw new NoSuchElementException("No connection with id " + id + " found in cache.");
-    }
-    return ConnectionDto.fromConnection(connectionCache.get(id));
+
+    return ConnectionDto.fromConnection(connection);
   }
 
   /**
@@ -83,10 +105,13 @@ public class ConnectionService {
   private boolean matchesConnection(Connection connection, QueryConnectionRequest query) {
     boolean matches = true;
 
-    matches &= regexQueryService.matches(connection.getId().toString(), query.id());
     matches &=
         regexQueryService.matches(
             connection.getRegistrationTime().toString(), query.registrationTime());
+
+    matches &=
+        regexQueryService.matches(
+            connection.getConnectionStatus().toString(), query.connectionStatus());
 
     if (query.agent() != null) {
 
@@ -111,7 +136,7 @@ public class ConnectionService {
     boolean matches = true;
 
     matches &= regexQueryService.matches(agent.getServiceName(), query.serviceName());
-    matches &= regexQueryService.matchesLong(agent.getPid(), query.pid());
+    matches &= regexQueryService.matches(agent.getVmId(), query.vmId());
     matches &= regexQueryService.matches(agent.getGepardVersion(), query.gepardVersion());
     matches &= regexQueryService.matches(agent.getOtelVersion(), query.otelVersion());
     matches &= regexQueryService.matchesInstant(agent.getStartTime(), query.startTime());
