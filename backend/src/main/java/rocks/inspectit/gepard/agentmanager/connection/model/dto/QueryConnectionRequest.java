@@ -18,7 +18,6 @@ public record QueryConnectionRequest(
   public record QueryAgentRequest(
       @ValidRegexPattern(message = "Invalid service name pattern") String serviceName,
       @ValidRegexPattern(message = "Invalid VM-ID pattern") String vmId,
-      @ValidRegexPattern(message = "Invalid agent-ID pattern") String agentId,
       @ValidRegexPattern(message = "Invalid Gepard version pattern") String gepardVersion,
       @ValidRegexPattern(message = "Invalid OpenTelemetry version pattern") String otelVersion,
       @ValidRegexPattern(message = "Invalid start time pattern")

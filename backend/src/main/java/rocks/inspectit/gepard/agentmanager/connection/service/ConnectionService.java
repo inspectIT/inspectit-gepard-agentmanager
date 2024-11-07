@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import rocks.inspectit.gepard.agentmanager.agent.model.Agent;
+import rocks.inspectit.gepard.commons.model.agent.Agent;
 import rocks.inspectit.gepard.agentmanager.connection.model.Connection;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.ConnectionDto;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.CreateConnectionRequest;

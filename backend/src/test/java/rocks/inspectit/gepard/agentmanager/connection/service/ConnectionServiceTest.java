@@ -16,7 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import rocks.inspectit.gepard.agentmanager.agent.model.Agent;
+import rocks.inspectit.gepard.commons.model.agent.Agent;
 import rocks.inspectit.gepard.agentmanager.connection.model.Connection;
 import rocks.inspectit.gepard.agentmanager.connection.model.ConnectionStatus;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.ConnectionDto;
@@ -66,7 +66,6 @@ class ConnectionServiceTest {
               "0.0.1",
               "1.26.8",
               "67887@localhost",
-              id,
               Instant.now().toEpochMilli(),
               "22",
               Map.of());
@@ -87,14 +86,13 @@ class ConnectionServiceTest {
               "0.0.1",
               "1.26.8",
               "67887@localhost",
-              id,
               Instant.now().toEpochMilli(),
               "22",
               Map.of());
       Connection connection = connectionService.handleConnectRequest(id, createConnectionRequest);
 
       ConnectionDto connectionDto =
-          connectionService.getConnection(connection.getAgent().getAgentId());
+          connectionService.getConnection(id);
 
       assertEquals(
           Instant.ofEpochMilli(createConnectionRequest.startTime()), connectionDto.startTime());
@@ -102,7 +100,6 @@ class ConnectionServiceTest {
       assertEquals(createConnectionRequest.otelVersion(), connectionDto.otelVersion());
       assertEquals(createConnectionRequest.gepardVersion(), connectionDto.gepardVersion());
       assertEquals(createConnectionRequest.vmId(), connectionDto.vmId());
-      assertEquals(createConnectionRequest.agentId(), connectionDto.agentId());
       assertEquals(createConnectionRequest.serviceName(), connectionDto.serviceName());
     }
   }
@@ -119,7 +116,6 @@ class ConnectionServiceTest {
               "0.0.1",
               "1.26.8",
               "67887@localhost",
-              id,
               Instant.now().toEpochMilli(),
               "22",
               Map.of());
@@ -133,7 +129,6 @@ class ConnectionServiceTest {
       assertEquals(createConnectionRequest.gepardVersion(), response.getAgent().getGepardVersion());
       assertEquals(createConnectionRequest.vmId(), response.getAgent().getVmId());
       assertEquals(createConnectionRequest.serviceName(), response.getAgent().getServiceName());
-      assertEquals(createConnectionRequest.agentId(), response.getAgent().getAgentId());
     }
   }
 
@@ -156,7 +151,6 @@ class ConnectionServiceTest {
       assertEquals(connection.getAgent().getGepardVersion(), response.gepardVersion());
       assertEquals(connection.getAgent().getOtelVersion(), response.otelVersion());
       assertEquals(connection.getAgent().getVmId(), response.vmId());
-      assertEquals(connection.getAgent().getAgentId(), response.agentId());
       assertEquals(connection.getAgent().getStartTime(), response.startTime());
       assertEquals(connection.getAgent().getJavaVersion(), response.javaVersion());
       assertEquals(connection.getAgent().getAttributes(), response.attributes());
@@ -188,7 +182,7 @@ class ConnectionServiceTest {
     void testQueryShouldFindConnectionById() {
       // given
       String id = "7e4686b";
-      Connection connection = createTestConnection(id);
+      Connection connection = createTestConnection();
       connectionCache.put(id, connection);
       QueryConnectionRequest query = new QueryConnectionRequest(null, null, null);
 
@@ -197,7 +191,6 @@ class ConnectionServiceTest {
 
       // then
       assertThat(result).hasSize(1);
-      assertThat(result.get(0).agentId()).isEqualTo(id);
     }
 
     @Test
@@ -205,7 +198,7 @@ class ConnectionServiceTest {
       // given
       String id = "7e4686b";
       Instant registrationTime = Instant.now();
-      Connection connection = createTestConnection(id, registrationTime);
+      Connection connection = createTestConnection(registrationTime);
       connectionCache.put(id, connection);
 
       QueryConnectionRequest query =
@@ -223,7 +216,7 @@ class ConnectionServiceTest {
     void testQueryShouldFindConnectionByAgentServiceName() {
       // given
       String id = "7e4686b";
-      Connection connection = createTestConnection(id);
+      Connection connection = createTestConnection();
       connectionCache.put(id, connection);
 
       QueryConnectionRequest query =
@@ -231,7 +224,7 @@ class ConnectionServiceTest {
               null,
               null,
               new QueryConnectionRequest.QueryAgentRequest(
-                  "testService", null, null, null, null, null, null, null));
+                  "testService", null, null, null, null, null, null));
 
       // when
       List<ConnectionDto> result = connectionService.queryConnections(query);
@@ -246,7 +239,7 @@ class ConnectionServiceTest {
       // given
       String id = "7e4686b";
       Map<String, String> attributes = Map.of("custom", "attribute");
-      Connection connection = createTestConnectionWithAttributes(id, attributes);
+      Connection connection = createTestConnectionWithAttributes(attributes);
       connectionCache.put(id, connection);
 
       QueryConnectionRequest query =
@@ -254,7 +247,7 @@ class ConnectionServiceTest {
               null,
               null,
               new QueryConnectionRequest.QueryAgentRequest(
-                  null, null, null, null, null, null, null, attributes));
+                  null, null, null, null, null, null, attributes));
 
       // when
       List<ConnectionDto> result = connectionService.queryConnections(query);
@@ -268,7 +261,7 @@ class ConnectionServiceTest {
     void testQueryShouldNotFindConnectionWhenAttributesDontMatch() {
       // given
       String id = "7e4686b";
-      Connection connection = createTestConnectionWithAttributes(id, Map.of("key1", "value1"));
+      Connection connection = createTestConnectionWithAttributes(Map.of("key1", "value1"));
       connectionCache.put(id, connection);
 
       QueryConnectionRequest query =
@@ -276,7 +269,7 @@ class ConnectionServiceTest {
               null,
               null,
               new QueryConnectionRequest.QueryAgentRequest(
-                  null, null, null, null, null, null, null, Map.of("key2", "value2")));
+                  null, null, null, null, null, null, Map.of("key2", "value2")));
 
       // when
       List<ConnectionDto> result = connectionService.queryConnections(query);
@@ -291,7 +284,7 @@ class ConnectionServiceTest {
       String id = "7e4686b";
       Instant registrationTime = Instant.now();
       Map<String, String> attributes = Map.of("custom", "attribute");
-      Connection connection = createTestConnectionWithAttributes(id, registrationTime, attributes);
+      Connection connection = createTestConnectionWithAttributes(registrationTime, attributes);
       connectionCache.put(id, connection);
 
       QueryConnectionRequest query =
@@ -299,7 +292,7 @@ class ConnectionServiceTest {
               registrationTime.toString(),
               ConnectionStatus.CONNECTED.toString(),
               new QueryConnectionRequest.QueryAgentRequest(
-                  "testService", "1234@localhost", id, "1.0", "1.0", null, "17", attributes));
+                  "testService", "1234@localhost", "1.0", "1.0", null, "17", attributes));
 
       // when
       List<ConnectionDto> result = connectionService.queryConnections(query);
@@ -307,7 +300,6 @@ class ConnectionServiceTest {
       // then
       assertThat(result).hasSize(1);
       ConnectionDto dto = result.get(0);
-      assertThat(dto.agentId()).isEqualTo(id);
       assertThat(dto.registrationTime()).isEqualTo(registrationTime);
       assertThat(dto.serviceName()).isEqualTo("testService");
       assertThat(dto.attributes()).containsAllEntriesOf(attributes);
@@ -318,8 +310,8 @@ class ConnectionServiceTest {
       // given
       String id1 = "7e4686b";
       String id2 = "7e4686c";
-      Connection connection1 = createTestConnection(id1);
-      Connection connection2 = createTestConnection(id2);
+      Connection connection1 = createTestConnection();
+      Connection connection2 = createTestConnection();
       connectionCache.put(id1, connection1);
       connectionCache.put(id2, connection2);
 
@@ -330,32 +322,6 @@ class ConnectionServiceTest {
 
       // then
       assertThat(result).hasSize(2);
-      assertThat(result).extracting(ConnectionDto::agentId).containsExactlyInAnyOrder(id1, id2);
-    }
-
-    @Test
-    void testQueryShouldFindConnectionsByRegexId() {
-      // given
-      String id1 = "426614174000";
-      String id2 = "426614174001";
-      Connection connection1 = createTestConnection(id1);
-      Connection connection2 = createTestConnection(id2);
-      connectionCache.put(id1, connection1);
-      connectionCache.put(id2, connection2);
-
-      QueryConnectionRequest query =
-          new QueryConnectionRequest(
-              null,
-              null,
-              new QueryConnectionRequest.QueryAgentRequest(
-                  null, null, "regex:^[0-9a-f]+$", null, null, null, null, null));
-
-      // when
-      List<ConnectionDto> result = connectionService.queryConnections(query);
-
-      // then
-      assertThat(result).hasSize(2);
-      assertThat(result).extracting(ConnectionDto::agentId).containsExactlyInAnyOrder(id1, id2);
     }
 
     @Test
@@ -363,12 +329,12 @@ class ConnectionServiceTest {
       // given
       Instant registrationTime1 = Instant.parse("2023-04-15T12:34:56Z");
       Instant registrationTime2 = Instant.parse("2023-04-16T12:34:56Z");
-      Connection connection1 = createTestConnection("7e4686b", registrationTime1);
-      String connectionId1 = connection1.getAgent().getAgentId();
-      Connection connection2 = createTestConnection("7e4686c", registrationTime2);
-      String connectionId2 = connection2.getAgent().getAgentId();
-      connectionCache.put(connectionId1, connection1);
-      connectionCache.put(connectionId2, connection2);
+      String id1 = "7e4686b";
+      String id2 = "7e4686c";
+      Connection connection1 = createTestConnection(registrationTime1);
+      Connection connection2 = createTestConnection(registrationTime2);
+      connectionCache.put(id1, connection1);
+      connectionCache.put(id2, connection2);
 
       QueryConnectionRequest query =
           new QueryConnectionRequest("regex:^2023-04-[0-9]+T[0-9:]+Z$", null, null);
@@ -388,8 +354,8 @@ class ConnectionServiceTest {
       // given
       String id1 = "7e4686b";
       String id2 = "7e4686c";
-      Connection connection1 = createTestConnection(id1, "service-a");
-      Connection connection2 = createTestConnection(id2, "service-b");
+      Connection connection1 = createTestConnection("service-a");
+      Connection connection2 = createTestConnection("service-b");
       connectionCache.put(id1, connection1);
       connectionCache.put(id2, connection2);
 
@@ -398,7 +364,7 @@ class ConnectionServiceTest {
               null,
               null,
               new QueryConnectionRequest.QueryAgentRequest(
-                  "regex:^service-.*", null, null, null, null, null, null, null));
+                  "regex:^service-.*", null, null, null, null, null, null));
 
       // when
       List<ConnectionDto> result = connectionService.queryConnections(query);
@@ -414,7 +380,7 @@ class ConnectionServiceTest {
     void testQueryShouldFindConnectionByRegexAgentStartTime() {
       // given
       String id = "7e4686b";
-      Connection connection = createTestConnection(id);
+      Connection connection = createTestConnection();
 
       Instant nearStartTime = Instant.now();
 
@@ -429,7 +395,7 @@ class ConnectionServiceTest {
               null,
               null,
               new QueryConnectionRequest.QueryAgentRequest(
-                  null, null, null, null, null, timeRegex, null, null));
+                  null, null, null, null, timeRegex, null, null));
 
       // when
       List<ConnectionDto> result = connectionService.queryConnections(query);
@@ -450,8 +416,8 @@ class ConnectionServiceTest {
       String id2 = "7e4686c";
       Map<String, String> attributes1 = Map.of("key1", "value-123");
       Map<String, String> attributes2 = Map.of("key2", "value-456");
-      Connection connection1 = createTestConnectionWithAttributes(id1, attributes1);
-      Connection connection2 = createTestConnectionWithAttributes(id2, attributes2);
+      Connection connection1 = createTestConnectionWithAttributes(attributes1);
+      Connection connection2 = createTestConnectionWithAttributes(attributes2);
       connectionCache.put(id1, connection1);
       connectionCache.put(id2, connection2);
 
@@ -460,47 +426,45 @@ class ConnectionServiceTest {
               null,
               null,
               new QueryConnectionRequest.QueryAgentRequest(
-                  null, null, null, null, null, null, null, Map.of("key1", "regex:^value-.*")));
+                  null, null, null, null, null, null, Map.of("key1", "regex:^value-.*")));
 
       // when
       List<ConnectionDto> result = connectionService.queryConnections(query);
 
       // then
       assertThat(result).hasSize(1);
-      assertThat(result).extracting(ConnectionDto::agentId).containsExactly(id1);
       assertThat(result.get(0).attributes()).containsEntry("key1", "value-123");
     }
   }
 
-  private Connection createTestConnection(String id) {
-    return createTestConnection(id, Instant.now(), "testService");
+  private Connection createTestConnection() {
+    return createTestConnection(Instant.now(), "testService");
   }
 
-  private Connection createTestConnection(String id, Instant registrationTime) {
-    return createTestConnection(id, registrationTime, "testService");
+  private Connection createTestConnection(Instant registrationTime) {
+    return createTestConnection(registrationTime, "testService");
   }
 
-  private Connection createTestConnection(String id, String serviceName) {
-    return createTestConnection(id, Instant.now(), serviceName);
+  private Connection createTestConnection(String serviceName) {
+    return createTestConnection(Instant.now(), serviceName);
   }
 
-  private Connection createTestConnection(String id, Instant registrationTime, String serviceName) {
+  private Connection createTestConnection(Instant registrationTime, String serviceName) {
     return new Connection(
         registrationTime,
         ConnectionStatus.CONNECTED,
-        new Agent(serviceName, "1234@localhost", id, "1.0", "1.0", Instant.now(), "17", Map.of()));
+        new Agent(serviceName, "1234@localhost", "1.0", "1.0", Instant.now(), "17", Map.of()));
   }
 
-  private Connection createTestConnectionWithAttributes(String id, Map<String, String> attributes) {
-    return createTestConnectionWithAttributes(id, Instant.now(), attributes);
+  private Connection createTestConnectionWithAttributes(Map<String, String> attributes) {
+    return createTestConnectionWithAttributes(Instant.now(), attributes);
   }
 
-  private Connection createTestConnectionWithAttributes(
-      String id, Instant registrationTime, Map<String, String> attributes) {
+  private Connection createTestConnectionWithAttributes(Instant registrationTime, Map<String, String> attributes) {
     return new Connection(
         registrationTime,
         ConnectionStatus.CONNECTED,
         new Agent(
-            "testService", "1234@localhost", id, "1.0", "1.0", Instant.now(), "17", attributes));
+            "testService", "1234@localhost", "1.0", "1.0", Instant.now(), "17", attributes));
   }
 }

@@ -3,7 +3,7 @@ package rocks.inspectit.gepard.agentmanager.connection.model;
 
 import java.time.Instant;
 import lombok.*;
-import rocks.inspectit.gepard.agentmanager.agent.model.Agent;
+import rocks.inspectit.gepard.commons.model.agent.Agent;
 
 /**
  * Represents a connected agent. It is an internal data structure and not exposed to the API. Acts

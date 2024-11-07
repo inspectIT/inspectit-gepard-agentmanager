@@ -8,7 +8,7 @@ plugins {
 
 group = 'rocks.inspectit.gepard'
 version = '0.0.1-SNAPSHOT'
-def configVersion = '3.0.2-dev'
+def configVersion = '3.0.3-dev'
 
 java {
     sourceCompatibility = '17'

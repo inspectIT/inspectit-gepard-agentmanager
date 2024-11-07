@@ -63,7 +63,6 @@ class ConnectionControllerTest {
             "0.0.1",
             "1.26.8",
             "67887@localhost",
-            id,
             Instant.now().toEpochMilli(),
             "22",
             Map.of());
@@ -101,7 +100,6 @@ class ConnectionControllerTest {
             "5",
             "7",
             "42@localhost",
-            agentId,
             Instant.now(),
             "22",
             Map.of());
@@ -126,7 +124,6 @@ class ConnectionControllerTest {
             "5",
             "7",
             "42@localhost",
-            agentId,
             Instant.now(),
             "22",
             Map.of());
@@ -169,7 +166,6 @@ class ConnectionControllerTest {
             new QueryConnectionRequest.QueryAgentRequest(
                 "service-name",
                 "12345",
-                "123456",
                 "0.0.1",
                 "1.26.8",
                 "67887",
@@ -185,7 +181,6 @@ class ConnectionControllerTest {
                 "0.0.1",
                 "1.26.8",
                 "67887@localhost",
-                "7e4686b7998c88427b14700f1c2aa69304a1c2fdb899067efe8ba9542fc02029",
                 Instant.now(),
                 "22",
                 Map.of()));
@@ -229,7 +224,6 @@ class ConnectionControllerTest {
             new QueryConnectionRequest.QueryAgentRequest(
                 "regex:^service-.*",
                 "12345L",
-                "7e4686b7998c88427b14700f1c2aa69304a1c2fdb899067efe8ba9542fc02029",
                 "0\\.0\\.1",
                 "1\\.26\\.8",
                 "67887L",
@@ -245,7 +239,6 @@ class ConnectionControllerTest {
                 "0.0.1",
                 "1.26.8",
                 "67887@localhost",
-                "7e4686b7998c88427b14700f1c2aa69304a1c2fdb899067efe8ba9542fc02029",
                 Instant.now(),
                 "22",
                 Map.of("key", "value-123")));
@@ -269,7 +262,7 @@ class ConnectionControllerTest {
             null,
             null,
             new QueryConnectionRequest.QueryAgentRequest(
-                "regex:*service-.*", null, null, null, null, null, null, null));
+                "regex:*service-.*", null, null, null, null, null, null));
 
     mockMvc
         .perform(

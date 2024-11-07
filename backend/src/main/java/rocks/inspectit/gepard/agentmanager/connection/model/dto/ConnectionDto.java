@@ -15,7 +15,6 @@ public record ConnectionDto(
     @NotNull(message = "Gepard Version missing.") String gepardVersion,
     @NotNull(message = "OpenTelemetry Version missing.") String otelVersion,
     @NotNull(message = "VM-ID is missing.") String vmId,
-    @NotNull(message = "Agent-ID is missing") String agentId,
     @NotNull(message = "Start-Time missing.") Instant startTime,
     @NotNull(message = "Java Version missing.") String javaVersion,
     @NotNull(message = "Attributes are missing.") Map<String, String> attributes) {
@@ -28,7 +27,6 @@ public record ConnectionDto(
         connection.getAgent().getGepardVersion(),
         connection.getAgent().getOtelVersion(),
         connection.getAgent().getVmId(),
-        connection.getAgent().getAgentId(),
         connection.getAgent().getStartTime(),
         connection.getAgent().getJavaVersion(),
         connection.getAgent().getAttributes());
