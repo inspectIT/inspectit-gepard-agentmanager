@@ -15,30 +15,30 @@ export const ConnectionService = {
     const data = await kyInstance
       .get(ROUTES.FIND_ALL)
       .json<ServerConnection[]>();
-    const transformedConnections = transformConnectionsResponse(data);
+    const transformedConnections =
+      ConnectionService.transformConnectionsResponse(data);
     return z.array(ConnectionSchema).parse(transformedConnections);
   },
+  transformConnectionsResponse(apiResponse: ServerConnection[]) {
+    return apiResponse.map((item) => {
+      const transformedAttributes = Object.entries(item.attributes).map(
+        ([key, value]) => ({
+          key,
+          value,
+        })
+      );
+
+      return {
+        id: item.id,
+        registrationTime: item.registrationTime,
+        serviceName: item.serviceName,
+        gepardVersion: item.gepardVersion,
+        otelVersion: item.otelVersion,
+        pid: item.pid,
+        startTime: item.startTime,
+        javaVersion: item.javaVersion,
+        attributes: transformedAttributes,
+      };
+    });
+  },
 };
-
-function transformConnectionsResponse(apiResponse: ServerConnection[]) {
-  return apiResponse.map((item) => {
-    const transformedAttributes = Object.entries(item.attributes).map(
-      ([key, value]) => ({
-        key,
-        value,
-      })
-    );
-
-    return {
-      id: item.id,
-      registrationTime: item.registrationTime,
-      serviceName: item.serviceName,
-      gepardVersion: item.gepardVersion,
-      otelVersion: item.otelVersion,
-      pid: item.pid,
-      startTime: item.startTime,
-      javaVersion: item.javaVersion,
-      attributes: transformedAttributes,
-    };
-  });
-}

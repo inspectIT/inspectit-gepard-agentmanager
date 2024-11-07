@@ -1,4 +1,6 @@
+import RowExpander from "@/components/ui/row-expander";
 import SortableTableColumn from "@/components/ui/sortable-table-column";
+import UnsortableTableColumn from "@/components/ui/unsortable-table-column";
 import { Connection } from "@/types/Connection";
 import { ColumnDef } from "@tanstack/react-table";
 
@@ -83,22 +85,12 @@ export const ConnectionsTableColumns: ColumnDef<Connection>[] = [
     },
   },
   {
-    accessorKey: "attributes",
-    header: ({ column }) => {
-      return <SortableTableColumn column={column} title="Attributes" />;
+    accessorKey: "details",
+    header: () => {
+      return <UnsortableTableColumn title="Details" />;
     },
     cell: ({ row }) => {
-      console.log(row.getValue("attributes"));
-      return row.getCanExpand() ? (
-        <button
-          onClick={row.getToggleExpandedHandler()}
-          style={{ cursor: "pointer" }}
-        >
-          {row.getIsExpanded() ? "👇" : "👉"}
-        </button>
-      ) : (
-        ""
-      );
+      return <RowExpander row={row} />;
     },
   },
 ];

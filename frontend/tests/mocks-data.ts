@@ -1,6 +1,8 @@
-import { Connection } from "@/types/Connection";
+import { ServerConnection } from "@/types/Connection";
 
-export const generateMockConnection = (serviceName: string): Connection => ({
+export const generateMockConnection = (
+  serviceName: string
+): ServerConnection => ({
   id: "123e4567-e89b-12d3-a456-426614174000",
   registrationTime: new Date().toISOString(),
   serviceName: serviceName,
