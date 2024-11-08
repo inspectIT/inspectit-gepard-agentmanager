@@ -66,7 +66,7 @@ class ConnectionServiceTest {
               "0.0.1",
               "1.26.8",
               "67887@localhost",
-              Instant.now().toEpochMilli(),
+              Instant.now(),
               "22",
               Map.of());
       connectionService.handleConnectRequest(id, createConnectionRequest);
@@ -86,7 +86,7 @@ class ConnectionServiceTest {
               "0.0.1",
               "1.26.8",
               "67887@localhost",
-              Instant.now().toEpochMilli(),
+              Instant.now(),
               "22",
               Map.of());
       Connection connection = connectionService.handleConnectRequest(id, createConnectionRequest);
@@ -94,7 +94,7 @@ class ConnectionServiceTest {
       ConnectionDto connectionDto = connectionService.getConnection(id);
 
       assertEquals(
-          Instant.ofEpochMilli(createConnectionRequest.startTime()), connectionDto.startTime());
+          createConnectionRequest.startTime(), connectionDto.startTime());
       assertEquals(createConnectionRequest.javaVersion(), connectionDto.javaVersion());
       assertEquals(createConnectionRequest.otelVersion(), connectionDto.otelVersion());
       assertEquals(createConnectionRequest.gepardVersion(), connectionDto.gepardVersion());
@@ -115,14 +115,14 @@ class ConnectionServiceTest {
               "0.0.1",
               "1.26.8",
               "67887@localhost",
-              Instant.now().toEpochMilli(),
+              Instant.now(),
               "22",
               Map.of());
 
       Connection response = connectionService.handleConnectRequest(id, createConnectionRequest);
 
       assertEquals(
-          createConnectionRequest.startTime(), response.getAgent().getStartTime().toEpochMilli());
+          createConnectionRequest.startTime(), response.getAgent().getStartTime());
       assertEquals(createConnectionRequest.javaVersion(), response.getAgent().getJavaVersion());
       assertEquals(createConnectionRequest.otelVersion(), response.getAgent().getOtelVersion());
       assertEquals(createConnectionRequest.gepardVersion(), response.getAgent().getGepardVersion());

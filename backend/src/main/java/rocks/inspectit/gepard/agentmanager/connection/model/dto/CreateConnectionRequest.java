@@ -14,7 +14,7 @@ public record CreateConnectionRequest(
     @NotNull(message = "Gepard Version missing.") String gepardVersion,
     @NotNull(message = "OpenTelemetry Version missing.") String otelVersion,
     @NotNull(message = "VM-ID is missing.") String vmId,
-    @NotNull(message = "Start-Time missing.") Long startTime,
+    @NotNull(message = "Start-Time missing.") Instant startTime,
     @NotNull(message = "Java Version missing.") String javaVersion,
     Map<String, String> attributes) {
 
@@ -27,7 +27,7 @@ public record CreateConnectionRequest(
             createConnectionRequest.vmId,
             createConnectionRequest.gepardVersion,
             createConnectionRequest.otelVersion,
-            Instant.ofEpochMilli(createConnectionRequest.startTime),
+            createConnectionRequest.startTime,
             createConnectionRequest.javaVersion,
             createConnectionRequest.attributes != null
                 ? createConnectionRequest.attributes

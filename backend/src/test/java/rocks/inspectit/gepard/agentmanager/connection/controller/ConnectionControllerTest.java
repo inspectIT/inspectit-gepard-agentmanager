@@ -63,7 +63,7 @@ class ConnectionControllerTest {
             "0.0.1",
             "1.26.8",
             "67887@localhost",
-            Instant.now().toEpochMilli(),
+            Instant.now(),
             "22",
             Map.of());
 
