@@ -1,6 +1,6 @@
 import { ArrowUpDown } from "lucide-react";
 import { Column } from "@tanstack/react-table";
-import { Button } from "./button";
+import { Button } from "@/components/ui/shadcn/button";
 
 interface SortableTableColumnProps<T> {
   column: Column<T>;

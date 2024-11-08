@@ -1,22 +1,22 @@
-import { TableCell } from "@/components/ui/table";
+import { TableCell } from "@/components/ui/shadcn/table";
 import { useConnectionsQuery } from "@/hooks/features/connections/useConnections";
 import { ConnectionsTableColumns } from "./ConnectionsTableColumns";
 import DataTable from "@/components/ui/data-table";
 import { AttributesTableColumns } from "./AttributesTableColumns";
 
 interface ConnectionDetailsProps {
-  pid: number;
+  connectionId: string;
 }
 
 export default function ConnectionDetails({
-  pid,
+  connectionId,
 }: Readonly<ConnectionDetailsProps>) {
   const connectionsQuery = useConnectionsQuery();
   const columnCount = ConnectionsTableColumns.length;
 
   if (connectionsQuery.isSuccess) {
     const connection = connectionsQuery.data.find(
-      (connection) => connection.pid === pid
+      (connection) => connection.connectionId === connectionId
     );
 
     if (connection) {

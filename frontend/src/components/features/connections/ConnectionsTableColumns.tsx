@@ -18,6 +18,12 @@ export const ConnectionsTableColumns: ColumnDef<Connection>[] = [
         </div>
       );
     },
+    //@ts-expect-error Seems like a library bug, that filterFn is not found by typescript.
+    filterFn: "equalsInArray",
+    meta: {
+      filterVariant: "search",
+      title: "Service Name",
+    },
   },
   {
     accessorKey: "connectionStatus",
@@ -30,6 +36,12 @@ export const ConnectionsTableColumns: ColumnDef<Connection>[] = [
           <ConnectionStatusBadge status={row.getValue("connectionStatus")} />
         </div>
       );
+    },
+    //@ts-expect-error Seems like a library bug, that filterFn is not found by typescript.
+    filterFn: "equalsInArray",
+    meta: {
+      filterVariant: "select",
+      title: "Connection Status",
     },
   },
   // {
@@ -58,6 +70,12 @@ export const ConnectionsTableColumns: ColumnDef<Connection>[] = [
           {row.getValue("javaVersion")}
         </div>
       );
+    },
+    //@ts-expect-error Seems like a library bug, that filterFn is not found by typescript.
+    filterFn: "equalsInArray",
+    meta: {
+      filterVariant: "select",
+      title: "Java Version",
     },
   },
   {

@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import { Link, useLocation } from "react-router-dom";
-import { buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/shadcn/button";
 import { NAV_ITEMS } from "./NavItems";
 import { useSidebarStore } from "@/stores/useSidebarStore";
 

@@ -1,4 +1,4 @@
-import { Button } from "./button";
+import { Button } from "@/components/ui/shadcn/button";
 
 interface UnsortableTableColumnProps {
   title: string;

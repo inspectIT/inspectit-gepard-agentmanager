@@ -21,6 +21,7 @@ const GenericConnectionSchema = z.object({
     .regex(iso8601Regex, "Invalid ISO 8601 UTC timestamp format"),
   javaVersion: z.string(),
 });
+
 export const ConnectionSchema = GenericConnectionSchema.extend({
   attributes: z.array(
     z.object({
@@ -34,6 +35,9 @@ export const ServerConnectionSchema = GenericConnectionSchema.extend({
   attributes: z.record(z.string()),
 });
 
+export const ConnectionQuerySchema = ServerConnectionSchema.partial();
+
 export type ServerConnection = z.infer<typeof ServerConnectionSchema>;
+export type ConnectionQuery = z.infer<typeof ConnectionQuerySchema>;
 export type Connection = z.infer<typeof ConnectionSchema>;
 export type ConnectionStatus = z.infer<typeof ConnectionStatusSchema>;
