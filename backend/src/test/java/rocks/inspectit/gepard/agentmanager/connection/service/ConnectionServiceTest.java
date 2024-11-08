@@ -93,8 +93,7 @@ class ConnectionServiceTest {
 
       ConnectionDto connectionDto = connectionService.getConnection(id);
 
-      assertEquals(
-          createConnectionRequest.startTime(), connectionDto.startTime());
+      assertEquals(createConnectionRequest.startTime(), connectionDto.startTime());
       assertEquals(createConnectionRequest.javaVersion(), connectionDto.javaVersion());
       assertEquals(createConnectionRequest.otelVersion(), connectionDto.otelVersion());
       assertEquals(createConnectionRequest.gepardVersion(), connectionDto.gepardVersion());
@@ -121,8 +120,7 @@ class ConnectionServiceTest {
 
       Connection response = connectionService.handleConnectRequest(id, createConnectionRequest);
 
-      assertEquals(
-          createConnectionRequest.startTime(), response.getAgent().getStartTime());
+      assertEquals(createConnectionRequest.startTime(), response.getAgent().getStartTime());
       assertEquals(createConnectionRequest.javaVersion(), response.getAgent().getJavaVersion());
       assertEquals(createConnectionRequest.otelVersion(), response.getAgent().getOtelVersion());
       assertEquals(createConnectionRequest.gepardVersion(), response.getAgent().getGepardVersion());
