@@ -15,7 +15,7 @@ interface ConnectionAttributeFilterFormProps {
   sortedUniqueValues: string[];
 }
 
-export default function ConnectionAttributesFilterForm<({
+export default function ConnectionAttributesFilterForm({
   setAttributes,
   setOpen,
   column,
