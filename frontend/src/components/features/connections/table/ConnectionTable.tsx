@@ -96,14 +96,6 @@ export default function ConnectionTable({
         <ConnectionTableBody table={table} />
       </Table>
       <TablePagination table={table} />
-
-      <pre>
-        {JSON.stringify(
-          { columnFilters: table.getState().columnFilters },
-          null,
-          2
-        )}
-      </pre>
     </div>
   );
 }
