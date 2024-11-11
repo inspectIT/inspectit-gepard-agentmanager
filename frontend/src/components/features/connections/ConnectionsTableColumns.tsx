@@ -126,4 +126,12 @@ export const ConnectionsTableColumns: ColumnDef<Connection>[] = [
       return <RowExpander row={row} />;
     },
   },
+  {
+    accessorKey: "attributes",
+    filterFn: "attributeEquals",
+    meta: {
+      filterVariant: "attributes",
+      title: "Java Version",
+    },
+  },
 ];

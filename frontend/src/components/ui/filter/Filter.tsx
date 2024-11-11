@@ -1,6 +1,7 @@
 import { Column } from "@tanstack/react-table";
 import { useMemo } from "react";
 import ComboFilter from "./ComboFilter";
+import ConnectionAttributesFilter from "@/components/features/connections/ConnectionAttributesFilter";
 
 interface FilterProps<TData> {
   column: Column<TData>;
@@ -42,6 +43,16 @@ export default function Filter<TData>({ column }: FilterProps<TData>) {
         columnFilterValues={columnFilterValue as string[] | undefined}
         sortedUniqueValues={sortedUniqueValues}
         withSearch
+      />
+    );
+  }
+
+  if (filterVariant === "attributes") {
+    return (
+      <ConnectionAttributesFilter
+        column={column}
+        columnFilterValues={columnFilterValue as string[] | undefined}
+        sortedUniqueValues={sortedUniqueValues}
       />
     );
   }

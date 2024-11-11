@@ -13,29 +13,30 @@ export default function ConnectionFilters({
   table,
 }: ConnectionFiltersProps) {
   // Define columns that are filterable
-  const filterableColumns = ["serviceName", "connectionStatus", "javaVersion"];
+  const filterableColumnIds = [
+    "serviceName",
+    "connectionStatus",
+    "javaVersion",
+    "attributes",
+  ];
 
-  // Get the header group (only one header group for emplyoees table)
-  const headerGroup = table.getHeaderGroups()[0];
+  const columns = table.getAllColumns();
+
   // Get only headers that are filterable
-  const headers = headerGroup.headers.filter((header) => {
-    return filterableColumns.includes(header.id);
+  const filterableColumns = columns.filter((column) => {
+    return filterableColumnIds.includes(column.id);
   });
 
   return (
-    <div className={cn("flex flex-col md:flex-row gap-4", className)}>
-      {headers.map((header) => {
+    <div className={cn("flex flex-col md:flex-row gap-4 items-end", className)}>
+      {filterableColumns.map((column) => {
         return (
-          <div key={header.id}>
-            {header.isPlaceholder ? null : (
-              <>
-                {header.column.getCanFilter() ? (
-                  <div>
-                    <Filter column={header.column} />
-                  </div>
-                ) : null}
-              </>
-            )}
+          <div key={column.id}>
+            {column.getCanFilter() ? (
+              <div>
+                <Filter column={column} />
+              </div>
+            ) : null}
           </div>
         );
       })}

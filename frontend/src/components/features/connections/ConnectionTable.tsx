@@ -21,7 +21,7 @@ import ConnectionTableHeader from "./ConnectionTableHeader";
 import ConnectionTableBody from "./ConnectionTableBody";
 import TablePagination from "@/components/ui/table-pagination";
 import ConnectionFilters from "./ConnectionFilters";
-import { equalsInArrayFn } from "@/lib/react-table-utils";
+import { attributeEqualsFn, equalsInArrayFn } from "@/lib/react-table-utils";
 import ConnectionAttributesFilter from "./ConnectionAttributesFilter";
 
 interface DataTableProps {
@@ -51,6 +51,7 @@ export default function ConnectionTable({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([
     { id: "connectionStatus", value: ["CONNECTED"] },
   ]);
+
   const table = useReactTable<Connection>({
     data,
     columns,
@@ -79,14 +80,20 @@ export default function ConnectionTable({
     },
     filterFns: {
       equalsInArray: equalsInArrayFn,
+      attributeEquals: attributeEqualsFn,
     },
     getRowCanExpand: () => true,
+    initialState: {
+      columnVisibility: {
+        attributes: false,
+      },
+    },
   });
 
   return (
     <div className="flex flex-col gap-4">
       <ConnectionFilters table={table} />
-      <ConnectionAttributesFilter />
+      {/* <ConnectionAttributesFilter /> */}
 
       <Table>
         <ConnectionTableHeader table={table} />
