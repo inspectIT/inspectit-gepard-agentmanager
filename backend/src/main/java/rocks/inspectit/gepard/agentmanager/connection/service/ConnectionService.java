@@ -76,7 +76,8 @@ public class ConnectionService {
    * @return List<ConnectionDto> The connections that match the query.
    */
   public List<ConnectionDto> queryConnections(QueryConnectionRequest query) {
-    return connectionCache.entrySet().stream().filter(entry -> matchesConnection(entry.getValue(), query))
+    return connectionCache.entrySet().stream()
+        .filter(entry -> matchesConnection(entry.getValue(), query))
         .map(entry -> ConnectionDto.fromConnection(entry.getKey(), entry.getValue()))
         .collect(Collectors.toList());
   }
