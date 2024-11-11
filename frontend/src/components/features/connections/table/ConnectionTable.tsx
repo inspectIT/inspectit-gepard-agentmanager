@@ -20,9 +20,8 @@ import { Connection } from "@/types/Connection";
 import ConnectionTableHeader from "./ConnectionTableHeader";
 import ConnectionTableBody from "./ConnectionTableBody";
 import TablePagination from "@/components/ui/table-pagination";
-import ConnectionFilters from "./ConnectionFilters";
+import ConnectionFilters from "../filter/ConnectionFilters";
 import { attributeEqualsFn, equalsInArrayFn } from "@/lib/react-table-utils";
-import ConnectionAttributesFilter from "./ConnectionAttributesFilter";
 
 interface DataTableProps {
   columns: ColumnDef<Connection>[];
@@ -93,8 +92,6 @@ export default function ConnectionTable({
   return (
     <div className="flex flex-col gap-4">
       <ConnectionFilters table={table} />
-      {/* <ConnectionAttributesFilter /> */}
-
       <Table>
         <ConnectionTableHeader table={table} />
         <ConnectionTableBody table={table} />

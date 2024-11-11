@@ -1,7 +1,7 @@
 import { Connection } from "@/types/Connection";
 import { useState } from "react";
-import { ConnectionsTableColumns } from "./ConnectionsTableColumns";
-import ConnectionTable from "./ConnectionTable";
+import { ConnectionsTableColumns } from "./table/ConnectionsTableColumns";
+import ConnectionTable from "./table/ConnectionTable";
 import {
   Page,
   PageContent,

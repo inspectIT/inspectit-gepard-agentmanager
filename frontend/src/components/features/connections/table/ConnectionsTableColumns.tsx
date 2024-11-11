@@ -128,6 +128,7 @@ export const ConnectionsTableColumns: ColumnDef<Connection>[] = [
   },
   {
     accessorKey: "attributes",
+    //@ts-expect-error Seems like a library bug, that filterFn is not found by typescript.
     filterFn: "attributeEquals",
     meta: {
       filterVariant: "attributes",

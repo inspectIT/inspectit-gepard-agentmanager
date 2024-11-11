@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { Connection } from "@/types/Connection";
 import { flexRender, Row, Table } from "@tanstack/react-table";
 import React from "react";
-import ConnectionDetails from "./ConnectionDetails";
+import ConnectionDetails from "./details/ConnectionDetails";
 import { ConnectionsTableColumns } from "./ConnectionsTableColumns";
 
 export default function ConnectionTableBody({

@@ -1,24 +1,22 @@
 import { Button } from "@/components/ui/shadcn/button";
 import { useState } from "react";
 import ConnectionAttributesFilterForm from "./ConnectionAttributeFilterForm";
-import { Badge } from "@/components/ui/shadcn/badge";
 import { Attribute } from "@/types/Attribute";
-import { Column, Table } from "@tanstack/react-table";
+import { Column } from "@tanstack/react-table";
+import { X } from "lucide-react";
 import { Connection } from "@/types/Connection";
-import { Cross, Delete, X } from "lucide-react";
-import { ExitIcon } from "@radix-ui/react-icons";
 
-interface ConnectionAttributesFilterProps {
-  column: Column<Connection>;
+interface ConnectionAttributesFilterProps<TData> {
+  column: Column<TData>;
   columnFilterValues: string[] | undefined;
   sortedUniqueValues: string[];
 }
 
-export default function ConnectionAttributesFilter({
+export default function ConnectionAttributesFilter<TData>({
   column,
   columnFilterValues,
   sortedUniqueValues,
-}: ConnectionAttributesFilterProps) {
+}: ConnectionAttributesFilterProps<TData>) {
   const [open, setOpen] = useState(false);
   console.log(sortedUniqueValues);
   const [attributes, setAttributes] = useState<Attribute[]>([]);
@@ -57,7 +55,7 @@ export default function ConnectionAttributesFilter({
           <ConnectionAttributesFilterForm
             setOpen={setOpen}
             setAttributes={setAttributes}
-            column={column}
+            column={column as unknown as Column<Connection>}
             sortedUniqueValues={sortedUniqueValues}
             columnFilterValues={columnFilterValues}
           />

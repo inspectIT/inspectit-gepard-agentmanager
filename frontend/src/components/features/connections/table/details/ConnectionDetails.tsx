@@ -1,6 +1,6 @@
 import { TableCell } from "@/components/ui/shadcn/table";
 import { useConnectionsQuery } from "@/hooks/features/connections/useConnections";
-import { ConnectionsTableColumns } from "./ConnectionsTableColumns";
+import { ConnectionsTableColumns } from "../ConnectionsTableColumns";
 import DataTable from "@/components/ui/data-table";
 import { AttributesTableColumns } from "./AttributesTableColumns";
 

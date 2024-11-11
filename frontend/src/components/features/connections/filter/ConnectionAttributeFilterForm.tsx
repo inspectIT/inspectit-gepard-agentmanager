@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/shadcn/button";
 import { Input } from "@/components/ui/shadcn/input";
-import { Label } from "@/components/ui/shadcn/label";
-import { Switch } from "@/components/ui/shadcn/switch";
+
 import { Attribute } from "@/types/Attribute";
+import { Connection } from "@/types/Connection";
 import { Column } from "@tanstack/react-table";
 import { X } from "lucide-react";
 import { useState } from "react";
@@ -10,12 +10,12 @@ import { useState } from "react";
 interface ConnectionAttributeFilterFormProps {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setAttributes: React.Dispatch<React.SetStateAction<Attribute[]>>;
-  column: Column<TData, TValue>;
+  column: Column<Connection>;
   columnFilterValues: string[] | undefined;
   sortedUniqueValues: string[];
 }
 
-export default function ConnectionAttributesFilterForm({
+export default function ConnectionAttributesFilterForm<({
   setAttributes,
   setOpen,
   column,

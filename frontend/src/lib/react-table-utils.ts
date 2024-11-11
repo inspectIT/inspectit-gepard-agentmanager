@@ -39,6 +39,8 @@ export const attributeEqualsFn: FilterFn<Connection> = (
   return areAttributesMatching(rowAttributes, filterValue);
 };
 
+attributeEqualsFn.autoRemove = (val: Attribute[]) => val.length === 0;
+
 function areAttributesMatching(
   rowAttributes: Attribute[],
   filterValue: Attribute[]
@@ -61,6 +63,9 @@ function areAttributesMatching(
 
   return true;
 }
+
+// export only for unit tests
+export const areAttributesMatchingTest = areAttributesMatching;
 
 function testFalsey(val: unknown) {
   return val === undefined || val === null || val === "";

@@ -1,7 +1,7 @@
 import { Column } from "@tanstack/react-table";
 import { useMemo } from "react";
 import ComboFilter from "./ComboFilter";
-import ConnectionAttributesFilter from "@/components/features/connections/ConnectionAttributesFilter";
+import ConnectionAttributesFilter from "@/components/features/connections/filter/ConnectionAttributesFilter";
 
 interface FilterProps<TData> {
   column: Column<TData>;
