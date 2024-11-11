@@ -6,11 +6,13 @@ import React from "react";
 import ConnectionDetails from "./details/ConnectionDetails";
 import { ConnectionsTableColumns } from "./ConnectionsTableColumns";
 
+interface ConnectionTableBodyProps {
+  table: Table<Connection>;
+}
+
 export default function ConnectionTableBody({
   table,
-}: {
-  table: Table<Connection>;
-}) {
+}: Readonly<ConnectionTableBodyProps>) {
   const isExpanded = (row: Row<Connection>) => {
     return row.getIsExpanded();
   };

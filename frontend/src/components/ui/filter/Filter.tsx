@@ -7,7 +7,9 @@ interface FilterProps<TData> {
   column: Column<TData>;
 }
 
-export default function Filter<TData>({ column }: FilterProps<TData>) {
+export default function Filter<TData>({
+  column,
+}: Readonly<FilterProps<TData>>) {
   const { filterVariant } = column.columnDef.meta ?? {};
 
   const columnFilterValue = column.getFilterValue() as
@@ -21,7 +23,7 @@ export default function Filter<TData>({ column }: FilterProps<TData>) {
       return [];
     } else {
       const values = Array.from(column.getFacetedUniqueValues().keys())
-        .sort()
+        .sort((a: string, b: string) => a.localeCompare(b))
         .slice(0, 5000);
       return values as string[];
     }

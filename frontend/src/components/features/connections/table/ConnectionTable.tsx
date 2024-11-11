@@ -15,7 +15,6 @@ import {
 } from "@tanstack/react-table";
 import { Dispatch, SetStateAction, useState } from "react";
 import { Table } from "@/components/ui/shadcn/table";
-import React from "react";
 import { Connection } from "@/types/Connection";
 import ConnectionTableHeader from "./ConnectionTableHeader";
 import ConnectionTableBody from "./ConnectionTableBody";
@@ -47,7 +46,7 @@ export default function ConnectionTable({
     pageSize: 10,
   });
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
     { id: "connectionStatus", value: ["CONNECTED"] },
   ]);
 

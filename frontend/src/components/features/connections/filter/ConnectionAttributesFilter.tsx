@@ -16,7 +16,7 @@ export default function ConnectionAttributesFilter<TData>({
   column,
   columnFilterValues,
   sortedUniqueValues,
-}: ConnectionAttributesFilterProps<TData>) {
+}: Readonly<ConnectionAttributesFilterProps<TData>>) {
   const [open, setOpen] = useState(false);
   console.log(sortedUniqueValues);
   const [attributes, setAttributes] = useState<Attribute[]>([]);

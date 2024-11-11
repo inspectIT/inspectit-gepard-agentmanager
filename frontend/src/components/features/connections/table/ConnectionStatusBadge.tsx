@@ -7,7 +7,7 @@ interface ConnectionStatusBadgeProps {
 
 export default function ConnectionStatusBadge({
   status = "DISCONNECTED",
-}: ConnectionStatusBadgeProps) {
+}: Readonly<ConnectionStatusBadgeProps>) {
   let variant: "default" | "secondary" | "destructive";
   let additionalClasses = "";
 

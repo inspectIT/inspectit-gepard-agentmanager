@@ -25,7 +25,7 @@ export default function ComboFilter<TData, TValue>({
   columnFilterValues,
   sortedUniqueValues,
   withSearch = false,
-}: SearchFilterProps<TData, TValue>) {
+}: Readonly<SearchFilterProps<TData, TValue>>) {
   const [open, setOpen] = useState(false);
 
   const handleOnItemSelect = (value: string) => {
@@ -62,13 +62,7 @@ export default function ComboFilter<TData, TValue>({
             aria-expanded={open}
             className="w-[200px] justify-between"
           >
-            {!columnFilterValues
-              ? "All"
-              : columnFilterValues.length == 1 && columnFilterValues[0] != ""
-              ? columnFilterValues[0]
-              : columnFilterValues.length == 1 && columnFilterValues[0] == ""
-              ? "None"
-              : "Multiple"}
+            {getTriggerText(columnFilterValues)}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -97,4 +91,17 @@ export default function ComboFilter<TData, TValue>({
       </Popover>
     </>
   );
+}
+
+function getTriggerText(columnFilterValues: string[] | undefined) {
+  if (!columnFilterValues) {
+    return "All";
+  }
+  if (columnFilterValues.length === 1 && columnFilterValues[0] === "") {
+    return "None";
+  }
+  if (columnFilterValues.length === 1) {
+    return columnFilterValues[0];
+  }
+  return "Multiple";
 }

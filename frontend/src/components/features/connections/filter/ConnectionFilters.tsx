@@ -11,7 +11,7 @@ interface ConnectionFiltersProps {
 export default function ConnectionFilters({
   className,
   table,
-}: ConnectionFiltersProps) {
+}: Readonly<ConnectionFiltersProps>) {
   // Define columns that are filterable
   const filterableColumnIds = [
     "serviceName",
