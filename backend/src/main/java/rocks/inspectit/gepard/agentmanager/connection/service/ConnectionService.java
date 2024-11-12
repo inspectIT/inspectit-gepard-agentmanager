@@ -9,9 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
-import rocks.inspectit.gepard.agentmanager.configuration.events.ConfigurationRequestEvent;
 import rocks.inspectit.gepard.agentmanager.connection.model.Connection;
 import rocks.inspectit.gepard.agentmanager.connection.model.ConnectionStatus;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.ConnectionDto;
@@ -27,22 +25,25 @@ import rocks.inspectit.gepard.commons.model.agent.Agent;
 public class ConnectionService {
 
   private final ConcurrentHashMap<String, Connection> connectionCache;
-
   private final RegexQueryService regexQueryService;
 
   /**
-   * Handles a ConfigurationRequestEvent. If the agent is not connected, it will be connected. If it
-   * is already connected, the last fetch time of the agent will be updated.
+   * Handles a ConfigurationRequest. If the agent is not connected, it will be connected. If it is
+   * already connected, the last fetch time of the agent will be updated.
    *
-   * @param event The configuration request event.
+   * @param agentId The id of the agent to be connected.
+   * @param headers The request headers, which should contain the agent information.
    */
-  @EventListener
-  public void handleConfigurationRequestEvent(ConfigurationRequestEvent event) {
-    if (!isAgentConnected(event.getAgentId())) {
-      connectAgent(event.getAgentId(), event.getHeaders());
+  public boolean handleConfigurationRequest(String agentId, Map<String, String> headers) {
+    boolean isNewRegistration;
+    if (!isAgentConnected(agentId)) {
+      connectAgent(agentId, headers);
+      isNewRegistration = true;
     } else {
-      updateConnectionLastFetch(event.getAgentId());
+      updateConnectionLastFetch(agentId);
+      isNewRegistration = false;
     }
+    return isNewRegistration;
   }
 
   /**
@@ -108,7 +109,7 @@ public class ConnectionService {
    * @param agentId The id of the agent to be searched for.
    * @return true if the agent was found in the cache, false otherwise.
    */
-  private boolean isAgentConnected(String agentId) {
+  public boolean isAgentConnected(String agentId) {
     return connectionCache.get(agentId) != null;
   }
 

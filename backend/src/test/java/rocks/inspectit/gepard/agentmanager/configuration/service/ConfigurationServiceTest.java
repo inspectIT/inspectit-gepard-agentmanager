@@ -4,7 +4,6 @@ package rocks.inspectit.gepard.agentmanager.configuration.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
-import static rocks.inspectit.gepard.agentmanager.testutils.ConfigurationRequestTestUtils.getGepardHeaders;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,9 +13,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.http.HttpHeaders;
-import rocks.inspectit.gepard.agentmanager.configuration.events.ConfigurationRequestEvent;
 import rocks.inspectit.gepard.agentmanager.exception.JsonParseException;
 import rocks.inspectit.gepard.agentmanager.testutils.InspectitConfigurationTestUtil;
 import rocks.inspectit.gepard.config.model.InspectitConfiguration;
@@ -25,7 +21,6 @@ import rocks.inspectit.gepard.config.model.InspectitConfiguration;
 class ConfigurationServiceTest {
 
   @InjectMocks private ConfigurationService configurationService;
-  @Mock private ApplicationEventPublisher applicationEventPublisher;
   @Mock private GitService gitService;
 
   @Spy private ObjectMapper objectMapper;
@@ -130,13 +125,10 @@ class ConfigurationServiceTest {
                      }
                     """;
 
-    HttpHeaders headers = getGepardHeaders();
     when(gitService.getFileContent()).thenReturn(fileContent);
     when(objectMapper.readValue(fileContent, InspectitConfiguration.class))
         .thenReturn(configuration);
-    InspectitConfiguration result =
-        configurationService.handleConfigurationRequest("agentId", headers.toSingleValueMap());
-    verify(applicationEventPublisher).publishEvent(any(ConfigurationRequestEvent.class));
+    InspectitConfiguration result = configurationService.getConfiguration();
     assertEquals(configuration, result);
   }
 }

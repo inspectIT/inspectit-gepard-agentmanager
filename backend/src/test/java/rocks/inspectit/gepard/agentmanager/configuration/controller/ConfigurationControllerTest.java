@@ -4,12 +4,10 @@ package rocks.inspectit.gepard.agentmanager.configuration.controller;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static rocks.inspectit.gepard.agentmanager.testutils.ConfigurationRequestTestUtils.getGepardHeaders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -48,16 +46,38 @@ class ConfigurationControllerTest {
   void getConfiguration_whenConfigAvailable_shouldReturnOk() throws Exception {
 
     HttpHeaders headers = getGepardHeaders();
-    Map<String, String> headersMap = headers.toSingleValueMap();
 
-    when(configurationService.handleConfigurationRequest(agentId, headersMap))
-        .thenReturn(new InspectitConfiguration());
+    when(configurationService.getConfiguration()).thenReturn(new InspectitConfiguration());
 
     mockMvc
         .perform(get("/api/v1/agent-configuration/" + agentId).headers(headers))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(content().json(objectMapper.writeValueAsString(new InspectitConfiguration())));
+  }
+
+  @Test
+  void getConfiguration_whenAgentIsNew_shouldReturnRegistrationHeaderTrue() throws Exception {
+    HttpHeaders headers = getGepardHeaders();
+    when(configurationService.getConfiguration()).thenReturn(new InspectitConfiguration());
+    when(connectionService.handleConfigurationRequest(agentId, headers.toSingleValueMap()))
+        .thenReturn(true);
+
+    mockMvc
+        .perform(get("/api/v1/agent-configuration/" + agentId).headers(headers))
+        .andExpect(header().string("x-gepard-service-registered", "true"));
+  }
+
+  @Test
+  void getConfiguration_whenAgentIsNew_shouldReturnRegistrationHeaderFalse() throws Exception {
+    HttpHeaders headers = getGepardHeaders();
+    when(configurationService.getConfiguration()).thenReturn(new InspectitConfiguration());
+    when(connectionService.handleConfigurationRequest(agentId, headers.toSingleValueMap()))
+        .thenReturn(false);
+
+    mockMvc
+        .perform(get("/api/v1/agent-configuration/" + agentId).headers(headers))
+        .andExpect(header().string("x-gepard-service-registered", "false"));
   }
 
   @Test

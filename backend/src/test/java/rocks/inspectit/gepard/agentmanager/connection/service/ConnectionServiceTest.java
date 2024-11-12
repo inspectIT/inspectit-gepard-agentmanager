@@ -2,15 +2,16 @@
 package rocks.inspectit.gepard.agentmanager.connection.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.*;
 import static rocks.inspectit.gepard.agentmanager.testutils.ConfigurationRequestTestUtils.getGepardHeadersAsMap;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -18,7 +19,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import rocks.inspectit.gepard.agentmanager.configuration.events.ConfigurationRequestEvent;
 import rocks.inspectit.gepard.agentmanager.connection.model.Connection;
 import rocks.inspectit.gepard.agentmanager.connection.model.ConnectionStatus;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.ConnectionDto;
@@ -85,6 +85,40 @@ class ConnectionServiceTest {
       assertEquals(connection.getAgent().getGepardVersion(), connectionDto.gepardVersion());
       assertEquals(connection.getAgent().getVmId(), connectionDto.vmId());
       assertEquals(connection.getAgent().getServiceName(), connectionDto.serviceName());
+    }
+  }
+
+  @Nested
+  class HandleConfigurationRequest {
+    @Test
+    void testHandleConfigurationRequestUpdatesLastFetchOnExistingEntity()
+        throws InterruptedException {
+      String id = "7e4686b7998c88427b14700f1c2aa69304a1c2fdb899067efe8ba9542fc02029";
+
+      boolean isFirstRequest;
+      isFirstRequest = connectionService.handleConfigurationRequest(id, getGepardHeadersAsMap());
+      ConnectionDto connectionDto = connectionService.getConnection(id);
+      assertTrue(isFirstRequest);
+      isFirstRequest = connectionService.handleConfigurationRequest(id, getGepardHeadersAsMap());
+      ConnectionDto connectionDto2 = connectionService.getConnection(id);
+
+      await().atMost(1, TimeUnit.SECONDS);
+      assertFalse(isFirstRequest);
+      ConnectionDto connectionDto3 = connectionService.getConnection(id);
+
+      assertTrue(
+          connectionDto2.timeSinceLastFetch().compareTo(connectionDto3.timeSinceLastFetch()) < 0);
+    }
+
+    @Test
+    void testHandleConfigurationRequestCreatesNewEntity() {
+      String id = "7e4686b7998c88427b14700f1c2aa69304a1c2fdb899067efe8ba9542fc02029";
+
+      boolean isFirstRequest =
+          connectionService.handleConfigurationRequest(id, getGepardHeadersAsMap());
+      ConnectionDto connectionDto = connectionService.getConnection(id);
+      assertTrue(isFirstRequest);
+      assertNotNull(connectionDto);
     }
   }
 
@@ -390,47 +424,6 @@ class ConnectionServiceTest {
       // then
       assertThat(result).hasSize(1);
       assertThat(result.get(0).attributes()).containsEntry("key1", "value-123");
-    }
-
-    @Nested
-    class handleConfigurationRequestEvent {
-      @Test
-      void testHandleConfigurationRequestCreatesNewConnectionForUnknownService()
-          throws InterruptedException {
-        String id = "7e4686b7998c88427b14700f1c2aa69304a1c2fdb899067efe8ba9542fc02029";
-
-        Map<String, String> headers = getGepardHeadersAsMap();
-
-        ConfigurationRequestEvent event = new ConfigurationRequestEvent(this, id, headers);
-        connectionService.handleConfigurationRequestEvent(event);
-
-        Connection response = connectionCache.get(id);
-
-        assertEquals(
-            Instant.parse(headers.get("x-gepard-start-time")), response.getAgent().getStartTime());
-        assertEquals(headers.get("x-gepard-java-version"), response.getAgent().getJavaVersion());
-        assertEquals(headers.get("x-gepard-otel-version"), response.getAgent().getOtelVersion());
-        assertEquals(
-            headers.get("x-gepard-gepard-version"), response.getAgent().getGepardVersion());
-        assertEquals(headers.get("x-gepard-vm-id"), response.getAgent().getVmId());
-        assertEquals(headers.get("x-gepard-service-name"), response.getAgent().getServiceName());
-      }
-
-      @Test
-      void testHandleConfigurationRequestUpdatesLastFetchTimeForKnownService() {
-        String id = "7e4686b7998c88427b14700f1c2aa69304a1c2fdb899067efe8ba9542fc02029";
-
-        Map<String, String> headers = getGepardHeadersAsMap();
-
-        connectionService.handleConfigurationRequestEvent(
-            new ConfigurationRequestEvent(this, id, headers));
-
-        Duration firstFetchTime = connectionService.getConnection(id).timeSinceLastFetch();
-        connectionService.handleConfigurationRequestEvent(
-            new ConfigurationRequestEvent(this, id, headers));
-        Duration secondFetchTime = connectionService.getConnection(id).timeSinceLastFetch();
-        assertTrue(secondFetchTime.compareTo(firstFetchTime) < 0);
-      }
     }
   }
 
