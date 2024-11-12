@@ -2,6 +2,7 @@
 package rocks.inspectit.gepard.agentmanager.connection.model.dto;
 
 import jakarta.validation.constraints.NotNull;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
 import rocks.inspectit.gepard.agentmanager.connection.model.Connection;
@@ -12,6 +13,7 @@ public record ConnectionDto(
     @NotNull(message = "Connection ID missing.") String connectionId,
     @NotNull(message = "Registration Time missing.") Instant registrationTime,
     @NotNull(message = "Connection status is missing") ConnectionStatus connectionStatus,
+    @NotNull(message = "Time since last fetch is missing.") Duration timeSinceLastFetch,
     @NotNull(message = "Service Name missing.") String serviceName,
     @NotNull(message = "Gepard Version missing.") String gepardVersion,
     @NotNull(message = "OpenTelemetry Version missing.") String otelVersion,
@@ -25,6 +27,7 @@ public record ConnectionDto(
         id,
         connection.getRegistrationTime(),
         connection.getConnectionStatus(),
+        Duration.between(connection.getLastFetch(), Instant.now()),
         connection.getAgent().getServiceName(),
         connection.getAgent().getGepardVersion(),
         connection.getAgent().getOtelVersion(),

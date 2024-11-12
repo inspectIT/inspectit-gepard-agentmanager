@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,10 +17,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import rocks.inspectit.gepard.agentmanager.connection.model.Connection;
 import rocks.inspectit.gepard.agentmanager.connection.model.ConnectionStatus;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.ConnectionDto;
-import rocks.inspectit.gepard.agentmanager.connection.model.dto.CreateConnectionRequest;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.QueryConnectionRequest;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.UpdateConnectionRequest;
 import rocks.inspectit.gepard.agentmanager.connection.service.ConnectionService;
@@ -32,54 +31,6 @@ class ConnectionControllerTest {
   @Autowired private ObjectMapper objectMapper;
 
   @MockBean private ConnectionService connectionService;
-
-  @Test
-  void connect_whenFieldIsMissing_shouldReturnBadRequest() throws Exception {
-    String id = "7e4686b7998c88427b14700f1c2aa69304a1c2fdb899067efe8ba9542fc02029";
-    String requestBody =
-        """
-                {
-                "serviceName": "customer-service-e",
-                "gepardVersion: "0.0.1",
-                "otelVersion": "1.26.8"
-
-                }
-                """;
-
-    mockMvc
-        .perform(
-            post("/api/v1/connections/{id}", id)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestBody))
-        .andExpect(status().isBadRequest());
-  }
-
-  @Test
-  void connect_whenEverythingIsValid_shouldReturnOk() throws Exception {
-    String id = "7e4686b7998c88427b14700f1c2aa69304a1c2fdb899067efe8ba9542fc02029";
-    CreateConnectionRequest createConnectionRequest =
-        new CreateConnectionRequest(
-            "customer-service-e",
-            "0.0.1",
-            "1.26.8",
-            "67887@localhost",
-            Instant.now(),
-            "22",
-            Map.of());
-
-    Connection connection = CreateConnectionRequest.toConnection(createConnectionRequest);
-    when(connectionService.handleConnectRequest(id, createConnectionRequest))
-        .thenReturn(connection);
-
-    mockMvc
-        .perform(
-            post("/api/v1/connections/{id}", id)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(createConnectionRequest)))
-        .andExpect(status().isCreated())
-        .andExpect(header().exists("Location"))
-        .andExpect(header().string("Location", "http://localhost/api/v1/connections/" + id));
-  }
 
   @Test
   void get_connections_whenEverythingIsValid_shouldReturnOk() throws Exception {
@@ -97,6 +48,7 @@ class ConnectionControllerTest {
             "id",
             Instant.now(),
             ConnectionStatus.CONNECTED,
+            Duration.ofSeconds(3),
             "service name",
             "5",
             "7",
@@ -122,6 +74,7 @@ class ConnectionControllerTest {
             "id",
             Instant.now(),
             ConnectionStatus.CONNECTED,
+            Duration.ofSeconds(3),
             "service name",
             "5",
             "7",
@@ -174,6 +127,7 @@ class ConnectionControllerTest {
                 "id",
                 Instant.now(),
                 ConnectionStatus.CONNECTED,
+                Duration.ofSeconds(2),
                 "service-name",
                 "0.0.1",
                 "1.26.8",
@@ -233,6 +187,7 @@ class ConnectionControllerTest {
                 "id",
                 Instant.parse("2023-04-15T12:34:56Z"),
                 ConnectionStatus.CONNECTED,
+                Duration.ofSeconds(2),
                 "service-name",
                 "0.0.1",
                 "1.26.8",

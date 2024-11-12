@@ -3,6 +3,7 @@ package rocks.inspectit.gepard.agentmanager.configuration.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+import java.util.Map;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,10 +18,15 @@ public class ConfigurationController {
 
   private final ConfigurationService configurationService;
 
-  @GetMapping
-  @Operation(summary = "Get the agent configuration.")
-  public ResponseEntity<InspectitConfiguration> getAgentConfiguration() {
-    InspectitConfiguration configuration = configurationService.getConfiguration();
+  @GetMapping("/{agentId}")
+  @Operation(
+      summary =
+          "Get the agent configuration and register the agent with the given id and agent info in the configuration server.")
+  public ResponseEntity<InspectitConfiguration> getAgentConfiguration(
+      @PathVariable String agentId, @RequestHeader Map<String, String> headers) {
+
+    InspectitConfiguration configuration =
+        configurationService.handleConfigurationRequest(agentId, headers);
 
     // No config available
     if (Objects.isNull(configuration)) {
