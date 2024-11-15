@@ -18,13 +18,10 @@ export default function ConnectionAttributesFilter<TData>({
   sortedUniqueValues,
 }: Readonly<ConnectionAttributesFilterProps<TData>>) {
   const [open, setOpen] = useState(false);
-  console.log(sortedUniqueValues);
   const [attributes, setAttributes] = useState<Attribute[]>([]);
 
   const handleDeleteAttribute = (targetAttribute: Attribute) => {
-    console.log(targetAttribute);
     setAttributes((prev: Attribute[]) => {
-      console.log(prev);
       return prev.filter(
         (prevAttribute) =>
           prevAttribute.key != targetAttribute.key &&
@@ -33,7 +30,6 @@ export default function ConnectionAttributesFilter<TData>({
     });
 
     column.setFilterValue((prev: Attribute[]) => {
-      console.log(prev);
       return prev.filter(
         (prevAttribute) =>
           prevAttribute.key != targetAttribute.key &&

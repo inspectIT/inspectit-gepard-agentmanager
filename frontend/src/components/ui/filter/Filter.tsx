@@ -17,21 +17,25 @@ export default function Filter<TData>({
     | string
     | undefined;
 
+  const facetedUniqueValues = column.getFacetedUniqueValues();
+
   const getSortedUniqueValues = (): string[] => {
     // Not implemented yet!
     if (filterVariant === "range") {
       return [];
-    } else {
-      const values = Array.from(column.getFacetedUniqueValues().keys())
+    } else if (filterVariant === "search" || filterVariant === "select") {
+      const values = Array.from(facetedUniqueValues.keys())
         .sort((a: string, b: string) => a.localeCompare(b))
         .slice(0, 5000);
       return values as string[];
+    } else {
+      return Array.from(facetedUniqueValues.keys()) as string[];
     }
   };
 
   const sortedUniqueValues = useMemo(getSortedUniqueValues, [
     filterVariant,
-    column,
+    facetedUniqueValues,
   ]);
 
   if (filterVariant === "range") {

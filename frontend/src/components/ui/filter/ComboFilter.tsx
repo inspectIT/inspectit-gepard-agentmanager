@@ -35,10 +35,8 @@ export default function ComboFilter<TData, TValue>({
         const index = old.indexOf(value);
         if (index > -1) {
           // Remove the value from the array
-          console.log("Remove!");
           return old.filter((item) => item !== value);
         } else {
-          console.log("add!");
           // Add the value to the array
           return [...old, value];
         }
