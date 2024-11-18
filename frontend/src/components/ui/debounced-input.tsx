@@ -1,5 +1,5 @@
 import { InputHTMLAttributes, useEffect, useState } from "react";
-import { Input } from "./input";
+import { Input } from "@/components/ui/shadcn/input";
 
 // A typical debounced input react component
 export default function DebouncedInput({
@@ -20,7 +20,6 @@ export default function DebouncedInput({
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      console.log(value);
       onChange(value);
     }, debounce);
 

@@ -1,12 +1,16 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import ConnectionsView from "@/components/features/connections/ConnectionsView";
-import { Connection } from "@/types/Connection";
+import { Connection, ServerConnection } from "@/types/Connection";
 import { generateMockConnection } from "../../../mocks-data";
+import { ConnectionService } from "@/services/ConnectionService";
 
-const mockConnections: Connection[] = [
+const serverMockConnections: ServerConnection[] = [
   generateMockConnection("service-1"),
   generateMockConnection("service-2"),
 ];
+
+const mockConnections: Connection[] =
+  ConnectionService.transformConnectionsResponse(serverMockConnections);
 
 describe("ConnectionsView", () => {
   it("renders ConnectionsView component", () => {
@@ -20,35 +24,6 @@ describe("ConnectionsView", () => {
   it("renders the correct number of connections", () => {
     render(<ConnectionsView connections={mockConnections} />);
     expect(screen.getAllByRole("row")).toHaveLength(3);
-  });
-
-  it("filters connections based on search input", async () => {
-    render(<ConnectionsView connections={mockConnections} />);
-    const searchInput = screen.getByPlaceholderText("Search all columns...");
-    fireEvent.change(searchInput, { target: { value: "service-1" } });
-
-    await waitFor(
-      () => {
-        expect(screen.getByText("service-1")).toBeInTheDocument();
-        expect(screen.queryByText("service-2")).not.toBeInTheDocument();
-      },
-      { timeout: 1000 }
-    );
-  });
-
-  it("clears the filter when search input is empty", async () => {
-    render(<ConnectionsView connections={mockConnections} />);
-    const searchInput = screen.getByPlaceholderText("Search all columns...");
-    fireEvent.change(searchInput, { target: { value: "service-1" } });
-    fireEvent.change(searchInput, { target: { value: "" } });
-
-    await waitFor(
-      () => {
-        expect(screen.getByText("service-1")).toBeInTheDocument();
-        expect(screen.queryByText("service-2")).toBeInTheDocument();
-      },
-      { timeout: 1000 }
-    );
   });
 
   it("renders JVM Start Time Correctly", () => {

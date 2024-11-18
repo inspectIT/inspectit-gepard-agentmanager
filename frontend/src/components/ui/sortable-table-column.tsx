@@ -1,6 +1,6 @@
 import { ArrowUpDown } from "lucide-react";
 import { Column } from "@tanstack/react-table";
-import { Button } from "./button";
+import { Button } from "@/components/ui/shadcn/button";
 
 interface SortableTableColumnProps<T> {
   column: Column<T>;
@@ -18,6 +18,7 @@ export default function SortableTableColumn<T>({
   return (
     <Button
       variant="ghost"
+      className="px-2"
       // when the button is clicked, the sorting direction is toggled
       onClick={() => {
         column.toggleSorting(column.getIsSorted() === "asc");

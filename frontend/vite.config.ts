@@ -19,5 +19,9 @@ export default defineConfig({
     globals: true,
     setupFiles: "tests/vitest.setup.ts",
     env: loadEnv("development", process.cwd(), ""),
+    coverage: {
+      include: ["src/*/**"],
+      exclude: ["src/**/shadcn/**"],
+    },
   },
 });

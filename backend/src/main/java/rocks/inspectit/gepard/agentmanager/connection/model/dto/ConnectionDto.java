@@ -9,6 +9,7 @@ import rocks.inspectit.gepard.agentmanager.connection.model.ConnectionStatus;
 
 /** Represents a connection response. */
 public record ConnectionDto(
+    @NotNull(message = "Connection ID missing.") String connectionId,
     @NotNull(message = "Registration Time missing.") Instant registrationTime,
     @NotNull(message = "Connection status is missing") ConnectionStatus connectionStatus,
     @NotNull(message = "Service Name missing.") String serviceName,
@@ -19,8 +20,9 @@ public record ConnectionDto(
     @NotNull(message = "Java Version missing.") String javaVersion,
     @NotNull(message = "Attributes are missing.") Map<String, String> attributes) {
 
-  public static ConnectionDto fromConnection(Connection connection) {
+  public static ConnectionDto fromConnection(String id, Connection connection) {
     return new ConnectionDto(
+        id,
         connection.getRegistrationTime(),
         connection.getConnectionStatus(),
         connection.getAgent().getServiceName(),

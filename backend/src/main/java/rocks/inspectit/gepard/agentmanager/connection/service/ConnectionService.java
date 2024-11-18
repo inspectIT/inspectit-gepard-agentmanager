@@ -55,7 +55,7 @@ public class ConnectionService {
       throw new NoSuchElementException("Connection not found for agent: " + connectionId);
 
     connection.setConnectionStatus(updateRequest.connectionStatus());
-    return ConnectionDto.fromConnection(connection);
+    return ConnectionDto.fromConnection(connectionId, connection);
   }
 
   /**
@@ -64,7 +64,9 @@ public class ConnectionService {
    * @return List<ConnectionDto> All connections from the cache.
    */
   public List<ConnectionDto> getConnections() {
-    return connectionCache.values().stream().map(ConnectionDto::fromConnection).toList();
+    return connectionCache.entrySet().stream()
+        .map(entry -> ConnectionDto.fromConnection(entry.getKey(), entry.getValue()))
+        .collect(Collectors.toList());
   }
 
   /**
@@ -74,9 +76,9 @@ public class ConnectionService {
    * @return List<ConnectionDto> The connections that match the query.
    */
   public List<ConnectionDto> queryConnections(QueryConnectionRequest query) {
-    return connectionCache.values().stream()
-        .filter(connection -> matchesConnection(connection, query))
-        .map(ConnectionDto::fromConnection)
+    return connectionCache.entrySet().stream()
+        .filter(entry -> matchesConnection(entry.getValue(), query))
+        .map(entry -> ConnectionDto.fromConnection(entry.getKey(), entry.getValue()))
         .collect(Collectors.toList());
   }
 
@@ -92,7 +94,7 @@ public class ConnectionService {
     if (connection == null)
       throw new NoSuchElementException("No connection with id " + id + " found in cache.");
 
-    return ConnectionDto.fromConnection(connection);
+    return ConnectionDto.fromConnection(id, connection);
   }
 
   /**

@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { MenuIcon } from "lucide-react";
 import SideNavigation from "./SideNavigation";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+} from "@/components/ui/shadcn/sheet";
 
 /*
 This components is used, if the viewport is smaller than md.

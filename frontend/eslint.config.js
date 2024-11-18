@@ -42,5 +42,7 @@ export default tseslint.config(
       'react/prop-types': [2, { ignore: ['className', 'orientation'] }],
       '@typescript-eslint/no-confusing-void-expression': 'off',
     },
+    ignores: ['src/**/shadcn/**']
+
   },
 )
