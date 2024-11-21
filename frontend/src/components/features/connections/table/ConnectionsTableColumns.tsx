@@ -118,21 +118,25 @@ export const ConnectionsTableColumns: ColumnDef<Connection>[] = [
     },
   },
   {
+    accessorKey: "lastFetch",
+    header: () => {
+      return <UnsortableTableColumn title="Last Fetch" />;
+    },
+    cell: ({ row }) => {
+      return (
+        <div className="px-2 align-middle font-medium">
+          {row.getValue("lastFetch")}
+        </div>
+      );
+    },
+  },
+  {
     accessorKey: "details",
     header: () => {
       return <UnsortableTableColumn title="Details" />;
     },
     cell: ({ row }) => {
       return <RowExpander row={row} />;
-    },
-  },
-  {
-    accessorKey: "attributes",
-    //@ts-expect-error Seems like a library bug, that filterFn is not found by typescript.
-    filterFn: "attributeEquals",
-    meta: {
-      filterVariant: "attributes",
-      title: "Java Version",
     },
   },
 ];

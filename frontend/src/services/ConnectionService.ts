@@ -5,6 +5,7 @@ import {
   ConnectionSchema,
   ServerConnection,
 } from "@/types/Connection";
+import { transformConnectionsResponse } from "@/lib/data-transformation";
 
 const ROUTES = {
   FIND_ALL: "connections",
@@ -16,31 +17,7 @@ export const ConnectionService = {
     const data = await kyInstance
       .get(ROUTES.FIND_ALL)
       .json<ServerConnection[]>();
-    const transformedConnections =
-      ConnectionService.transformConnectionsResponse(data);
+    const transformedConnections = transformConnectionsResponse(data);
     return z.array(ConnectionSchema).parse(transformedConnections);
-  },
-  transformConnectionsResponse(apiResponse: ServerConnection[]) {
-    return apiResponse.map((item) => {
-      const transformedAttributes = Object.entries(item.attributes).map(
-        ([key, value]) => ({
-          key,
-          value,
-        })
-      );
-
-      return {
-        connectionId: item.connectionId,
-        registrationTime: item.registrationTime,
-        connectionStatus: item.connectionStatus,
-        serviceName: item.serviceName,
-        gepardVersion: item.gepardVersion,
-        otelVersion: item.otelVersion,
-        vmId: item.vmId,
-        startTime: item.startTime,
-        javaVersion: item.javaVersion,
-        attributes: transformedAttributes,
-      };
-    });
   },
 };
