@@ -6,7 +6,7 @@ import tseslint from 'typescript-eslint'
 import react from 'eslint-plugin-react'
 
 export default tseslint.config(
-  { ignores: ['dist'] },
+  { ignores: ['dist', 'coverage', 'src/**/shadcn/**'] },
   {
     settings: {
       react: {
@@ -42,7 +42,5 @@ export default tseslint.config(
       'react/prop-types': [2, { ignore: ['className', 'orientation'] }],
       '@typescript-eslint/no-confusing-void-expression': 'off',
     },
-    ignores: ['src/**/shadcn/**']
-
   },
 )

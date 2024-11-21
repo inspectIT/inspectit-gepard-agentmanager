@@ -22,7 +22,7 @@ export default function ConnectionFilters({
 
   const columns = table.getAllColumns();
 
-  // Get only headers that are filterable
+  // Get only columns that are filterable
   const filterableColumns = columns.filter((column) => {
     return filterableColumnIds.includes(column.id);
   });
