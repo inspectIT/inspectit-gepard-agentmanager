@@ -24,6 +24,13 @@ import rocks.inspectit.gepard.commons.model.agent.Agent;
 @RequiredArgsConstructor
 public class ConnectionService {
 
+  public static final String X_GEPARD_SERVICE_NAME = "x-gepard-service-name";
+  public static final String X_GEPARD_VM_ID = "x-gepard-vm-id";
+  public static final String X_GEPARD_GEPARD_VERSION = "x-gepard-gepard-version";
+  public static final String X_GEPARD_OTEL_VERSION = "x-gepard-otel-version";
+  public static final String X_GEPARD_JAVA_VERSION = "x-gepard-java-version";
+  public static final String X_GEPARD_START_TIME = "x-gepard-start-time";
+
   private final ConcurrentHashMap<String, Connection> connectionCache;
   private final RegexQueryService regexQueryService;
 
@@ -72,7 +79,7 @@ public class ConnectionService {
   public List<ConnectionDto> getConnections() {
     return connectionCache.entrySet().stream()
         .map(entry -> ConnectionDto.fromConnection(entry.getKey(), entry.getValue()))
-        .collect(Collectors.toList());
+        .toList();
   }
 
   /**
@@ -85,7 +92,7 @@ public class ConnectionService {
     return connectionCache.entrySet().stream()
         .filter(entry -> matchesConnection(entry.getValue(), query))
         .map(entry -> ConnectionDto.fromConnection(entry.getKey(), entry.getValue()))
-        .collect(Collectors.toList());
+        .toList();
   }
 
   /**
@@ -207,12 +214,12 @@ public class ConnectionService {
 
     validateConfigurationRequestHeaders(headers);
 
-    String serviceName = headers.get("x-gepard-service-name");
-    String vmId = headers.get("x-gepard-vm-id");
-    String gepardVersion = headers.get("x-gepard-gepard-version");
-    String otelVersion = headers.get("x-gepard-otel-version");
-    String javaVersion = headers.get("x-gepard-java-version");
-    String startTime = headers.get("x-gepard-start-time");
+    String serviceName = headers.get(X_GEPARD_SERVICE_NAME);
+    String vmId = headers.get(X_GEPARD_VM_ID);
+    String gepardVersion = headers.get(X_GEPARD_GEPARD_VERSION);
+    String otelVersion = headers.get(X_GEPARD_OTEL_VERSION);
+    String javaVersion = headers.get(X_GEPARD_JAVA_VERSION);
+    String startTime = headers.get(X_GEPARD_START_TIME);
 
     Map<String, String> attributes =
         headers.entrySet().stream()

@@ -28,9 +28,10 @@ class ConfigurationControllerTest {
   @Autowired private ObjectMapper objectMapper;
 
   @MockBean private ConfigurationService configurationService;
+
   @MockBean private ConnectionService connectionService;
 
-  private static String agentId = "12345";
+  private static final String AGENT_ID = "12345";
 
   @Test
   void getConfiguration_whenNoConfigAvailable_shouldReturnNoContent() throws Exception {
@@ -38,7 +39,7 @@ class ConfigurationControllerTest {
     when(configurationService.getConfiguration()).thenReturn(null);
 
     mockMvc
-        .perform(get("/api/v1/agent-configuration/" + agentId))
+        .perform(get("/api/v1/agent-configuration/" + AGENT_ID))
         .andExpect(status().isNoContent());
   }
 
@@ -50,34 +51,10 @@ class ConfigurationControllerTest {
     when(configurationService.getConfiguration()).thenReturn(new InspectitConfiguration());
 
     mockMvc
-        .perform(get("/api/v1/agent-configuration/" + agentId).headers(headers))
+        .perform(get("/api/v1/agent-configuration/" + AGENT_ID).headers(headers))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(content().json(objectMapper.writeValueAsString(new InspectitConfiguration())));
-  }
-
-  @Test
-  void getConfiguration_whenAgentIsNew_shouldReturnRegistrationHeaderTrue() throws Exception {
-    HttpHeaders headers = getGepardHeaders();
-    when(configurationService.getConfiguration()).thenReturn(new InspectitConfiguration());
-    when(connectionService.handleConfigurationRequest(agentId, headers.toSingleValueMap()))
-        .thenReturn(true);
-
-    mockMvc
-        .perform(get("/api/v1/agent-configuration/" + agentId).headers(headers))
-        .andExpect(header().string("x-gepard-service-registered", "true"));
-  }
-
-  @Test
-  void getConfiguration_whenAgentIsNew_shouldReturnRegistrationHeaderFalse() throws Exception {
-    HttpHeaders headers = getGepardHeaders();
-    when(configurationService.getConfiguration()).thenReturn(new InspectitConfiguration());
-    when(connectionService.handleConfigurationRequest(agentId, headers.toSingleValueMap()))
-        .thenReturn(false);
-
-    mockMvc
-        .perform(get("/api/v1/agent-configuration/" + agentId).headers(headers))
-        .andExpect(header().string("x-gepard-service-registered", "false"));
   }
 
   @Test

@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import java.util.Map;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import rocks.inspectit.gepard.agentmanager.configuration.service.ConfigurationService;
@@ -35,9 +36,11 @@ public class ConfigurationController {
       return ResponseEntity.noContent().build();
     }
 
-    return ResponseEntity.ok()
-        .header("x-gepard-service-registered", String.valueOf(isFirstRequest))
-        .body(configuration);
+    if (isFirstRequest) {
+      return ResponseEntity.status(HttpStatus.CREATED).body(configuration);
+    }
+
+    return ResponseEntity.ok().body(configuration);
   }
 
   @PutMapping
