@@ -1,6 +1,6 @@
 import { render } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
 import { isRouteErrorResponse, useRouteError } from "react-router-dom";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import ErrorPage from "@/pages/ErrorPage";
 
 vi.mock("react-router-dom");

@@ -3,6 +3,7 @@ import ConnectionsPage from "@/pages/ConnectionsPage";
 import { render, screen } from "@testing-library/react";
 import { generateMockConnection } from "../mocks-data";
 import { Mock, vi } from "vitest";
+
 vi.mock("@/hooks/features/connections/useConnections");
 
 describe("ConnectionsPage", () => {
