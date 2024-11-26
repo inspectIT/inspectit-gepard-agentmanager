@@ -35,9 +35,6 @@ tasks.register('package_frontend', Jar) {
 // Task to build the frontend
 npm_run_build {
 
-    // First clean the dist and build directory
-    // dependsOn clean
-
     // Only execute this task if something in the frontend has changed.
     inputs.files fileTree('src')
     inputs.files fileTree('public')

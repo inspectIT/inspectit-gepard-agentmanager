@@ -8,6 +8,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import rocks.inspectit.gepard.agentmanager.exception.MissingHeaderException;
 
+/** Validation class that helps checking that all mandatory headers are set. */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ConfigurationRequestHeaderValidator {
   public static void validateConfigurationRequestHeaders(Map<String, String> headers) {

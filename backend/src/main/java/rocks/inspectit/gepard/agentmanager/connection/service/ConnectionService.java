@@ -30,6 +30,7 @@ public class ConnectionService {
   public static final String X_GEPARD_OTEL_VERSION = "x-gepard-otel-version";
   public static final String X_GEPARD_JAVA_VERSION = "x-gepard-java-version";
   public static final String X_GEPARD_START_TIME = "x-gepard-start-time";
+  public static final String X_GEPARD_ATTRIBUTE = "x-gepard-attribute-";
 
   private final ConcurrentHashMap<String, Connection> connectionCache;
   private final RegexQueryService regexQueryService;
@@ -40,6 +41,7 @@ public class ConnectionService {
    *
    * @param agentId The id of the agent to be connected.
    * @param headers The request headers, which should contain the agent information.
+   * @return true if it is a new the connection, false if it is a reconnect
    */
   public boolean handleConfigurationRequest(String agentId, Map<String, String> headers) {
     boolean isNewRegistration;
@@ -223,13 +225,11 @@ public class ConnectionService {
 
     Map<String, String> attributes =
         headers.entrySet().stream()
-            .filter(entry -> entry.getKey().startsWith("x-gepard-attribute-"))
+            .filter(entry -> entry.getKey().startsWith(X_GEPARD_ATTRIBUTE))
             .collect(
                 Collectors.toMap(
                     entry ->
-                        entry
-                            .getKey()
-                            .substring("x-gepard-attribute-".length()), // remove the prefix
+                        entry.getKey().substring(X_GEPARD_ATTRIBUTE.length()), // remove the prefix
                     Map.Entry::getValue));
 
     Agent agent =

@@ -33,7 +33,7 @@ public class ConfigurationRequestTestUtils {
     headers.add(X_GEPARD_OTEL_VERSION, "test-otel-version");
     headers.add(X_GEPARD_JAVA_VERSION, "test-java-version");
     headers.add(X_GEPARD_START_TIME, Instant.now().toString());
-    headers.add("x-gepard-attribute-test-attribute", "test-attribute-value");
+    headers.add(X_GEPARD_ATTRIBUTE + "test-attribute", "test-attribute-value");
     return headers;
   }
 }
