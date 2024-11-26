@@ -12,10 +12,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import rocks.inspectit.gepard.agentmanager.connection.model.Connection;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.ConnectionDto;
-import rocks.inspectit.gepard.agentmanager.connection.model.dto.CreateConnectionRequest;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.QueryConnectionRequest;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.UpdateConnectionRequest;
 import rocks.inspectit.gepard.agentmanager.connection.service.ConnectionService;
@@ -31,15 +28,6 @@ import rocks.inspectit.gepard.agentmanager.exception.ApiError;
 public class ConnectionController {
 
   private final ConnectionService connectionService;
-
-  @PostMapping("/{id}")
-  @Operation(summary = "Connect an agent to the agent manager.")
-  public ResponseEntity<Void> connect(
-      @PathVariable String id, @Valid @RequestBody CreateConnectionRequest connectRequest) {
-    Connection connection = connectionService.handleConnectRequest(id, connectRequest);
-    return ResponseEntity.created(ServletUriComponentsBuilder.fromCurrentRequest().build().toUri())
-        .build();
-  }
 
   @PatchMapping("/{id}")
   @Operation(summary = "Update the agent connection.")

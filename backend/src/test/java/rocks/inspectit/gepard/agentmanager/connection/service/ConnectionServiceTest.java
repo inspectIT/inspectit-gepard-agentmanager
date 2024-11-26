@@ -2,13 +2,16 @@
 package rocks.inspectit.gepard.agentmanager.connection.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.*;
+import static rocks.inspectit.gepard.agentmanager.testutils.ConfigurationRequestTestUtils.getGepardHeadersAsMap;
 
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -19,7 +22,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import rocks.inspectit.gepard.agentmanager.connection.model.Connection;
 import rocks.inspectit.gepard.agentmanager.connection.model.ConnectionStatus;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.ConnectionDto;
-import rocks.inspectit.gepard.agentmanager.connection.model.dto.CreateConnectionRequest;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.QueryConnectionRequest;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.UpdateConnectionRequest;
 import rocks.inspectit.gepard.agentmanager.connection.validation.RegexQueryService;
@@ -60,17 +62,8 @@ class ConnectionServiceTest {
     @Test
     void testGetConnections() {
       String id = "7e4686b7998c88427b14700f1c2aa69304a1c2fdb899067efe8ba9542fc02029";
-      CreateConnectionRequest createConnectionRequest =
-          new CreateConnectionRequest(
-              "customer-service-e",
-              "0.0.1",
-              "1.26.8",
-              "67887@localhost",
-              Instant.now(),
-              "22",
-              Map.of());
-      connectionService.handleConnectRequest(id, createConnectionRequest);
-      connectionService.handleConnectRequest(id, createConnectionRequest);
+
+      connectionCache.put(id, createTestConnection());
 
       List<ConnectionDto> response = connectionService.getConnections();
 
@@ -80,52 +73,52 @@ class ConnectionServiceTest {
     @Test
     void testGetConnection() {
       String id = "7e4686b7998c88427b14700f1c2aa69304a1c2fdb899067efe8ba9542fc02029";
-      CreateConnectionRequest createConnectionRequest =
-          new CreateConnectionRequest(
-              "customer-service-e",
-              "0.0.1",
-              "1.26.8",
-              "67887@localhost",
-              Instant.now(),
-              "22",
-              Map.of());
-      Connection connection = connectionService.handleConnectRequest(id, createConnectionRequest);
+
+      Connection connection = createTestConnection();
+      connectionCache.put(id, connection);
 
       ConnectionDto connectionDto = connectionService.getConnection(id);
 
-      assertEquals(createConnectionRequest.startTime(), connectionDto.startTime());
-      assertEquals(createConnectionRequest.javaVersion(), connectionDto.javaVersion());
-      assertEquals(createConnectionRequest.otelVersion(), connectionDto.otelVersion());
-      assertEquals(createConnectionRequest.gepardVersion(), connectionDto.gepardVersion());
-      assertEquals(createConnectionRequest.vmId(), connectionDto.vmId());
-      assertEquals(createConnectionRequest.serviceName(), connectionDto.serviceName());
+      assertEquals(connection.getAgent().getStartTime(), connectionDto.startTime());
+      assertEquals(connection.getAgent().getJavaVersion(), connectionDto.javaVersion());
+      assertEquals(connection.getAgent().getOtelVersion(), connectionDto.otelVersion());
+      assertEquals(connection.getAgent().getGepardVersion(), connectionDto.gepardVersion());
+      assertEquals(connection.getAgent().getVmId(), connectionDto.vmId());
+      assertEquals(connection.getAgent().getServiceName(), connectionDto.serviceName());
     }
   }
 
   @Nested
-  class HandleConnectRequest {
+  class HandleConfigurationRequest {
+    @Test
+    void testHandleConfigurationRequestUpdatesLastFetchOnExistingEntity()
+        throws InterruptedException {
+      String id = "7e4686b7998c88427b14700f1c2aa69304a1c2fdb899067efe8ba9542fc02029";
+
+      boolean isFirstRequest;
+      isFirstRequest = connectionService.handleConfigurationRequest(id, getGepardHeadersAsMap());
+      ConnectionDto connectionDto = connectionService.getConnection(id);
+      assertTrue(isFirstRequest);
+      isFirstRequest = connectionService.handleConfigurationRequest(id, getGepardHeadersAsMap());
+      ConnectionDto connectionDto2 = connectionService.getConnection(id);
+
+      await().atMost(1, TimeUnit.SECONDS);
+      assertFalse(isFirstRequest);
+      ConnectionDto connectionDto3 = connectionService.getConnection(id);
+
+      assertTrue(
+          connectionDto2.timeSinceLastFetch().compareTo(connectionDto3.timeSinceLastFetch()) < 0);
+    }
 
     @Test
-    void testHandleConnectRequest() {
+    void testHandleConfigurationRequestCreatesNewEntity() {
       String id = "7e4686b7998c88427b14700f1c2aa69304a1c2fdb899067efe8ba9542fc02029";
-      CreateConnectionRequest createConnectionRequest =
-          new CreateConnectionRequest(
-              "customer-service-e",
-              "0.0.1",
-              "1.26.8",
-              "67887@localhost",
-              Instant.now(),
-              "22",
-              Map.of());
 
-      Connection response = connectionService.handleConnectRequest(id, createConnectionRequest);
-
-      assertEquals(createConnectionRequest.startTime(), response.getAgent().getStartTime());
-      assertEquals(createConnectionRequest.javaVersion(), response.getAgent().getJavaVersion());
-      assertEquals(createConnectionRequest.otelVersion(), response.getAgent().getOtelVersion());
-      assertEquals(createConnectionRequest.gepardVersion(), response.getAgent().getGepardVersion());
-      assertEquals(createConnectionRequest.vmId(), response.getAgent().getVmId());
-      assertEquals(createConnectionRequest.serviceName(), response.getAgent().getServiceName());
+      boolean isFirstRequest =
+          connectionService.handleConfigurationRequest(id, getGepardHeadersAsMap());
+      ConnectionDto connectionDto = connectionService.getConnection(id);
+      assertTrue(isFirstRequest);
+      assertNotNull(connectionDto);
     }
   }
 
@@ -449,6 +442,7 @@ class ConnectionServiceTest {
   private Connection createTestConnection(Instant registrationTime, String serviceName) {
     return new Connection(
         registrationTime,
+        Instant.now(),
         ConnectionStatus.CONNECTED,
         new Agent(serviceName, "1234@localhost", "1.0", "1.0", Instant.now(), "17", Map.of()));
   }
@@ -461,6 +455,7 @@ class ConnectionServiceTest {
       Instant registrationTime, Map<String, String> attributes) {
     return new Connection(
         registrationTime,
+        Instant.now(),
         ConnectionStatus.CONNECTED,
         new Agent("testService", "1234@localhost", "1.0", "1.0", Instant.now(), "17", attributes));
   }

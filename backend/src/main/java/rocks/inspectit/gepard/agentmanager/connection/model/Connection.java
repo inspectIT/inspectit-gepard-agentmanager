@@ -19,6 +19,9 @@ public class Connection {
   /** The registration time. * */
   private Instant registrationTime;
 
+  /** The time of the last communication. */
+  private Instant lastFetch;
+
   /** The status of the connection. */
   private ConnectionStatus connectionStatus;
 

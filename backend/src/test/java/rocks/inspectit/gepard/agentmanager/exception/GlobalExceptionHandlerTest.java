@@ -195,4 +195,19 @@ class GlobalExceptionHandlerTest {
     assertEquals("requestURI", response.getBody().path());
     assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
   }
+
+  @Test
+  void handleMissingHeaderException() {
+    MissingHeaderException exception = Mockito.mock(MissingHeaderException.class);
+    HttpServletRequest httpServletRequest = Mockito.mock(HttpServletRequest.class);
+    Mockito.when(httpServletRequest.getRequestURI()).thenReturn("requestURI");
+    Mockito.when(exception.getMessage()).thenReturn("exception message");
+
+    ResponseEntity<ApiError> response =
+        globalExceptionHandler.handleMissingHeaderException(exception, httpServletRequest);
+
+    assertEquals(List.of("exception message"), Objects.requireNonNull(response.getBody()).errors());
+    assertEquals("requestURI", response.getBody().path());
+    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+  }
 }

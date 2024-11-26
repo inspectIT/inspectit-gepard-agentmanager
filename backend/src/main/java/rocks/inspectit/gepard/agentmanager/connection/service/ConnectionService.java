@@ -1,6 +1,9 @@
 /* (C) 2024 */
 package rocks.inspectit.gepard.agentmanager.connection.service;
 
+import static rocks.inspectit.gepard.agentmanager.configuration.validation.ConfigurationRequestHeaderValidator.validateConfigurationRequestHeaders;
+
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -8,8 +11,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import rocks.inspectit.gepard.agentmanager.connection.model.Connection;
+import rocks.inspectit.gepard.agentmanager.connection.model.ConnectionStatus;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.ConnectionDto;
-import rocks.inspectit.gepard.agentmanager.connection.model.dto.CreateConnectionRequest;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.QueryConnectionRequest;
 import rocks.inspectit.gepard.agentmanager.connection.model.dto.UpdateConnectionRequest;
 import rocks.inspectit.gepard.agentmanager.connection.validation.RegexQueryService;
@@ -21,23 +24,35 @@ import rocks.inspectit.gepard.commons.model.agent.Agent;
 @RequiredArgsConstructor
 public class ConnectionService {
 
-  private final ConcurrentHashMap<String, Connection> connectionCache;
+  public static final String X_GEPARD_SERVICE_NAME = "x-gepard-service-name";
+  public static final String X_GEPARD_VM_ID = "x-gepard-vm-id";
+  public static final String X_GEPARD_GEPARD_VERSION = "x-gepard-gepard-version";
+  public static final String X_GEPARD_OTEL_VERSION = "x-gepard-otel-version";
+  public static final String X_GEPARD_JAVA_VERSION = "x-gepard-java-version";
+  public static final String X_GEPARD_START_TIME = "x-gepard-start-time";
+  public static final String X_GEPARD_ATTRIBUTE = "x-gepard-attribute-";
 
+  private final ConcurrentHashMap<String, Connection> connectionCache;
   private final RegexQueryService regexQueryService;
 
   /**
-   * Handles a connection request from an agent.
+   * Handles a ConfigurationRequest. If the agent is not connected, it will be connected. If it is
+   * already connected, the last fetch time of the agent will be updated.
    *
-   * @param connectionId The id for the created connection.
-   * @param connectRequest The request for the new connection to be created.
-   * @return Connection The response containing all saved information.
+   * @param agentId The id of the agent to be connected.
+   * @param headers The request headers, which should contain the agent information.
+   * @return true if it is a new the connection, false if it is a reconnect
    */
-  public Connection handleConnectRequest(
-      String connectionId, CreateConnectionRequest connectRequest) {
-    Connection connection = CreateConnectionRequest.toConnection(connectRequest);
-    connectionCache.put(connectionId, connection);
-
-    return connection;
+  public boolean handleConfigurationRequest(String agentId, Map<String, String> headers) {
+    boolean isNewRegistration;
+    if (!isAgentConnected(agentId)) {
+      connectAgent(agentId, headers);
+      isNewRegistration = true;
+    } else {
+      updateConnectionLastFetch(agentId);
+      isNewRegistration = false;
+    }
+    return isNewRegistration;
   }
 
   /**
@@ -66,7 +81,7 @@ public class ConnectionService {
   public List<ConnectionDto> getConnections() {
     return connectionCache.entrySet().stream()
         .map(entry -> ConnectionDto.fromConnection(entry.getKey(), entry.getValue()))
-        .collect(Collectors.toList());
+        .toList();
   }
 
   /**
@@ -79,7 +94,7 @@ public class ConnectionService {
     return connectionCache.entrySet().stream()
         .filter(entry -> matchesConnection(entry.getValue(), query))
         .map(entry -> ConnectionDto.fromConnection(entry.getKey(), entry.getValue()))
-        .collect(Collectors.toList());
+        .toList();
   }
 
   /**
@@ -95,6 +110,29 @@ public class ConnectionService {
       throw new NoSuchElementException("No connection with id " + id + " found in cache.");
 
     return ConnectionDto.fromConnection(id, connection);
+  }
+
+  /**
+   * Determines if an agent is connected.
+   *
+   * @param agentId The id of the agent to be searched for.
+   * @return true if the agent was found in the cache, false otherwise.
+   */
+  public boolean isAgentConnected(String agentId) {
+    return connectionCache.get(agentId) != null;
+  }
+
+  /**
+   * Updates the last fetch time of an agent connection.
+   *
+   * @param agentId The id of the agent to be updated.
+   */
+  private void updateConnectionLastFetch(String agentId) {
+    Connection connection = connectionCache.get(agentId);
+    if (connection != null) connection.setLastFetch(Instant.now());
+    else
+      throw new NoSuchElementException(
+          "No connection for agent id " + agentId + " found in cache.");
   }
 
   /**
@@ -166,5 +204,47 @@ public class ConnectionService {
               return actualValue != null
                   && regexQueryService.matches(actualValue, queryEntry.getValue());
             });
+  }
+
+  /**
+   * Handles a connection request from an agent.
+   *
+   * @param connectionId The id for the created connection.
+   * @param headers The request headers, which should contain the agent information.
+   */
+  private void connectAgent(String connectionId, Map<String, String> headers) {
+
+    validateConfigurationRequestHeaders(headers);
+
+    String serviceName = headers.get(X_GEPARD_SERVICE_NAME);
+    String vmId = headers.get(X_GEPARD_VM_ID);
+    String gepardVersion = headers.get(X_GEPARD_GEPARD_VERSION);
+    String otelVersion = headers.get(X_GEPARD_OTEL_VERSION);
+    String javaVersion = headers.get(X_GEPARD_JAVA_VERSION);
+    String startTime = headers.get(X_GEPARD_START_TIME);
+
+    Map<String, String> attributes =
+        headers.entrySet().stream()
+            .filter(entry -> entry.getKey().startsWith(X_GEPARD_ATTRIBUTE))
+            .collect(
+                Collectors.toMap(
+                    entry ->
+                        entry.getKey().substring(X_GEPARD_ATTRIBUTE.length()), // remove the prefix
+                    Map.Entry::getValue));
+
+    Agent agent =
+        new Agent(
+            serviceName,
+            vmId,
+            gepardVersion,
+            otelVersion,
+            Instant.parse(startTime),
+            javaVersion,
+            attributes);
+
+    Connection connection =
+        new Connection(Instant.now(), Instant.now(), ConnectionStatus.CONNECTED, agent);
+
+    connectionCache.put(connectionId, connection);
   }
 }

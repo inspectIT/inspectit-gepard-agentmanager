@@ -21,7 +21,6 @@ import rocks.inspectit.gepard.config.model.InspectitConfiguration;
 class ConfigurationServiceTest {
 
   @InjectMocks private ConfigurationService configurationService;
-
   @Mock private GitService gitService;
 
   @Spy private ObjectMapper objectMapper;
@@ -99,5 +98,37 @@ class ConfigurationServiceTest {
     verify(gitService, times(0)).updateFileContent(anyString());
     verify(gitService, times(0)).commit();
     assertEquals("Failed to serialize InspectitConfiguration to JSON", exception.getMessage());
+  }
+
+  @Test
+  void testHandleConfigurationRequest() throws JsonProcessingException {
+    String fileContent =
+        """
+                    {
+                       "instrumentation": {
+                         "scopes": {
+                           "s_controller": {
+                             "fqn": "io.opentelemetry.smoketest.springboot.controller.WebController"
+                           }
+                         },
+                         "rules": {
+                           "r_controller": {
+                             "scopes": {
+                               "s_controller": true
+                             },
+                             "tracing": {
+                               "startSpan": true
+                             }
+                           }
+                         }
+                       }
+                     }
+                    """;
+
+    when(gitService.getFileContent()).thenReturn(fileContent);
+    when(objectMapper.readValue(fileContent, InspectitConfiguration.class))
+        .thenReturn(configuration);
+    InspectitConfiguration result = configurationService.getConfiguration();
+    assertEquals(configuration, result);
   }
 }

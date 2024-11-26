@@ -157,4 +157,17 @@ public class GlobalExceptionHandler {
 
     return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
   }
+
+  @ExceptionHandler(MissingHeaderException.class)
+  public ResponseEntity<ApiError> handleMissingHeaderException(
+      MissingHeaderException ex, HttpServletRequest request) {
+    ApiError apiError =
+        new ApiError(
+            request.getRequestURI(),
+            List.of(ex.getMessage()),
+            HttpStatus.BAD_REQUEST.value(),
+            LocalDateTime.now());
+
+    return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+  }
 }
