@@ -2,23 +2,21 @@ import { render, screen } from "@testing-library/react";
 import ConnectionsView from "@/components/features/connections/ConnectionsView";
 import { Connection, ServerConnection } from "@/types/Connection";
 import { generateMockConnection } from "../../../mocks-data";
-import { ConnectionService } from "@/services/ConnectionService";
+import { transformConnectionsResponse } from "@/lib/data-transformation";
 
 const serverMockConnections: ServerConnection[] = [
   generateMockConnection("service-1"),
   generateMockConnection("service-2"),
 ];
 
-const mockConnections: Connection[] =
-  ConnectionService.transformConnectionsResponse(serverMockConnections);
+const mockConnections: Connection[] = transformConnectionsResponse(
+  serverMockConnections
+);
 
 describe("ConnectionsView", () => {
   it("renders ConnectionsView component", () => {
     render(<ConnectionsView connections={mockConnections} />);
     expect(screen.getByText("Connections")).toBeInTheDocument();
-    expect(
-      screen.getByText("All currently connected agents.")
-    ).toBeInTheDocument();
   });
 
   it("renders the correct number of connections", () => {

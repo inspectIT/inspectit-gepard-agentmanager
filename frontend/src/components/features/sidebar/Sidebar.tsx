@@ -4,6 +4,7 @@ import { BsArrowLeftShort } from "react-icons/bs";
 import { cn } from "@/lib/utils";
 import SideNavigation from "./SideNavigation";
 import { useSidebarStore } from "@/stores/useSidebarStore";
+
 interface SidebarProps {
   className?: string;
 }

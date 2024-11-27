@@ -6,6 +6,7 @@ export const generateMockConnection = (
   connectionId: "123e4567-e89b-12d3-a456-426614174000",
   registrationTime: new Date().toISOString(),
   serviceName: serviceName,
+  timeSinceLastFetch: "PT1M",
   gepardVersion: "1.0.0",
   otelVersion: "1.0.0",
   vmId: "vm",

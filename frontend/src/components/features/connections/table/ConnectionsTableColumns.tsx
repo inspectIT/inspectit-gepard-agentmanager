@@ -44,21 +44,6 @@ export const ConnectionsTableColumns: ColumnDef<Connection>[] = [
       title: "Connection Status",
     },
   },
-  // {
-  //   accessorKey: "vmId",
-  //   header: ({ column }) => {
-  //     return <SortableTableColumn column={column} title="VM ID" />;
-  //   },
-  //   cell: ({ row }) => {
-  //     return (
-  //       <div className="px-4 align-middle font-medium">
-  //         {row.getValue("vmId")}
-  //       </div>
-  //     );
-  //   },
-  //   enableGlobalFilter: true,
-
-  // },
   {
     accessorKey: "javaVersion",
     header: ({ column }) => {
@@ -118,12 +103,16 @@ export const ConnectionsTableColumns: ColumnDef<Connection>[] = [
     },
   },
   {
-    accessorKey: "details",
+    accessorKey: "lastFetch",
     header: () => {
-      return <UnsortableTableColumn title="Details" />;
+      return <UnsortableTableColumn title="Last Fetch" />;
     },
     cell: ({ row }) => {
-      return <RowExpander row={row} />;
+      return (
+        <div className="px-2 align-middle font-medium">
+          {row.getValue("lastFetch")}
+        </div>
+      );
     },
   },
   {
@@ -133,6 +122,15 @@ export const ConnectionsTableColumns: ColumnDef<Connection>[] = [
     meta: {
       filterVariant: "attributes",
       title: "Java Version",
+    },
+  },
+  {
+    accessorKey: "details",
+    header: () => {
+      return <UnsortableTableColumn title="Details" />;
+    },
+    cell: ({ row }) => {
+      return <RowExpander row={row} />;
     },
   },
 ];
