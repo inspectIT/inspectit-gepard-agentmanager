@@ -1,12 +1,6 @@
 import { Connection } from "@/types/Connection";
 import ConnectionTable from "./table/ConnectionTable";
-import {
-  Page,
-  PageContent,
-  PageDescription,
-  PageHeader,
-  PageTitle,
-} from "@/components/ui/page";
+import { Page, PageContent, PageHeader, PageTitle } from "@/components/ui/page";
 import useConnectionTable from "@/hooks/features/connections/useConnectionTable";
 import ConnectionFilters from "./filter/ConnectionFilters";
 import TablePagination from "@/components/ui/table-pagination";
@@ -23,9 +17,7 @@ export default function ConnectionsView({
     <Page>
       <PageHeader>
         <PageTitle>Connections</PageTitle>
-        <PageDescription>
-          <ConnectionFilters table={table} />
-        </PageDescription>
+        <ConnectionFilters table={table} />
       </PageHeader>
       <PageContent>
         <ConnectionTable table={table} />

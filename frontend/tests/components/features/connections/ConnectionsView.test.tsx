@@ -17,9 +17,6 @@ describe("ConnectionsView", () => {
   it("renders ConnectionsView component", () => {
     render(<ConnectionsView connections={mockConnections} />);
     expect(screen.getByText("Connections")).toBeInTheDocument();
-    expect(
-      screen.getByText("All currently connected agents.")
-    ).toBeInTheDocument();
   });
 
   it("renders the correct number of connections", () => {

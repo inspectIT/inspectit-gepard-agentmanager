@@ -44,21 +44,6 @@ export const ConnectionsTableColumns: ColumnDef<Connection>[] = [
       title: "Connection Status",
     },
   },
-  // {
-  //   accessorKey: "vmId",
-  //   header: ({ column }) => {
-  //     return <SortableTableColumn column={column} title="VM ID" />;
-  //   },
-  //   cell: ({ row }) => {
-  //     return (
-  //       <div className="px-4 align-middle font-medium">
-  //         {row.getValue("vmId")}
-  //       </div>
-  //     );
-  //   },
-  //   enableGlobalFilter: true,
-
-  // },
   {
     accessorKey: "javaVersion",
     header: ({ column }) => {
@@ -128,6 +113,15 @@ export const ConnectionsTableColumns: ColumnDef<Connection>[] = [
           {row.getValue("lastFetch")}
         </div>
       );
+    },
+  },
+  {
+    accessorKey: "attributes",
+    //@ts-expect-error Seems like a library bug, that filterFn is not found by typescript.
+    filterFn: "attributeEquals",
+    meta: {
+      filterVariant: "attributes",
+      title: "Java Version",
     },
   },
   {
